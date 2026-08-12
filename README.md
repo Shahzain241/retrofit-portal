@@ -75,21 +75,69 @@ Any email/password is accepted (no real authentication).
 ## Project structure
 
 ```
-src/
-  components/   shared UI (Button, Badge, StatCard, StatusPill, ProgressBar,
-                Toggle, Header, Footer, CtaBanner, Sidebar, Topbar,
-                DashboardLayout, ProjectTabs, ProjectHeaderCard, PaymentMethodCard)
-  pages/        route-level pages
-    auth/       Login, Signup, AuthLayout
-    client/     ClientDashboard, MyProjects, ProjectDetail, Profile, Billing, Plans,
-                project-tabs/ (Overview, TaskDocs, Communication, Timeline, Deliverables)
-    admin/      AdminDashboard, ProjectsDirectory, TaskBoard, Services, ServiceForm,
-                Users, InviteStaff, Settings
-  styles/       all CSS (one file per component/page)
-  assets/       images, icons, logo
-  data/         mock data (services, projects, stats, testimonials, etc.)
-  context/      ProfileContext (profile/settings, persisted to localStorage)
-  utils/        pdf.js (invoice PDF generation)
+📦 src
+├── 📁 assets/                    # Images, icons & logo
+├── 📁 components/                # Shared & reusable UI components
+│   ├── Button
+│   ├── Badge
+│   ├── StatCard
+│   ├── StatusPill
+│   ├── ProgressBar
+│   ├── Toggle
+│   ├── Header
+│   ├── Footer
+│   ├── CtaBanner
+│   ├── Sidebar
+│   ├── Topbar
+│   ├── DashboardLayout
+│   ├── ProjectTabs
+│   ├── ProjectHeaderCard
+│   └── PaymentMethodCard
+│
+├── 📁 pages/                     # Route-level pages
+│   ├── 📁 auth/
+│   │   ├── Login
+│   │   ├── Signup
+│   │   └── AuthLayout
+│   │
+│   ├── 📁 client/
+│   │   ├── ClientDashboard
+│   │   ├── MyProjects
+│   │   ├── ProjectDetail
+│   │   ├── Profile
+│   │   ├── Billing
+│   │   ├── Plans
+│   │   └── 📁 project-tabs/
+│   │       ├── Overview
+│   │       ├── TaskDocs
+│   │       ├── Communication
+│   │       ├── Timeline
+│   │       └── Deliverables
+│   │
+│   └── 📁 admin/
+│       ├── AdminDashboard
+│       ├── ProjectsDirectory
+│       ├── TaskBoard
+│       ├── Services
+│       ├── ServiceForm
+│       ├── Users
+│       ├── InviteStaff
+│       └── Settings
+│
+├── 📁 styles/                    # Component & page-specific CSS
+│   └── *.css
+│
+├── 📁 data/                      # Mock/static application data
+│   ├── services
+│   ├── projects
+│   ├── stats
+│   └── testimonials
+│
+├── 📁 context/                   # Global React Context
+│   └── ProfileContext            # Profile/settings + localStorage
+│
+└── 📁 utils/                     # Utility functions
+    └── pdf.js                    # Invoice PDF generation
 ```
 
 ## Notes
