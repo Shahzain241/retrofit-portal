@@ -1,9 +1,23 @@
-const variants = {
-  primary: 'bg-gradient-to-r from-navy-900 to-teal-700 text-white hover:opacity-90',
-  green: 'bg-brand-green text-white hover:opacity-90',
-  outline: 'bg-white text-ink border border-line hover:bg-surface',
-  navy: 'bg-navy-900 text-white hover:bg-navy-800',
-  ghost: 'bg-transparent text-body hover:bg-surface',
+import '../styles/Button.css';
+
+/**
+ * Shared Button component — renders every primary/secondary/ghost action
+ * across the portal. Styling lives in styles/Button.css.
+ *
+ * Variants:
+ *   primary | green | outline | navy | ghost | gradient | gradientEdge
+ *
+ * Fixed pixel sizes come from each page's stylesheet via the `className`
+ * prop (e.g. `.rp-button.rp-new-project`), so the Button itself stays dumb.
+ */
+const variantClass = {
+  primary: 'rp-button-primary',
+  green: 'rp-button-green',
+  outline: 'rp-button-outline',
+  navy: 'rp-button-navy',
+  ghost: 'rp-button-ghost',
+  gradient: 'rp-button-gradient',
+  gradientEdge: 'rp-button-gradientEdge',
 };
 
 export default function Button({
@@ -14,10 +28,7 @@ export default function Button({
   ...props
 }) {
   return (
-    <button
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
-      {...props}
-    >
+    <button className={`rp-button ${variantClass[variant] || ''} ${className}`} {...props}>
       {Icon && <Icon size={16} />}
       {children}
     </button>

@@ -2,8 +2,8 @@ export const projects = [
   {
     id: 'RET-2026-9156',
     code: 'RET-2026-0042',
-    title: 'High-Efficiency Heat Pump Installation Cluster',
-    address: '124 Oakwood Crescent',
+    title: 'Deep Retrofit & Solar Installation',
+    address: '42 Maple Avenue',
     location: 'London, NW10 6RF, UK',
     fullAddress: '42 Oakwood Drive, New Property, Manchester',
     image:
@@ -49,8 +49,8 @@ export const projects = [
   {
     id: 'RET-2026-9158',
     code: 'RET-2026-0044',
-    title: 'Insulation Upgrade Programme',
-    address: '23 Oak Avenue',
+    title: 'Deep Retrofit & Solar Installation',
+    address: '42 Maple Avenue',
     location: 'Manchester, M1 4AB, UK',
     fullAddress: '23 Oak Avenue, Manchester',
     image:

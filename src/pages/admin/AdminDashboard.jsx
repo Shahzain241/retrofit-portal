@@ -12,36 +12,37 @@ import {
   Line,
   Tooltip,
 } from 'recharts';
-import { FileText, ClipboardCheck, Clock, Star, Activity, Zap, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
 import { teamWorkload, projectByStatus, revenueTrend } from '../../data/misc';
 import { priorityQueue } from '../../data/projects';
+import { adminStats } from '../../data/dashboardStats';
 import { useProfile } from '../../context/ProfileContext';
+import '../../styles/AdminDashboard.css';
 
+/**
+ * Admin Dashboard — headline stats, workload/status/revenue charts and the
+ * priority queue table. Styled via AdminDashboard.css, DashboardShared.css
+ * and Tailwind utilities.
+ */
 export default function AdminDashboard() {
   const { profile } = useProfile();
   return (
     <div>
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-navy-950 to-navy-800 text-white p-8 mb-6">
-        <div className="absolute -right-10 -top-10 w-64 h-64 rounded-full border-[20px] border-brand-green/40" />
-        <div className="absolute right-16 bottom-0 w-32 h-32 rounded-full bg-brand-green/30" />
-        <h1 className="text-3xl font-bold relative z-10">Good morning {profile.firstName}!</h1>
+      <div className="dashboard-banner text-white p-6 sm:p-8 mb-6">
+        <div className="dashboard-banner-glow" />
+        <h1 className="text-2xl sm:text-3xl font-bold relative z-10">Good morning {profile.firstName}!</h1>
         <p className="text-white/70 mt-2 relative z-10">
           You have <span className="text-brand-green font-semibold">2 pending projects</span> that
           require attention today.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
-        <StatCard icon={FileText} value="2" label="New Today" />
-        <StatCard icon={ClipboardCheck} value="4" label="Active Projects" />
-        <StatCard icon={Clock} value="4" label="Overdue Tasks" dark />
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-8">
-        <StatCard icon={Star} value="£1,5054" label="Revenue MTD" />
-        <StatCard icon={Activity} value="4" label="Avg Completion" />
-        <StatCard icon={Zap} value="100%" label="Compliance" />
+      <div className="admin-stats-grid">
+        {adminStats.map((s, i) => (
+          <StatCard key={i} icon={s.icon} value={s.value} label={s.label} variant={s.variant} compact />
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -69,8 +70,8 @@ export default function AdminDashboard() {
             <h4 className="font-bold text-ink">Project by Status</h4>
             <MoreHorizontal size={18} className="text-muted" />
           </div>
-          <div className="flex items-center gap-6">
-            <div className="relative w-40 h-40 shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="relative w-36 h-36 sm:w-40 sm:h-40 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -93,13 +94,16 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="space-y-3">
-              {projectByStatus.map((d) => (
-                <div key={d.name} className="flex items-center gap-2 text-sm">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="text-body flex-1">{d.name}</span>
-                  <span className="font-semibold text-ink">{d.value}%</span>
-                </div>
-              ))}
+              {projectByStatus.map((d) => {
+                const dotStyle = { '--dot-color': d.color };
+                return (
+                  <div key={d.name} className="flex items-center gap-2 text-sm">
+                    <span className="w-2.5 h-2.5 rounded-full legend-dot" style={dotStyle} />
+                    <span className="text-body flex-1">{d.name}</span>
+                    <span className="font-semibold text-ink">{d.value}%</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

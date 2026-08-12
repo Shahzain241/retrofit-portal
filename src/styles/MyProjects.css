@@ -1,0 +1,15 @@
+/* My Projects (client) — filter pills & table.
+
+   "New Project" header CTA uses the shared `.rp-button.rp-dash-cta` base
+   (DashboardShared.css); this class only sets its 143px width. */
+.rp-button.rp-new-project-btn {
+  width: 143px;
+}
+
+/* "View" action inside each project row. */
+.rp-button.rp-table-btn-view {
+  width: 65px;
+  height: 34px;
+  border-radius: 10px;
+  color: #ffffff;
+}

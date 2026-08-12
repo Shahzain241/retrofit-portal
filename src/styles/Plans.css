@@ -1,0 +1,7 @@
+/* Billing Plans (client) — pricing card CTA state. */
+
+/* Gradient CTA used for "Current Plan" and "Contact Sales". */
+.rp-button.rp-plan-card-cta {
+  border: 1px solid #c4c4c442;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}

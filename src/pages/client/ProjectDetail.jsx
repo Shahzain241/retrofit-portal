@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import ProjectHeaderCard from '../../components/ProjectHeaderCard';
-import ProjectTabs from '../../layouts/ProjectTabs';
+import ProjectTabs from '../../components/ProjectTabs';
 import { projects } from '../../data/projects';
 import OverviewTab from './project-tabs/OverviewTab';
 import TaskDocsTab from './project-tabs/TaskDocsTab';

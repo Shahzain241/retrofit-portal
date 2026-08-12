@@ -1,0 +1,173 @@
+/* Client dashboard — active-project cards & upgrade panel.
+   `.dashboard-banner` lives in DashboardShared.css (shared with admin). */
+
+/* Client hero banner spans the full content width so its right edge aligns
+   with the four stat cards below. */
+.dashboard-banner.dashboard-banner-client {
+  width: 100%;
+}
+
+.dashboard-banner-rings {
+  position: absolute;
+  top: 20px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 12px solid #0F9D58;
+  opacity: 0.9;
+}
+
+.ring-1 {
+  width: 140px;
+  height: 140px;
+  top: 10px;
+  right: 30px;
+  border: 12px solid #0F9D58;
+  opacity: 0.9;
+}
+
+.ring-2 {
+  width: 90px;
+  height: 90px;
+  top: 100px;
+  right: 90px;
+  border: 12px solid #0F9D58;
+  opacity: 0.5;
+}
+
+.dashboard-stats-grid {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Tablet: stat cards 2 columns, banner fills width */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard-banner {
+    width: 100% !important;
+  }
+}
+
+/* Mobile: stat cards single column, compact banner */
+@media (max-width: 640px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .dashboard-stats-grid > div {
+    padding: 14px;
+  }
+  .dashboard-banner {
+    width: 100% !important;
+    height: auto !important;
+    padding: 24px !important;
+  }
+  .dashboard-banner h1 {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  .dashboard-banner-rings {
+    display: none;
+  }
+}
+
+/* Mobile / small tablet: compact banner, smaller heading, no negative-overlap between
+   banner and stat cards. Nothing here affects desktop (>=1024px). */
+@media (max-width: 768px) {
+  .dashboard-banner {
+    height: auto !important;
+    padding: 24px !important;
+  }
+  .dashboard-banner h1 {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  .dashboard-stats-grid {
+    margin-top: 16px;
+  }
+}
+
+/* Active-project card extracted from inline styles */
+.rp-dash-proj-card {
+  width: 357px;
+  height: 513px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  opacity: 1;
+}
+
+.rp-dash-proj-img {
+  width: 357px;
+  height: 192px;
+}
+
+.rp-dash-proj-img img {
+  opacity: 1;
+}
+
+.rp-dash-proj-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  width: 168.03px;
+  height: 28px;
+  opacity: 1;
+  color: #0b1c30;
+}
+
+.rp-dash-proj-meta {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  width: 243.44px;
+  height: 24px;
+  opacity: 1;
+  color: #45464d;
+}
+
+/* "Open Project" button */
+.rp-button.rp-dash-proj-btn {
+  width: 325px;
+  height: 54px;
+  border-radius: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/* Upgrade panel + button */
+.rp-upgrade-banner {
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  background: #e9e8e9;
+}
+
+.rp-button.rp-upgrade-btn {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  text-align: center;
+  color: #ffffff;
+  width: 168.61px;
+  height: 44px;
+  border-radius: 8px;
+  padding: 10px 32px;
+  background: #12b14e;
+}

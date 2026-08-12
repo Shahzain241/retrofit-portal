@@ -47,7 +47,7 @@ export default function TaskDocsTab() {
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-2 bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-        <h4 className="font-bold text-ink mb-4">Your Documents</h4>
+        <h4 className="font-['Inter'] font-semibold text-[16px] leading-[24px] tracking-[0px] text-[#0B1C30] mb-4">Your Documents</h4>
         {feedback && (
           <p className="text-xs text-brand-green font-medium mb-4">{feedback}</p>
         )}

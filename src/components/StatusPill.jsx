@@ -1,3 +1,8 @@
+/**
+ * Shared StatusPill — colored status/priority text (Active, Completed,
+ * Offline, High, ...). Maps a status string to a Tailwind text color.
+ * Used across dashboards (admin Services table, My Projects table).
+ */
 const styles = {
   Active: 'text-brand-green',
   Completed: 'text-brand-green',

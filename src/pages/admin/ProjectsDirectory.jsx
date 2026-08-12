@@ -1,43 +1,62 @@
+import { useState } from 'react';
 import { CheckCircle2, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import Toggle from '../../components/Toggle';
+import ProgressBar from '../../components/ProgressBar';
 import { directoryProjects } from '../../data/projects';
+import { directoryFilterFields } from '../../data/projectsDirectory';
+import '../../styles/ProjectsDirectory.css';
 
-const filterFields = [
-  { label: 'STATUS', value: 'Planning' },
-  { label: 'ASSIGNED TO', value: 'John Smith' },
-  { label: 'DATA RANGE', value: 'Q4 2023 Overview' },
-];
-
+/**
+ * Admin Projects Directory — status filters, "has issues" toggle and the full
+ * project table. Styled via ProjectsDirectory.css + Tailwind utilities.
+ */
 export default function ProjectsDirectory() {
+  const [hasIssues, setHasIssues] = useState(true);
   return (
     <div>
-      <h1 className="text-2xl font-bold text-ink">Projects Directory</h1>
+      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Projects Directory</h1>
       <p className="text-body mt-1 mb-6">
         Manage, filter, and track all active enterprise sustainability initiatives.
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        {filterFields.map((f) => (
-          <div key={f.label} className="bg-white rounded-2xl border border-line/60 shadow-sm p-4">
+        {directoryFilterFields.map((f) => (
+          <div
+            key={f.label}
+            className="rp-filter-card"
+          >
             <p className="text-[11px] font-semibold text-muted mb-2">{f.label}</p>
-            <select className="w-full text-sm text-ink bg-transparent focus:outline-none">
+            <select className="rp-filter-select w-full text-sm text-ink bg-white focus:outline-none">
               <option>{f.value}</option>
             </select>
           </div>
         ))}
-        <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-4 flex items-center justify-between">
-          <p className="text-[11px] font-semibold text-muted">HAS ISSUES</p>
-          <div className="w-10 h-5 rounded-full bg-line flex items-center px-0.5">
-            <span className="w-4 h-4 rounded-full bg-white block" />
+        <div
+          className="rp-filter-card"
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold text-muted">HAS ISSUES</p>
+            <Toggle on={hasIssues} onClick={() => setHasIssues((v) => !v)} size="sm" variant="brand" />
+          </div>
+          <div className="rp-filter-value">
+            <span className="text-sm text-ink">Critical Only</span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 mb-6 text-sm">
-        <span className="text-body">Active filters:</span>
-        <span className="bg-white border border-line rounded-full px-3 py-1.5 flex items-center gap-2 text-ink">
-          Status: 2 Selected <X size={14} className="text-muted" />
+      <div className="flex flex-wrap items-center gap-3 mb-6 text-sm">
+        <span className="rp-filter-label">
+          Active filters:
         </span>
-        <button className="text-brand-green font-semibold">Clear all</button>
+        <span className="rp-filter-chip">
+          <span className="rp-filter-chip-label">
+            Status: 2 Selected
+          </span>
+          <X size={10} className="text-[#0B1C30]" />
+        </span>
+        <button className="rp-filter-clear">
+          Clear all
+        </button>
       </div>
 
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-x-auto">
@@ -72,11 +91,8 @@ export default function ProjectsDirectory() {
                 <td className="px-6 py-4 text-body">{p.service}</td>
                 <td className="px-6 py-4 w-52">
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
-                      <div
-                        className={`h-full ${p.danger ? 'bg-danger' : 'bg-brand-green'}`}
-                        style={{ width: `${p.progress}%` }}
-                      />
+                    <div className="flex-1">
+                      <ProgressBar value={p.progress} size="sm" variant={p.danger ? 'danger' : 'green'} />
                     </div>
                     <span className={`text-sm font-bold ${p.danger ? 'text-danger' : 'text-brand-green'}`}>
                       {p.progress}%

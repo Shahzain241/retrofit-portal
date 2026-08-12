@@ -17,7 +17,9 @@ export default function Signup() {
 
   return (
     <AuthLayout image={signupImg}>
-      <h1 className="text-2xl font-bold text-ink">Sign Up to your account</h1>
+      <h1 className="auth-title">
+        Sign Up to your account
+      </h1>
       <p className="text-body mt-1 mb-8">Sign Up to start your retrofit services</p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -65,7 +67,7 @@ export default function Signup() {
               {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <Link to="#" className="block text-right text-sm italic text-ink mt-2">
+          <Link to="#" className="block text-sm italic text-ink mt-2">
             Forgot password?
           </Link>
         </div>
@@ -75,7 +77,7 @@ export default function Signup() {
         </Button>
       </form>
 
-      <p className="text-center text-sm text-body mt-8">
+      <p className="text-sm text-body mt-8 text-left">
         Don't have an account?{' '}
         <Link to="/signup" className="font-semibold text-ink underline">
           Sign up

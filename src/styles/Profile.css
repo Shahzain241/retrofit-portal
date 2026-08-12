@@ -1,0 +1,20 @@
+/* Profile & Settings (client) — extracted inline styles.
+   Layout uses Tailwind utilities; `.rp-profile-save` mobile override is in
+   DashboardShared.css. */
+
+.rp-button.rp-profile-save {
+  width: 338px;
+  height: 54px;
+  border-radius: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background: #12b14e;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  text-align: center;
+  vertical-align: middle;
+  color: #ffffff;
+}

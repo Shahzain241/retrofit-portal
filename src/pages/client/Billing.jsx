@@ -1,32 +1,41 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Download } from 'lucide-react';
 import Button from '../../components/Button';
+import Badge from '../../components/Badge';
 import PaymentMethodCard from '../../components/PaymentMethodCard';
 import { invoices } from '../../data/misc';
 import { downloadInvoicePdf } from '../../utils/pdf';
+import '../../styles/Billing.css';
 
+/**
+ * Client Billing — current plan, payment methods and invoice history.
+ * Styled via Billing.css + shared dashboard classes.
+ */
 export default function Billing() {
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Billing & Subscription</h1>
+          <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Billing & Subscription</h1>
           <p className="text-body mt-1">
             Manage your organizational plan, payment methods, and billing history.
           </p>
         </div>
         <Link to="/billing/plans">
-          <Button variant="navy">Upgrade Plan</Button>
+          <Button
+            variant="gradientEdge"
+            className="rp-dash-cta w-[143px]"
+          >
+            Upgrade Plan
+          </Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-          <span className="bg-brand-green-light text-brand-green text-xs font-bold px-3 py-1 rounded-full">
-            Current Plan
-          </span>
-          <div className="flex items-end justify-between mt-3 mb-4">
-            <h3 className="text-2xl font-bold text-ink">Priority Plan</h3>
+      <div className="flex flex-col lg:flex-row justify-between gap-6 mb-8">
+        <div className="rp-plan-card">
+          <Badge variant="green">Current Plan</Badge>
+          <div className="flex flex-wrap items-end justify-between gap-3 mt-3 mb-4">
+            <h3 className="font-['Inter'] font-semibold text-[24px] leading-[32px] tracking-[-0.24px] text-[#0B1C30]">Priority Plan</h3>
             <div className="text-right">
               <p className="text-3xl font-bold text-ink">
                 £29<span className="text-sm text-muted font-normal">/mo</span>
@@ -43,18 +52,28 @@ export default function Billing() {
               )
             )}
           </div>
-          <div className="flex gap-3 border-t border-dashed border-line pt-4">
-            <Button variant="outline" className="flex-1">Upgrade Plan</Button>
-            <Button variant="navy" className="flex-1">Cancel</Button>
+          <div className="flex gap-3 border-t border-dashed border-line pt-4 rp-plan-actions">
+            <Button
+              variant="outline"
+              className="rp-plan-upgrade"
+            >
+              Upgrade Plan
+            </Button>
+            <Button
+              variant="navy"
+              className="rp-plan-cancel"
+            >
+              Cancel
+            </Button>
           </div>
         </div>
 
         <PaymentMethodCard />
       </div>
 
-      <h3 className="text-xl font-bold text-ink mb-4">Invoice History</h3>
-      <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-hidden">
-        <table className="w-full text-left">
+      <h3 className="font-['Inter'] font-semibold text-[25px] leading-[36px] tracking-[-0.3px] text-[#0B1C30] mb-4">Invoice History</h3>
+      <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-x-auto">
+        <table className="w-full text-left min-w-[480px]">
           <thead>
             <tr className="text-xs font-semibold text-muted uppercase border-b border-line">
               <th className="px-6 py-4">Date</th>
@@ -73,9 +92,9 @@ export default function Billing() {
                 </td>
                 <td className="px-6 py-4">
                   <Button
-                    variant="navy"
+                    variant="gradient"
                     icon={Download}
-                    className="!py-2 !px-4 text-xs"
+                    className="rp-table-btn-pdf !py-2 !px-4 text-xs"
                     onClick={() => downloadInvoicePdf(inv, i)}
                   >
                     PDF

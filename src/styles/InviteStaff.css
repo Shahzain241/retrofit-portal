@@ -1,0 +1,45 @@
+/* Invite Staff (admin) — extracted inline styles.
+   `.rp-dash-actions-bar` and `.rp-button.rp-dash-action*` live in
+   DashboardShared.css. */
+
+.is-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 40px;
+  letter-spacing: -0.9px;
+  vertical-align: middle;
+  color: #0b1c30;
+}
+
+.is-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #45464d;
+}
+
+.is-perm-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  width: 1056px;
+  height: 28px;
+  color: #0b1c30;
+}
+
+.is-perm-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #45464d;
+}

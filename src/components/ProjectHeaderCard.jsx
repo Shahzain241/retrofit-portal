@@ -1,18 +1,26 @@
+import '../styles/ProjectHeaderCard.css';
+import ProgressBar from './ProgressBar';
+import clientdash4 from '../assets/clientdash4.jpg';
+
+/**
+ * Project header card rendered at the top of the client Project Detail page —
+ * image, address/tag, coordinator, and progress. Uses the shared ProgressBar.
+ */
 export default function ProjectHeaderCard({ project }) {
   return (
     <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 flex flex-col md:flex-row gap-6">
       <img
-        src={project.image}
+        src={clientdash4}
         alt={project.address}
-        className="w-full md:w-56 h-40 object-cover rounded-xl"
+        className="rp-projcard-img object-cover shrink-0"
       />
       <div className="flex-1">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <h2 className="text-2xl font-bold text-ink">{project.address}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-ink">{project.address}</h2>
             <p className="text-body mt-1">{project.location}</p>
           </div>
-          <span className="bg-brand-green-light text-brand-green text-xs font-bold px-3 py-1.5 rounded-full">
+          <span className="bg-brand-green-light text-brand-green text-xs font-bold px-3 py-1.5 rounded-full shrink-0">
             {project.tag}
           </span>
         </div>
@@ -35,12 +43,7 @@ export default function ProjectHeaderCard({ project }) {
             <span className="text-body font-medium">Progress</span>
             <span className="text-brand-green font-bold">{project.progress}%</span>
           </div>
-          <div className="h-2 rounded-full bg-line overflow-hidden">
-            <div
-              className="h-full bg-brand-green rounded-full"
-              style={{ width: `${project.progress}%` }}
-            />
-          </div>
+          <ProgressBar value={project.progress} size="md" />
         </div>
       </div>
     </div>

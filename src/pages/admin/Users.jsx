@@ -2,44 +2,63 @@ import { Link } from 'react-router-dom';
 import { UserPlus, LogIn, Pencil, Ban } from 'lucide-react';
 import Button from '../../components/Button';
 import { users } from '../../data/misc';
+import '../../styles/Users.css';
 
+/**
+ * Admin User Directory — list of platform users with roles, status and
+ * management actions. Styled via Users.css + shared dashboard classes.
+ */
 export default function Users() {
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-ink">User Directory</h1>
+          <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">
+            User Directory
+          </h1>
           <p className="text-body mt-1">Manage platform access, roles, and impersonate accounts.</p>
         </div>
-        <Link to="/admin/users/invite">
-          <Button variant="navy" icon={UserPlus}>Invite New Staff</Button>
+        <Link to="/admin/users/invite" className="shrink-0">
+          <Button
+            variant="gradientEdge"
+            icon={UserPlus}
+            className="rp-dash-cta rp-invite-btn"
+          >
+            Invite New Staff
+          </Button>
         </Link>
       </div>
 
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-x-auto">
         <table className="w-full text-left min-w-[800px]">
           <thead>
-            <tr className="text-xs font-semibold text-muted uppercase border-b border-line">
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Role</th>
-              <th className="px-6 py-4"># Projects</th>
-              <th className="px-6 py-4">Last Login</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Action</th>
+            <tr className="border-b border-line">
+              <th className="px-6 py-4 rp-table-th">Name</th>
+              <th className="px-6 py-4 rp-table-th">Role</th>
+              <th className="px-6 py-4 rp-table-th"># Projects</th>
+              <th className="px-6 py-4 rp-table-th">Last Login</th>
+              <th className="px-6 py-4 rp-table-th">Status</th>
+              <th className="px-6 py-4 rp-table-th">Action</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u, i) => (
               <tr key={i} className="border-b border-line/60 last:border-0">
                 <td className="px-6 py-4">
-                  <p className="text-ink text-sm font-semibold">{u.name}</p>
+                  <p className="rp-table-td font-semibold">{u.name}</p>
                   <p className="text-xs text-muted">{u.email}</p>
                 </td>
-                <td className="px-6 py-4 text-body">{u.role}</td>
-                <td className="px-6 py-4 text-body">{u.projects}</td>
-                <td className="px-6 py-4 text-body">{u.lastLogin}</td>
                 <td className="px-6 py-4">
-                  <span className={`font-semibold text-sm ${u.status === 'Active' ? 'text-brand-green' : 'text-muted'}`}>
+                  <span className="rp-table-td">{u.role}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="rp-table-td">{u.projects}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="rp-table-td">{u.lastLogin}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`rp-table-td ${u.status === 'Active' ? 'rp-table-td-success' : ''}`}>
                     {u.status}
                   </span>
                 </td>

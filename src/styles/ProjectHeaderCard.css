@@ -1,0 +1,9 @@
+/* ProjectHeaderCard — hero image + progress.
+   Progress is rendered through the shared ProgressBar (ProgressBar.css). */
+
+.rp-projcard-img {
+  width: 258px;
+  height: 194px;
+  border-radius: 12px;
+  opacity: 1;
+}

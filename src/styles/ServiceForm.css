@@ -1,0 +1,71 @@
+/* Service Form (admin) — extracted inline styles. */
+
+.sf-section-title {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #000000;
+}
+
+.sf-service-active-title {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #0b1c30;
+}
+
+.sf-label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #45464d;
+}
+
+.rp-button.sf-mini-btn {
+  height: 39px;
+  gap: 10px;
+  white-space: nowrap;
+  border-radius: 12px;
+  border-right: 1.5px solid #ffffff;
+  border-bottom: 1.5px solid #ffffff;
+  padding: 9px;
+  font-family: 'TT Norms Pro';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+  color: #ffffff;
+  background: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%), linear-gradient(0deg, rgba(255, 255, 255, 0.002), rgba(255, 255, 255, 0.002));
+}
+
+.rp-button.sf-btn-add-tier {
+  width: 97px;
+}
+
+.rp-button.sf-btn-add-deliverable {
+  width: 147px;
+}
+
+.rp-button.sf-save-btn {
+  width: 338px;
+  height: 54px;
+  border-radius: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background: #12b14e;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  text-align: center;
+  vertical-align: middle;
+  color: #ffffff;
+}

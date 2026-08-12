@@ -10,7 +10,7 @@ const stateStyles = {
 export default function TimelineTab() {
   return (
     <div className="mt-6">
-      <h4 className="font-bold text-ink mb-6">Milestone Timeline</h4>
+      <h4 className="font-['Inter'] font-semibold text-[25px] leading-[36px] tracking-[-0.3px] text-[#0B1C30] mb-6">Milestone Timeline</h4>
       <div className="space-y-0">
         {milestones.map((m, i) => (
           <div key={i} className="flex gap-4">
@@ -23,7 +23,7 @@ export default function TimelineTab() {
               )}
             </div>
             <div className="pb-8">
-              <p className={`font-bold ${m.state === 'upcoming' ? 'text-muted' : 'text-ink'}`}>
+              <p className={`font-['Inter'] font-semibold text-[16px] leading-[24px] tracking-[0px] text-[#0B1C30] ${m.state === 'upcoming' ? '!text-muted' : ''}`}>
                 {m.title}{' '}
                 {m.state === 'current' && (
                   <span className="text-warning font-medium text-sm">(Current)</span>

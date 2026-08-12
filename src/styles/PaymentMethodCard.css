@@ -1,0 +1,18 @@
+/* PaymentMethodCard (Billing) — extracted inline styles.
+   Mobile fill rule for `.rp-pay-card` lives in DashboardShared.css. */
+
+.rp-pay-card {
+  width: 472px;
+  height: 316px;
+  gap: 32px;
+  border-radius: 18px;
+  padding: 16px 16px 26px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}
+
+/* "Add Backup Method" button — brand gradient overrides the primary variant. */
+.rp-button.rp-pay-add {
+  background-image: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.002), rgba(255, 255, 255, 0.002));
+}

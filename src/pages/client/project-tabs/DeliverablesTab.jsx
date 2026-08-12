@@ -7,7 +7,7 @@ const icons = { pdf: FileText, xls: FileSpreadsheet, doc: File };
 export default function DeliverablesTab() {
   return (
     <div className="mt-6">
-      <h4 className="font-bold text-ink mb-4">Deliverables (Available after delivery)</h4>
+      <h4 className="font-['Inter'] font-semibold text-[25px] leading-[36px] tracking-[-0.3px] text-[#0B1C30] mb-4">Deliverables (Available after delivery)</h4>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {deliverables.map((d, i) => {
           const Icon = icons[d.icon];

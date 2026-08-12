@@ -1,0 +1,309 @@
+/* Shared dashboard layout — mobile/tablet overrides only.
+   Desktop (>=1024px) rendering is NOT affected by anything below. */
+
+/* ---------- Dashboard banner ---------- */
+.dashboard-banner {
+  position: relative;
+  left: 1px;
+  overflow: hidden;
+  width: 100%;
+  height: 259px;
+  border-radius: 20px;
+  padding-bottom: 70px;
+  background: linear-gradient(95.93deg, #0b1c30 6.68%, #1e293b 96.83%);
+  box-shadow: 0px 0px 40px 0px #6bff8f26;
+}
+
+/* ---------- Dashboard CTA buttons (green->navy gradient + white edge) ---------- */
+/* Header action buttons (New Project, Create Service, Invite, Upgrade Plan).
+   Width is set per page via a page-specific modifier class. */
+.rp-button.rp-dash-cta {
+  height: 47px;
+  border-radius: 15px;
+  padding: 15px;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+/* Bottom action-bar buttons (Cancel / Save / Discard / Send Invite). */
+.rp-dash-actions-bar {
+  width: 696px;
+  height: 54px;
+  gap: 20px;
+}
+
+.rp-button.rp-dash-action {
+  height: 54px;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.rp-button.rp-dash-action-cancel {
+  border: 1px solid #c4c4c442;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}
+
+.rp-button.rp-dash-action-save {
+  background: var(--eco, #12b14e);
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}
+
+/* ---------- Shared sidebar ---------- */
+.rp-sidebar {
+  background-color: #0b1c30;
+}
+
+.rp-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12.38px;
+  margin-left: 98.59px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.rp-sidebar-logo {
+  width: 52.412109375px;
+  height: 65.94757080078125px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.rp-sidebar-divider {
+  width: 202px;
+  height: 0;
+  margin-top: 32.09px;
+  margin-left: 24px;
+  border-top: 1px solid;
+  border-image-source: linear-gradient(90deg, rgba(113, 128, 150, 0) 0%, rgba(113, 128, 150, 0.2) 50%, rgba(113, 128, 150, 0) 100%);
+  border-image-slice: 1;
+}
+
+/* Active nav link — green right/bottom edge (specificity beats Tailwind utils). */
+a.rp-sidebar-link-active {
+  gap: 12px;
+  padding: 16px;
+  height: 47px;
+  border-top: none;
+  border-left: none;
+  border-right: 1.5px solid #12b14e;
+  border-bottom: 1.5px solid #12b14e;
+}
+
+/* "New Project" button (client sidebar). */
+.rp-sidebar-newproject {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  width: 220px;
+  height: 47px;
+  border-radius: 15px;
+  border-right: 1.5px solid rgba(11, 28, 48, 0.12);
+  border-bottom: 1.5px solid rgba(11, 28, 48, 0.12);
+  padding: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0.2px;
+  color: #0b1c30;
+}
+
+/* ---------- Shared topbar ---------- */
+.rp-topbar-search-input {
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid #c4c4c480;
+  box-shadow: 0px 0.5px 9.5px 0px #0b1c301c;
+}
+
+/* ---------- Shared table header / cell text ---------- */
+.rp-table-th {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 145%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #45464d;
+}
+
+.rp-table-td {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 145%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #0b1c30;
+}
+
+.rp-table-td-success {
+  color: var(--color-brand-green, #1fae5c);
+}
+
+/* ---------- Shared notice banner (project overview "attention" strip) ---------- */
+.rp-notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+  justify-content: flex-start;
+  border-radius: 18px;
+  padding: 20px 16px;
+  background: #e9e8e9;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}
+
+.rp-notice-banner > span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #12b14e;
+}
+
+/* ---------- Shared toggle switch ---------- */
+.rp-toggle {
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  padding: 0 2px;
+  transition: background-color 0.2s;
+}
+
+.rp-toggle-lg {
+  width: 44px;
+  height: 24px;
+}
+
+.rp-toggle-sm {
+  width: 40px;
+  height: 20px;
+}
+
+.rp-toggle-off {
+  background: #e5e7eb;
+  justify-content: flex-start;
+}
+
+.rp-toggle-on {
+  justify-content: flex-end;
+}
+
+.rp-toggle-navy-on {
+  background: #0f1b2e;
+}
+
+.rp-toggle-brand-on {
+  background: #1fae5c;
+}
+
+.rp-toggle-knob {
+  border-radius: 9999px;
+  background: #ffffff;
+  display: block;
+}
+
+.rp-toggle-knob-lg {
+  width: 20px;
+  height: 20px;
+}
+
+.rp-toggle-knob-sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Search bar: always visible at every size. It flexes to fill the available
+   space, capped at its 634px design width so desktop stays identical. */
+.rp-dash-topbar-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rp-dash-topbar-search input {
+  width: 100% !important;
+  max-width: 634px;
+}
+
+/* Hide the drawer's close ("<") control on mobile; the backdrop and
+   nav-link clicks close it instead. Desktop stays untouched. */
+@media (max-width: 768px) {
+  .sidebar-collapse-btn {
+    display: none;
+  }
+
+  .rp-dash-content {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Fixed-width cards / buttons (inline styles) must fill the container
+   below 1024px so dashboard pages never overflow on tablet or mobile. */
+@media (max-width: 1023px) {
+  .rp-dash-proj-card,
+  .rp-plan-card,
+  .rp-pay-card,
+  .rp-filter-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .rp-dash-proj-img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-dash-proj-card,
+  .rp-plan-card,
+  .rp-pay-card {
+    height: auto !important;
+  }
+
+  .rp-dash-proj-img {
+    height: 160px !important;
+  }
+
+  .rp-dash-proj-btn,
+  .rp-plan-actions > *,
+  .rp-profile-save {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .rp-plan-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rp-filter-card {
+    height: auto !important;
+    padding: 12px 14px !important;
+  }
+
+  .rp-filter-card select,
+  .rp-filter-value {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* Fixed-width (e.g. 696px) admin action bars must not overflow on phones. */
+  .rp-dash-actions-bar {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

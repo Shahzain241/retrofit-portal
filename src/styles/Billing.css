@@ -1,0 +1,49 @@
+/* Billing & Subscription (client) — extracted inline styles.
+   Mobile fill rules for `.rp-plan-card`/`.rp-pay-card` live in DashboardShared.css. */
+
+/* Current-plan panel. */
+.rp-plan-card {
+  width: 660px;
+  height: 316px;
+  gap: 18px;
+  border-radius: 18px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+}
+
+/* "Upgrade Plan" primary action inside the plan panel. */
+.rp-button.rp-plan-upgrade {
+  width: 490px;
+  height: 54px;
+  gap: 8px;
+  border-radius: 15px;
+  border: 1px solid #c4c4c442;
+  padding: 15px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  text-align: center;
+  vertical-align: middle;
+  color: #0b1c30;
+}
+
+/* "Cancel" secondary action inside the plan panel. */
+.rp-button.rp-plan-cancel {
+  width: 86px;
+  height: 54px;
+  border-radius: 15px;
+  padding: 15px 16px;
+}
+
+/* "PDF" download cell-button in the invoice table. */
+.rp-button.rp-table-btn-pdf {
+  width: 85px;
+  height: 36px;
+  border-radius: 10px;
+  padding: 8px 16px;
+}

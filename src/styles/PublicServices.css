@@ -1,0 +1,42 @@
+/* Public Services page — extracted inline styles.
+   Layout/pills/cards otherwise use Tailwind utilities inline (current design). */
+
+.ps-search-input {
+  width: 900px;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid #c4c4c480;
+  background: #ffffff;
+  opacity: 1;
+}
+
+.ps-filter-row {
+  gap: 16px;
+  opacity: 1;
+}
+
+/* "View Details" gradient pill (public service cards). */
+.ps-view-btn {
+  display: block;
+  width: 280px;
+  height: 42.8px;
+  opacity: 1;
+  border-radius: 12px;
+  background: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%);
+}
+
+.ps-view-btn-label {
+  display: inline-block;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: -0.56px;
+  vertical-align: middle;
+  padding-top: 12px;
+  background: radial-gradient(96.94% 791.67% at 1.53% 50%, #ffffff 0%, #c8c7cb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}

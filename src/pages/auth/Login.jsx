@@ -21,7 +21,9 @@ export default function Login() {
 
   return (
     <AuthLayout image={loginImg}>
-      <h1 className="text-2xl font-bold text-ink">Login to your account</h1>
+      <h1 className="auth-title">
+        Login to your account
+      </h1>
       <p className="text-body mt-1 mb-6">The faster you login, The faster we get to work</p>
 
       <div className="flex gap-2 mb-6 bg-surface rounded-xl p-1">
@@ -68,7 +70,7 @@ export default function Login() {
               {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <Link to="#" className="block text-right text-sm italic text-ink mt-2">
+          <Link to="#" className="block text-sm italic text-ink mt-2">
             Forgot password?
           </Link>
         </div>
@@ -78,7 +80,7 @@ export default function Login() {
         </Button>
       </form>
 
-      <p className="text-center text-sm text-body mt-8">
+      <p className="text-sm text-body mt-8 text-left">
         Don't have an account?{' '}
         <Link to="/signup" className="font-semibold text-ink underline">
           Sign up

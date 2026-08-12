@@ -1,10 +1,15 @@
 import { Plus } from 'lucide-react';
 import Button from './Button';
+import '../styles/PaymentMethodCard.css';
 
+/**
+ * Payment method panel shown on the Billing page — current default card plus
+ * an "Add Backup Method" CTA. Styled via styles/PaymentMethodCard.css.
+ */
 export default function PaymentMethodCard() {
   return (
-    <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-      <h4 className="font-bold text-ink mb-4">Payment Method</h4>
+    <div className="rp-pay-card">
+      <h4 className="font-['Inter'] font-semibold text-[20px] leading-[28px] tracking-[0px] text-[#0B1C30] mb-4">Payment Method</h4>
       <div className="border border-line rounded-xl px-4 py-3 flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <span className="bg-navy-900 text-white text-[10px] font-bold px-2 py-1 rounded">VISA</span>
@@ -18,7 +23,11 @@ export default function PaymentMethodCard() {
       <p className="text-xs text-muted border-t border-dashed border-line pt-4 mb-4">
         Your default payment method is used for all recurring subscription charges and project extras.
       </p>
-      <Button variant="primary" icon={Plus} className="w-full">
+      <Button
+        variant="primary"
+        icon={Plus}
+        className="w-full rp-pay-add"
+      >
         Add Backup Method
       </Button>
     </div>

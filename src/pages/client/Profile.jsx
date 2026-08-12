@@ -1,7 +1,15 @@
 import { useRef, useState } from 'react';
 import { Pencil, Upload, Check, FileText } from 'lucide-react';
 import Button from '../../components/Button';
+import Badge from '../../components/Badge';
+import Toggle from '../../components/Toggle';
 import { useProfile, fileToDataUrl } from '../../context/ProfileContext';
+import '../../styles/Profile.css';
+
+/**
+ * Client Profile & Settings — identity, property, password and notification
+ * preferences. Styled via Profile.css + Tailwind utilities.
+ */
 
 export default function Profile() {
   const { profile, updateProfile, updateProperty, toggleNotification } = useProfile();
@@ -234,9 +242,7 @@ export default function Profile() {
       <form onSubmit={handleSaveProperty} className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 mt-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-bold text-ink">Primary Property Details</h4>
-          <span className="bg-brand-green-light text-brand-green text-xs font-bold px-3 py-1 rounded-full">
-            VERIFIED
-          </span>
+          <Badge variant="green">VERIFIED</Badge>
         </div>
         <div className="space-y-5">
           <div>
@@ -283,13 +289,17 @@ export default function Profile() {
             </label>
           )}
           <Button type="submit" variant="primary" className="w-full">
-            Upload & Save
+            Update
           </Button>
         </div>
       </form>
 
-      <div className="flex items-center gap-3 mt-6">
-        <Button variant="green" className="flex-1 !py-4" onClick={handleSaveAll}>
+      <div className="flex items-center justify-center gap-3 mt-6">
+        <Button
+          variant="green"
+          onClick={handleSaveAll}
+          className="rp-profile-save"
+        >
           Save
         </Button>
         {saved && (
@@ -299,20 +309,5 @@ export default function Profile() {
         )}
       </div>
     </div>
-  );
-}
-
-function Toggle({ on, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={on}
-      className={`w-11 h-6 rounded-full flex items-center px-0.5 shrink-0 transition-colors ${
-        on ? 'bg-navy-900 justify-end' : 'bg-line justify-start'
-      }`}
-    >
-      <span className="w-5 h-5 rounded-full bg-white block" />
-    </button>
   );
 }

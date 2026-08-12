@@ -1,0 +1,21 @@
+/* Service Detail page — extracted inline styles.
+   `hero-title` / `hero-subtitle` / `section-heading` / `timeline-*` /
+   `compliance-title` are intentionally left unstyled (inert hooks). */
+
+.sd-hero-badge {
+  width: 168.83px;
+  height: 32.25px;
+}
+
+.sd-image-badge {
+  width: 144.86px;
+  height: 24px;
+  padding: 4px 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+}

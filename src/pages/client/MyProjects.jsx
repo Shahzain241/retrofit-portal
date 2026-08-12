@@ -2,11 +2,16 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import StatusPill from '../../components/StatusPill';
+import ProgressBar from '../../components/ProgressBar';
 import { Plus } from 'lucide-react';
 import { projects } from '../../data/projects';
+import { projectFilters } from '../../data/projectFilters';
+import '../../styles/MyProjects.css';
 
-const filters = ['All', 'Active', 'Completed'];
-
+/**
+ * Client "My Projects" — filterable table of the current user's retrofit
+ * projects. Styled via MyProjects.css + shared dashboard classes.
+ */
 export default function MyProjects() {
   const [filter, setFilter] = useState('All');
 
@@ -18,16 +23,22 @@ export default function MyProjects() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Your Projects</h1>
+          <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Your Projects</h1>
           <p className="text-body mt-1">Manage and track your ongoing retrofit operations across all location</p>
         </div>
-        <Button variant="navy" icon={Plus}>New Project</Button>
+        <Button
+          variant="gradientEdge"
+          icon={Plus}
+          className="rp-dash-cta rp-new-project-btn shrink-0"
+        >
+          New Project
+        </Button>
       </div>
 
-      <div className="flex gap-2 mb-6">
-        {filters.map((f) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {projectFilters.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -40,8 +51,8 @@ export default function MyProjects() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-hidden">
-        <table className="w-full text-left">
+      <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-x-auto">
+        <table className="w-full text-left min-w-[640px]">
           <thead>
             <tr className="text-xs font-semibold text-muted uppercase border-b border-line">
               <th className="px-6 py-4">Project ID</th>
@@ -58,8 +69,8 @@ export default function MyProjects() {
                 <td className="px-6 py-5 text-body">{p.fullAddress}</td>
                 <td className="px-6 py-5 w-64">
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
-                      <div className="h-full bg-brand-green" style={{ width: `${p.progress}%` }} />
+                    <div className="flex-1">
+                      <ProgressBar value={p.progress} size="sm" />
                     </div>
                     <span className="text-brand-green font-bold text-sm">{p.progress}%</span>
                   </div>
@@ -69,7 +80,12 @@ export default function MyProjects() {
                 </td>
                 <td className="px-6 py-5 text-right">
                   <Link to={`/projects/${p.id}`}>
-                    <Button variant="navy" className="!py-2 !px-6">View</Button>
+                    <Button
+                      variant="gradient"
+                      className="rp-table-btn-view !py-2 !px-6"
+                    >
+                      View
+                    </Button>
                   </Link>
                 </td>
               </tr>

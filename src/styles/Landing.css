@@ -1,0 +1,750 @@
+/* Landing page styles. Footer and CTA-banner rules moved to their own
+   component stylesheets (Footer.css, CtaBanner.css); Service Detail styles
+   live in ServicesDetail.css. */
+
+.rp-root,
+.rp-root * {
+  box-sizing: border-box;
+}
+.rp-root {
+  --navy: #0b2a3d;
+  --navy-deep: #0a2233;
+  --teal: #0f3b3e;
+  --teal-dark: #0c2f31;
+  --mint: #35b378;
+  --mint-soft: #cfe9db;
+  --mint-pale: rgba(53, 179, 120, 0.12);
+  --ink: #10241f;
+  --gray: #66766f;
+  --gray-light: #93a19b;
+  --bg-soft: #f6f8f6;
+  --border: #e4e9e5;
+  --white: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  overflow-x: hidden;
+}
+.rp-root h1,
+.rp-root h2,
+.rp-root h3,
+.rp-root h4 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  margin: 0;
+  color: var(--ink);
+}
+.rp-root p {
+  margin: 0;
+}
+.rp-root a {
+  text-decoration: none;
+  color: inherit;
+}
+.rp-root button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+}
+.rp-root ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.rp-eyebrow {
+  color: var(--mint);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- HERO ---------- */
+.rp-hero {
+  position: relative;
+  height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(100deg, rgba(9, 22, 34, 0.66) 20%, rgba(9, 22, 34, 0.38) 65%, rgba(9, 22, 34, 0.5) 100%),
+    url('../assets/hero.png') center/cover no-repeat;
+  color: white;
+  padding: 40px 0;
+}
+.rp-hero .rp-container {
+  width: 100%;
+}
+.rp-hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+.rp-hero-inner {
+  max-width: 576px;
+}
+.rp-hero h1 {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 48px;
+  line-height: 52.8px;
+  letter-spacing: -0.96px;
+  text-transform: capitalize;
+  vertical-align: middle;
+  width: 576px;
+  max-width: 100%;
+  height: 159px;
+  color: #ffffff;
+}
+.rp-hero p.rp-sub {
+  margin-top: 18px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 340px;
+}
+.rp-hero-actions {
+  margin-top: 26px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.rp-hero-actions .rp-btn {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+.rp-hero-actions .rp-btn-white {
+  color: #0b1c30;
+}
+.rp-hero-media {
+  position: absolute;
+  right: calc((100% - 1200px) / 2 + 24px);
+  bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+}
+.rp-hero-stats {
+  display: flex;
+  gap: 38px;
+  flex-wrap: wrap;
+  padding-bottom: 6px;
+}
+.rp-stat .num {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}
+.rp-stat .label {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+  white-space: nowrap;
+}
+.rp-trustbadge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rp-trustbadge img {
+  width: 131px;
+  height: 131px;
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
+.rp-trustbadge-ring {
+  position: absolute;
+  inset: 0;
+  animation: rp-spin 14s linear infinite;
+}
+@keyframes rp-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- TRUSTED STRIP ---------- */
+.rp-trusted {
+  padding: 48px 0;
+  text-align: center;
+  background: var(--white);
+}
+.rp-trusted h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+.rp-logo-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  opacity: 0.5;
+}
+.rp-logo-row span {
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  color: #9aa5a0;
+}
+
+/* ---------- BUTTONS ---------- */
+.rp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+.rp-btn:hover {
+  transform: translateY(-1px);
+}
+.rp-btn-primary {
+  background: var(--teal);
+  color: white;
+}
+.rp-btn-primary:hover {
+  background: var(--teal-dark);
+  box-shadow: 0 8px 20px rgba(15, 59, 62, 0.25);
+}
+.rp-btn-white {
+  background: white;
+  color: var(--ink);
+}
+.rp-btn-white:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.rp-btn-outline-white {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.rp-btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- HOW IT WORKS ---------- */
+.rp-section {
+  padding: 90px 0;
+}
+.rp-section.alt {
+  background: var(--bg-soft);
+}
+.rp-section-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 44px;
+}
+#testimonials .rp-section-head {
+  width: 724px;
+  max-width: 100%;
+  height: 130px;
+}
+.rp-section-head h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 8px;
+  line-height: 1.25;
+}
+#how-it-works .rp-section-head h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 36px;
+  line-height: 43.2px;
+  letter-spacing: -1.44px;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: capitalize;
+  width: 374px;
+  max-width: 100%;
+  height: 87px;
+  margin: 8px auto 0;
+  color: #0b1c30;
+}
+#services .rp-section-head h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 36px;
+  line-height: 43.2px;
+  letter-spacing: -1.44px;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: capitalize;
+  width: 374px;
+  max-width: 100%;
+  height: 44px;
+  margin: 8px auto 0;
+  color: #0b1c30;
+}
+#testimonials .rp-section-head h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 36px;
+  line-height: 43.2px;
+  letter-spacing: -1.44px;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: capitalize;
+  width: 724px;
+  max-width: 100%;
+  height: 87px;
+  margin: 8px auto 0;
+  color: #0b1c30;
+}
+.rp-hiw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 320px;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+.rp-hiw-cell {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-height: 280px;
+  display: flex;
+}
+.rp-hiw-cell.img {
+  padding: 0;
+}
+.rp-hiw-cell.img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.rp-hiw-cell.text {
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 44px;
+}
+.rp-step-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--mint-soft);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.rp-hiw-cell.text h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.rp-hiw-cell.text p {
+  color: var(--gray);
+  font-size: 14.5px;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+/* ---------- SERVICES ---------- */
+.rp-viewall-wrap {
+  text-align: center;
+  margin-top: 8px;
+}
+.rp-viewall {
+  display: inline-block;
+  color: var(--mint);
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  padding-bottom: 8px;
+}
+.rp-viewall::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 0;
+  border-bottom: 1.5px dashed var(--mint);
+}
+#services {
+  min-height: 755px;
+}
+.rp-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 48px;
+}
+.rp-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  width: 364px;
+  max-width: 100%;
+  min-height: 457px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.rp-card:hover {
+  box-shadow: 0 16px 32px rgba(16, 36, 31, 0.1);
+  transform: translateY(-3px);
+}
+.rp-card img {
+  width: 314px;
+  height: 236px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+  margin: 12px auto 0;
+}
+.rp-card-body {
+  padding: 18px 20px 22px;
+}
+.rp-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.rp-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.rp-tag {
+  background: var(--mint-pale);
+  color: var(--mint);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.rp-card-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 21.6px;
+  letter-spacing: -0.72px;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: fit-content;
+  height: 22px;
+  position: relative;
+  top: -0.2px;
+  color: #0b1c30;
+}
+.rp-price {
+  color: var(--mint);
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.rp-card-desc {
+  color: var(--gray);
+  font-size: 14px;
+  line-height: 1.55;
+  margin-bottom: 20px;
+  min-height: 42px;
+}
+.rp-card .rp-btn {
+  width: 314px;
+  max-width: 100%;
+  display: flex;
+  margin: 34px auto 0;
+}
+.rp-card .rp-btn-primary {
+  border-radius: 10px;
+  background: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%);
+  color: #ffffff !important;
+}
+.rp-card .rp-btn-primary:hover {
+  background: linear-gradient(269.98deg, #0fa042 -214.32%, #002850 99.98%);
+}
+
+/* ---------- TESTIMONIALS ---------- */
+.rp-test-wrap {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0 12px;
+}
+.rp-test-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  padding: 6px 4px;
+  will-change: transform;
+  transform: translateX(var(--track-offset, 0));
+}
+.rp-test-card {
+  z-index: var(--test-z, 1);
+  flex: 0 0 320px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 26px;
+  margin-left: -58px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.4s ease;
+  box-shadow: 0 10px 22px rgba(16, 36, 31, 0.08);
+  transform: scale(0.94);
+}
+.rp-test-card:first-child {
+  margin-left: 0;
+}
+.rp-test-card.active {
+  transform: scale(1.03);
+  box-shadow: 0 26px 50px rgba(16, 36, 31, 0.18);
+}
+.rp-stars {
+  color: #006e2d;
+  font-size: 20px;
+  line-height: 19px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+.rp-test-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  width: 296.67px;
+  max-width: 100%;
+  height: 96px;
+  color: #0b1c30;
+  margin-bottom: 20px;
+}
+.rp-test-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.rp-test-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--mint-pale);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+}
+.rp-test-person .n {
+  font-weight: 700;
+  font-size: 14px;
+}
+.rp-test-person .r {
+  font-size: 11px;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+.rp-carousel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 36px;
+}
+.rp-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--teal);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+.rp-nav-btn:hover {
+  background: var(--teal-dark);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 980px) {
+  .rp-hero {
+    height: auto;
+    padding: 60px 0 32px;
+  }
+  .rp-hero-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+  .rp-hero h1 {
+    font-size: 34px;
+    line-height: 37.4px;
+    letter-spacing: -0.68px;
+  }
+  .rp-hiw-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .rp-hiw-cell {
+    min-height: 220px;
+  }
+  .rp-services-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rp-test-card {
+    flex-basis: 260px;
+    margin-left: -46px;
+  }
+}
+@media (max-width: 640px) {
+  .rp-container {
+    padding: 0 18px;
+  }
+  .rp-hero {
+    padding: 60px 0 32px;
+    height: auto;
+  }
+  .rp-hero h1 {
+    font-size: 26px;
+    line-height: 28.6px;
+    letter-spacing: -0.52px;
+  }
+  .rp-hero-stats {
+    gap: 22px;
+  }
+  .rp-trustbadge {
+    display: none;
+  }
+  .rp-section {
+    padding: 56px 0;
+  }
+  .rp-section-head h2 {
+    font-size: 26px;
+  }
+  .rp-services-grid {
+    grid-template-columns: 1fr;
+  }
+  .rp-logo-row {
+    gap: 28px;
+  }
+  .rp-test-card {
+    flex-basis: 78vw;
+    margin-left: -34px;
+    padding: 20px;
+  }
+}
+@media (max-width: 420px) {
+  .rp-hero h1 {
+    font-size: 24px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- RESPONSIVE (MOBILE / TABLET) ---------- */
+@media (max-width: 1023px) {
+  .rp-hero {
+    height: auto;
+    padding: 48px 0 32px;
+  }
+  .rp-hero-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+  .rp-hero h1 {
+    font-size: 32px;
+    line-height: 35.2px;
+    letter-spacing: -0.64px;
+    height: auto;
+  }
+  .rp-hero-media {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .rp-hero-stats {
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+  #how-it-works .rp-section-head h2,
+  #services .rp-section-head h2,
+  #testimonials .rp-section-head h2 {
+    font-size: 30px;
+    line-height: 36px;
+    letter-spacing: -1.2px;
+    width: 100%;
+    height: auto;
+  }
+  .rp-services-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rp-card {
+    width: 100%;
+    min-height: 440px;
+  }
+  .rp-card img {
+    width: 100%;
+    height: 200px;
+  }
+  .rp-card .rp-btn {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .rp-hero h1 {
+    font-size: 26px;
+    line-height: 28.6px;
+    letter-spacing: -0.52px;
+  }
+  .rp-hero-media {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rp-hero-stats {
+    gap: 20px;
+  }
+  .rp-services-grid {
+    grid-template-columns: 1fr;
+  }
+  #how-it-works .rp-section-head h2,
+  #services .rp-section-head h2,
+  #testimonials .rp-section-head h2 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}

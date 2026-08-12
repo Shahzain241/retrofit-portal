@@ -1,12 +1,13 @@
 import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { recentActivity } from '../../../data/misc';
+import '../../../styles/OverviewTab.css';
 
-const activity = [
-  { title: 'Technical Survey Uploaded', meta: 'Mike Ross • 2h ago' },
-  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
-  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
-];
-
+/**
+ * Project Overview tab — current phase, "attention" notice and recent
+ * activity feed. Styled via OverviewTab.css + Tailwind utilities.
+ */
 export default function OverviewTab({ project }) {
+  const activity = recentActivity;
   return (
     <div className="mt-6 space-y-6">
       <div>
@@ -16,14 +17,14 @@ export default function OverviewTab({ project }) {
       </div>
 
       {project.notice && (
-        <div className="bg-surface rounded-2xl px-5 py-4 flex items-center gap-3">
+        <div className="rp-notice-banner">
           <AlertCircle size={18} className="text-brand-green" />
-          <span className="text-brand-green font-medium text-sm">{project.notice}</span>
+          <span>{project.notice}</span>
         </div>
       )}
 
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-        <h4 className="font-bold text-ink mb-4">Recent Activity</h4>
+        <h4 className="font-['Inter'] font-semibold text-[16px] leading-[24px] tracking-[0px] text-[#0B1C30] mb-4">Recent Activity</h4>
         <div className="space-y-4">
           {activity.map((a, i) => (
             <div

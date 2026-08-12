@@ -1,15 +1,22 @@
 import { Check, X } from 'lucide-react';
 import Button from '../../components/Button';
 import { plans } from '../../data/misc';
+import '../../styles/Plans.css';
 
+/**
+ * Billing Plans (client) — the three subscription tiers. Styled via
+ * Plans.css + Tailwind utilities.
+ */
 export default function Plans() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-ink">Choose Your Transformation</h1>
+      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Choose Your Transformation</h1>
       <p className="text-body mt-1 mb-8">Scalable solutions for teams of all sizes.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((p) => (
+        {plans.map((p) => {
+          const gradientCta = p.cta === 'Current Plan' || p.cta === 'Contact Sales';
+          return (
           <div
             key={p.name}
             className={`relative rounded-2xl p-6 border ${
@@ -42,13 +49,14 @@ export default function Plans() {
               ))}
             </div>
             <Button
-              variant={p.highlight ? 'outline' : 'primary'}
-              className="w-full"
+              variant={gradientCta ? 'gradient' : 'outline'}
+              className={`w-full ${gradientCta ? 'rp-plan-card-cta' : ''}`}
             >
               {p.cta}
             </Button>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

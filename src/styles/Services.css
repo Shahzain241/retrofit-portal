@@ -1,0 +1,11 @@
+/* Services Management (admin) — header CTA and table text.
+   `.rp-table-th` / `.rp-table-td` live in DashboardShared.css. */
+
+.rp-button.rp-create-service-btn {
+  width: 156px;
+  font-family: 'TT Norms Pro';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 150%;
+  letter-spacing: 0.2px;
+}

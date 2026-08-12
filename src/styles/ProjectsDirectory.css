@@ -1,0 +1,76 @@
+/* Projects Directory (admin) — filter cards, chips, and table.
+   Lossy/mobile rules for `.rp-filter-card` live in DashboardShared.css. */
+
+.rp-filter-card {
+  width: 262px;
+  height: 107px;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  padding: 16px;
+}
+
+.rp-filter-select,
+.rp-filter-value {
+  width: 238px;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid #c4c4c480;
+  background: #ffffff;
+  padding: 0 12px;
+  margin-left: -4px;
+}
+
+.rp-filter-value {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* "Active filters:" label */
+.rp-filter-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #45464d;
+}
+
+/* Chip showing a selected filter */
+.rp-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 142.17px;
+  height: 38px;
+  border-radius: 9999px;
+  padding: 10px 12px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  color: #0b1c30;
+}
+
+.rp-filter-chip-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #0b1c30;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rp-filter-clear {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  text-align: center;
+  vertical-align: middle;
+  color: #12b14e;
+}

@@ -1,0 +1,83 @@
+/* Shared Button component — the only button marketplace-wide.
+   Variants: primary / green / outline / navy / ghost / gradient / gradientEdge.
+   Per-page fixed sizes live in each page's own stylesheet (`.rp-button.rp-button-*`). */
+
+.rp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: normal;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.rp-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rp-button-primary {
+  background-image: linear-gradient(to right, #0f1b2e, #0e5f56);
+  color: #ffffff;
+}
+.rp-button-primary:hover {
+  opacity: 0.9;
+}
+
+.rp-button-green {
+  background: #1fae5c;
+  color: #ffffff;
+}
+.rp-button-green:hover {
+  opacity: 0.9;
+}
+
+.rp-button-outline {
+  background: #ffffff;
+  color: #101828;
+  border: 1px solid #e5e7eb;
+}
+.rp-button-outline:hover {
+  background: #f7f8fa;
+}
+
+.rp-button-navy {
+  background: #0f1b2e;
+  color: #ffffff;
+}
+.rp-button-navy:hover {
+  background: #142238;
+}
+
+.rp-button-ghost {
+  background: transparent;
+  color: #475467;
+}
+.rp-button-ghost:hover {
+  background: #f7f8fa;
+}
+
+/* Brand gradient (green -> navy). The variant waking most dashboard CTAs. */
+.rp-button-gradient,
+.rp-button-gradientEdge {
+  background-image: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%);
+  color: #ffffff;
+}
+.rp-button-gradient:hover,
+.rp-button-gradientEdge:hover {
+  opacity: 0.9;
+}
+
+/* Gradient CTA with a 1.5px solid-white bottom/right edge. */
+.rp-button-gradientEdge {
+  border: none;
+  border-bottom: 1.5px solid #ffffff;
+  border-right: 1.5px solid #ffffff;
+}

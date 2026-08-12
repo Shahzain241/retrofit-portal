@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, X, Plus, Bold, Italic, List } from 'lucide-react';
 import Button from '../../components/Button';
+import '../../styles/ServiceForm.css';
 
 export default function ServiceForm() {
   const [deliverables, setDeliverables] = useState([
@@ -10,14 +11,20 @@ export default function ServiceForm() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-ink">Services Management</h1>
+      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Services Management</h1>
       <p className="text-body mt-1 mb-6">Add / Edit services, tiers, add-ons (demo)</p>
 
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 space-y-6">
-        <h4 className="font-bold text-ink">General Information</h4>
+        <h4 className="font-['Inter'] sf-section-title">
+          General Information
+        </h4>
 
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Service Title</label>
+          <label
+            className="block font-['Inter'] mb-2 sf-label"
+          >
+            Service Title
+          </label>
           <input
             placeholder="e.g. Comprehensive Energy Audit"
             className="w-full rounded-xl border border-line px-4 py-3 text-sm"
@@ -25,7 +32,11 @@ export default function ServiceForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Description</label>
+          <label
+            className="block font-['Inter'] mb-2 sf-label"
+          >
+            Description
+          </label>
           <div className="border border-line rounded-xl overflow-hidden">
             <div className="flex items-center gap-3 bg-surface px-4 py-2 border-b border-line">
               <Bold size={14} className="text-body" />
@@ -41,7 +52,11 @@ export default function ServiceForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Media</label>
+          <label
+            className="block font-['Inter'] mb-2 sf-label"
+          >
+            Media
+          </label>
           <div className="border-2 border-dashed border-line rounded-xl py-10 flex flex-col items-center justify-center text-center">
             <Upload size={22} className="text-ink mb-3" />
             <p className="font-semibold text-ink text-sm">Upload New EPC Certificate</p>
@@ -51,8 +66,18 @@ export default function ServiceForm() {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-semibold text-ink">Pricing Tiers</label>
-            <Button variant="navy" icon={Plus} className="!py-2 !px-4 text-xs">Add Tier</Button>
+            <label
+              className="block font-['Inter'] sf-label"
+            >
+              Pricing Tiers
+            </label>
+            <Button
+              variant="navy"
+              icon={Plus}
+              className="sf-mini-btn sf-btn-add-tier"
+            >
+              Add Tier
+            </Button>
           </div>
           <div className="border border-line rounded-xl p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -89,7 +114,7 @@ export default function ServiceForm() {
                 <Button
                   variant="navy"
                   icon={Plus}
-                  className="!py-2 !px-4 text-xs"
+                  className="sf-mini-btn sf-btn-add-deliverable"
                   onClick={() => setDeliverables((arr) => [...arr, ''])}
                 >
                   Add Deliverable
@@ -100,9 +125,11 @@ export default function ServiceForm() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 mt-6 flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-5 sm:p-6 mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h4 className="font-bold text-ink">Service Active</h4>
+          <h4 className="font-['Inter'] sf-service-active-title">
+            Service Active
+          </h4>
           <p className="text-sm text-body mt-1">Make this service immediately available for booking upon publishing.</p>
         </div>
         <div className="w-11 h-6 rounded-full bg-navy-900 flex items-center justify-end px-0.5 shrink-0">
@@ -110,7 +137,14 @@ export default function ServiceForm() {
         </div>
       </div>
 
-      <Button variant="green" className="w-full mt-6 !py-4">Save</Button>
+      <div className="flex items-center justify-center gap-3 mt-6">
+        <Button
+          variant="green"
+          className="sf-save-btn"
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 }

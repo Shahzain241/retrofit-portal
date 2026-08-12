@@ -1,3 +1,17 @@
+export const topbarNotifications = [
+  { title: 'Technical Survey Uploaded', meta: 'Mike Ross • 2h ago' },
+  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
+  { title: 'Milestone completed: Assessment', meta: 'System • 1d ago' },
+];
+
+export const topbarApps = ['Dashboard', 'Projects', 'Services', 'Billing', 'Support', 'Docs'];
+
+export const recentActivity = [
+  { title: 'Technical Survey Uploaded', meta: 'Mike Ross • 2h ago' },
+  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
+  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
+];
+
 export const users = [
   {
     name: 'John Smith',

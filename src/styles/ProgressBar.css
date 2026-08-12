@@ -1,0 +1,29 @@
+/* Shared ProgressBar — height/color variants only. The fill width is fed by
+   a `--progress` custom property set inline by the component (data-driven). */
+.rp-progress {
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.rp-progress-sm {
+  height: 6px;
+}
+
+.rp-progress-md {
+  height: 8px;
+}
+
+.rp-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  width: var(--progress, 0%);
+}
+
+.rp-progress-fill-green {
+  background: #1fae5c;
+}
+
+.rp-progress-fill-danger {
+  background: #e0432c;
+}

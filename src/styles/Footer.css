@@ -1,0 +1,147 @@
+/* Shared Footer component — extracted from the original Landing stylesheet.
+   Used on every public page (Landing, Services, Service Detail). */
+
+.rp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.rp-footer {
+  --white: #ffffff;
+  --border: #e4e9e5;
+  --gray: #66766f;
+  --teal: #0f3b3e;
+  --mint: #35b378;
+  background: transparent;
+  padding-top: 72px;
+  border-top: 1px solid var(--border);
+}
+
+.rp-footer-top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 56px;
+  position: relative;
+}
+
+.rp-footer-tagline {
+  font-family: 'Inter', sans-serif;
+  color: #59585c;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  max-width: 324.78px;
+  line-height: 100%;
+  letter-spacing: -0.64px;
+}
+
+.rp-footer h5 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.rp-footer ul li {
+  margin-bottom: 12px;
+}
+
+.rp-footer ul li a {
+  color: var(--gray);
+  font-size: 14px;
+  transition: color 0.15s;
+}
+.rp-footer ul li a:hover {
+  color: var(--mint);
+}
+
+.rp-socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.rp-socials a {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #eef1ef;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  transition: all 0.15s;
+}
+.rp-socials a:hover {
+  background: var(--teal);
+  color: white;
+}
+
+.rp-footer-bottom {
+  padding: 22px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray);
+}
+
+/* Footer logo lockup (RETROFIT / PORTAL) */
+.rp-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.rp-logo-img {
+  width: 40.18px;
+  height: 50.55px;
+  object-fit: contain;
+}
+.rp-logo-text {
+  line-height: 1.05;
+}
+.rp-logo-text .l1 {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 30.62px;
+  line-height: 100%;
+  letter-spacing: 0.13em;
+  width: 172.5px;
+  max-width: 100%;
+  height: 43.12px;
+  color: #0b1c30;
+}
+.rp-logo-text .l2 {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 19.19px;
+  line-height: 100%;
+  letter-spacing: 0.75em;
+  width: 147.19px;
+  max-width: 100%;
+  height: 19.69px;
+  color: #0b1c30;
+}
+
+@media (max-width: 980px) {
+  .rp-footer-top {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 420px) {
+  .rp-footer-top {
+    grid-template-columns: 1fr;
+  }
+}
