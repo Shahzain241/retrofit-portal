@@ -160,3 +160,25 @@
     text-align: left;
   }
 }
+
+/* Mobile: allow the fixed-height heading/subtext to wrap and the button to
+   shrink so the banner never clips or overflows on narrow phones. */
+@media (max-width: 640px) {
+  .rp-cta-banner h2,
+  .rp-root .rp-cta-banner h2 {
+    width: 100%;
+    height: auto;
+    font-size: 22px;
+  }
+  .rp-cta-banner p,
+  .rp-root .rp-cta-banner p {
+    width: 100%;
+    height: auto;
+    line-height: 1.4;
+  }
+  .rp-cta-btn,
+  .rp-root a.rp-cta-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}

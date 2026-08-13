@@ -90,14 +90,14 @@
   font-family: 'Nunito Sans', sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: 48px;
-  line-height: 52.8px;
+  font-size: clamp(26px, 4.6vw, 48px);
+  line-height: clamp(30px, 5vw, 52.8px);
   letter-spacing: -0.96px;
   text-transform: capitalize;
   vertical-align: middle;
   width: 576px;
   max-width: 100%;
-  height: 159px;
+  height: auto;
   color: #ffffff;
 }
 .rp-hero p.rp-sub {
@@ -105,13 +105,13 @@
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 18px;
-  line-height: 28.8px;
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: clamp(24px, 2.7vw, 28.8px);
   letter-spacing: 0px;
   vertical-align: middle;
   width: 508px;
   max-width: 100%;
-  height: 87px;
+  height: auto;
   color: #C4C4C4;
 }
 .rp-hero-actions {
@@ -131,7 +131,7 @@
 }
 .rp-hero-media {
   position: absolute;
-  right: calc((100% - 1200px) / 2 + 24px);
+  right: max(24px, calc((100% - 1200px) / 2 + 24px));
   bottom: 40px;
   display: flex;
   align-items: flex-end;
@@ -645,11 +645,6 @@
     align-items: flex-start;
     gap: 32px;
   }
-  .rp-hero h1 {
-    font-size: 34px;
-    line-height: 37.4px;
-    letter-spacing: -0.68px;
-  }
   .rp-hiw-grid {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
@@ -672,11 +667,6 @@
   .rp-hero {
     padding: 60px 0 32px;
     height: auto;
-  }
-  .rp-hero h1 {
-    font-size: 26px;
-    line-height: 28.6px;
-    letter-spacing: -0.52px;
   }
   .rp-hero-stats {
     gap: 22px;
@@ -702,13 +692,6 @@
     padding: 20px;
   }
 }
-@media (max-width: 420px) {
-  .rp-hero h1 {
-    font-size: 24px;
-    line-height: 28px;
-  }
-}
-
 /* ---------- RESPONSIVE (MOBILE / TABLET) ---------- */
 @media (max-width: 1023px) {
   .rp-hero {
@@ -719,12 +702,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 32px;
-  }
-  .rp-hero h1 {
-    font-size: 32px;
-    line-height: 35.2px;
-    letter-spacing: -0.64px;
-    height: auto;
   }
   .rp-hero-media {
     position: static;
@@ -765,11 +742,6 @@
 
 /* Mobile */
 @media (max-width: 640px) {
-  .rp-hero h1 {
-    font-size: 26px;
-    line-height: 28.6px;
-    letter-spacing: -0.52px;
-  }
   .rp-hero-media {
     flex-direction: column;
     align-items: flex-start;
@@ -785,5 +757,25 @@
   #testimonials .rp-section-head h2 {
     font-size: 24px;
     line-height: 30px;
+  }
+}
+
+/* Hero subtitle + action buttons: responsive on small screens so the fixed
+   Figma widths/heights never clip or overflow. */
+@media (max-width: 640px) {
+  .rp-hero p.rp-sub {
+    max-width: 300px;
+  }
+  .rp-hero-actions {
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .rp-hero-actions .rp-btn-white,
+  .rp-hero-actions .rp-btn-outline-white {
+    width: auto;
+    height: auto;
+    padding: 10px 22px;
   }
 }
