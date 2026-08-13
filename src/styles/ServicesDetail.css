@@ -1,10 +1,26 @@
 /* Service Detail page — extracted inline styles.
-   `hero-title` / `hero-subtitle` / `section-heading` / `timeline-*` /
-   `compliance-title` are intentionally left unstyled (inert hooks). */
+   `hero-title` / `hero-subtitle` / `compliance-title`
+   are intentionally left unstyled (inert hooks). */
 
 .sd-hero-badge {
   width: 168.83px;
   height: 32.25px;
+}
+
+.section-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.3px;
+  vertical-align: middle;
+  width: 1039px;
+  max-width: 100%;
+  height: 36px;
+  opacity: 1;
+  color: #0B1C30;
+  margin-bottom: 20px;
 }
 
 .sd-image-badge {
@@ -18,4 +34,94 @@
   line-height: 16px;
   letter-spacing: 0px;
   vertical-align: middle;
+}
+
+.timeline-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.3px;
+  vertical-align: middle;
+  width: 1039px;
+  max-width: 100%;
+  height: 36px;
+  opacity: 1;
+  color: #0B1C30;
+  margin-bottom: 24px;
+}
+
+.timeline-list {
+  position: relative;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.timeline-row:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 26px;
+  bottom: 0;
+  width: 2px;
+  background: #C4C4C4;
+}
+
+.timeline-marker {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  background: white;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-marker--completed {
+  background: #0F9D58;
+  color: white;
+}
+
+.timeline-marker--active {
+  border: 2px solid #0F9D58;
+  color: #0F9D58;
+}
+
+.timeline-marker--upcoming {
+  border: 2px solid #C4C4C4;
+  color: #9CA3AF;
+}
+
+.timeline-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  width: 991px;
+  max-width: 100%;
+  height: 24px;
+  opacity: 1;
+  color: #0B1C30;
+  margin: 0 0 4px;
+}
+
+.timeline-desc {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0;
 }

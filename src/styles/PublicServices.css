@@ -40,3 +40,20 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+/* The search box and card buttons have fixed desktop widths that would
+   overflow small screens. Cap them at the container width below 1024px;
+   laptop/desktop layout is unchanged. */
+@media (max-width: 1023px) {
+  .ps-search-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .ps-view-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

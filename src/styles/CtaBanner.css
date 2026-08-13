@@ -38,11 +38,12 @@
   border: 2px solid var(--navy);
 }
 
-.rp-cta-banner h2 {
+.rp-cta-banner h2,
+.rp-root .rp-cta-banner h2 {
   font-family: 'Exo 2', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-style: normal;
-  font-size: 27.49px;
+  font-size: 28px;
   line-height: 100%;
   letter-spacing: 0px;
   text-transform: capitalize;
@@ -50,6 +51,7 @@
   max-width: 100%;
   height: 33px;
   color: #ffffff;
+  margin: 0;
 }
 
 .rp-cta-banner p {
@@ -63,6 +65,14 @@
   max-width: 100%;
   height: 38px;
   color: #c4c4c4;
+  margin-top: 12px;
+}
+
+/* On the Landing page the global `.rp-root p { margin: 0 }` reset (imported
+   later, equal specificity) would otherwise zero the paragraph margin, making
+   the CTA taller/shorter than on the Services page. Restore it here so the two
+   pages always render identically. */
+.rp-root .rp-cta-banner p {
   margin-top: 12px;
 }
 

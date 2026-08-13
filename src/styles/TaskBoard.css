@@ -8,3 +8,19 @@
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
   padding: 16px;
 }
+
+/* On tablets/mobile the kanban grid collapses to fewer columns, so let each
+   column fill its grid cell and grow with its task list. The desktop 260x490
+   size is untouched at >= 1024px. */
+@media (max-width: 1023px) {
+  .rp-board-col {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .rp-board-col {
+    height: auto !important;
+  }
+}

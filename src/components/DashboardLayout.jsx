@@ -13,16 +13,28 @@ export default function DashboardLayout({ variant = 'client' }) {
   // Desktop layout width the dashboard is designed for:
   // 250px sidebar + 40px padding each side + 1120px content/banner column.
   const DESKTOP_DASHBOARD_WIDTH = 1450;
+  // Below this width we treat the device as mobile/tablet and keep the real
+  // device-width viewport, so CSS media queries and Tailwind responsive
+  // utilities kick in (drawer sidebar, stacked cards, scrollable tables).
+  // 1280px covers phones, tablets and iPad landscape; genuine laptops
+  // (>= 1280px) still get the desktop-width viewport below.
+  const MOBILE_BREAKPOINT = 1280;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // On devices narrower than the laptop design width, open the dashboard with
-  // a desktop-width layout viewport. The browser then lays out the exact laptop
-  // view (sidebar pinned, full top bar, 4-column stats, tables intact) and
-  // scales it to fit the screen. Desktop browsers ignore the meta, so real
-  // desktops are unchanged. Public/responsive pages keep their device-width
-  // viewport because this is restored on unmount.
+  // On genuine mobile/tablet widths (below 1280px) and real desktops (at or
+  // above the 1450px design width) do nothing: index.html already ships
+  // `width=device-width`, so media queries work normally and large desktops
+  // lay out at their true resolution. Only laptop widths (1280-1449px) get a
+  // desktop-width layout viewport so the exact laptop view (sidebar pinned,
+  // full top bar, 4-column stats, tables intact) is preserved, scaled to fit.
+  // The viewport is restored on unmount.
   useLayoutEffect(() => {
-    if (window.innerWidth >= DESKTOP_DASHBOARD_WIDTH) return undefined;
+    if (
+      window.innerWidth < MOBILE_BREAKPOINT ||
+      window.innerWidth >= DESKTOP_DASHBOARD_WIDTH
+    ) {
+      return undefined;
+    }
     const meta = document.querySelector('meta[name="viewport"]');
     if (!meta) return undefined;
     const previous = meta.getAttribute('content');

@@ -43,3 +43,19 @@
   vertical-align: middle;
   color: #45464d;
 }
+
+/* The 1056px design width was causing page-wide horizontal overflow on every
+   device narrower than a laptop. Let the heading size to its content below
+   1024px (desktop layout is unchanged). */
+@media (max-width: 1023px) {
+  .is-perm-title {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .is-perm-label {
+    max-width: 100%;
+    white-space: normal;
+  }
+}

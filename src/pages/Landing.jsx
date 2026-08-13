@@ -122,8 +122,11 @@ export default function LandingPage() {
         <div className="rp-container">
           <h4>Official Trustmark Installer</h4>
           <div className="rp-logo-row">
-            {LOGOS.map((l) => (
-              <span key={l}>{l}</span>
+            {LOGOS.map(({ name, icon: Icon }) => (
+              <span key={name} className="rp-trusted-logo">
+                <Icon size={16} />
+                {name}
+              </span>
             ))}
           </div>
         </div>

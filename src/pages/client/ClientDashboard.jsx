@@ -41,7 +41,7 @@ export default function ClientDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
         {projects.map((p, i) => (
           <div
             key={p.id}

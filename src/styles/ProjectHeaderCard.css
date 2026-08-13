@@ -7,3 +7,15 @@
   border-radius: 12px;
   opacity: 1;
 }
+
+/* The header card stacks vertically on mobile; the image should fill the
+   row instead of staying a fixed 258px sliver. Desktop layout is unchanged. */
+@media (max-width: 767px) {
+  .rp-projcard-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 240px;
+    object-fit: cover;
+  }
+}

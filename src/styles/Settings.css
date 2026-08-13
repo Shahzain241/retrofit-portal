@@ -66,3 +66,20 @@
   padding: 15px 42px;
   background: var(--eco, #12b14e);
 }
+
+/* The fixed 913px sub / 289px heading widths forced horizontal overflow on
+   tablets and phones. Below 1024px they size to their content instead;
+   laptop/desktop layout is unchanged. */
+@media (max-width: 1023px) {
+  .st-heading,
+  .st-sub {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .rp-button.rp-update-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

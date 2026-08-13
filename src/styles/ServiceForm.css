@@ -69,3 +69,12 @@
   vertical-align: middle;
   color: #ffffff;
 }
+
+/* Save button fills the row on phones so its fixed 338px width can't
+   overflow narrow viewports. Laptop/desktop layout is unchanged. */
+@media (max-width: 767px) {
+  .rp-button.sf-save-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

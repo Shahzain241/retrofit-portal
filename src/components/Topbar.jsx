@@ -28,12 +28,14 @@ export default function Topbar() {
 
   return (
     <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 rp-dash-topbar" ref={ref}>
-      <div className="relative ml-auto rp-dash-topbar-search">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
-        <input
-          placeholder="Search retrofit services..."
-          className="rp-topbar-search-input w-full bg-white pl-11 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-        />
+      <div className="rp-dash-topbar-search">
+        <div className="relative rp-dash-topbar-search-field">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
+          <input
+            placeholder="Search retrofit services..."
+            className="rp-topbar-search-input w-full bg-white pl-11 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+          />
+        </div>
       </div>
 
       <div className="relative shrink-0">
@@ -95,12 +97,6 @@ export default function Topbar() {
           alt="avatar"
           className="w-11 h-11 rounded-full object-cover"
         />
-        <div className="leading-tight hidden sm:block">
-          <p className="text-sm font-semibold text-ink">
-            {profile.firstName} {profile.lastName}
-          </p>
-          <p className="text-xs text-muted">{profile.email}</p>
-        </div>
       </div>
     </div>
   );

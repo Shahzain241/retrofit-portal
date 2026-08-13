@@ -228,6 +228,14 @@ a.rp-sidebar-link-active {
 .rp-dash-topbar-search {
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.rp-dash-topbar-search-field {
+  position: relative;
+  width: 100%;
+  max-width: 634px;
 }
 
 .rp-dash-topbar-search input {
@@ -261,6 +269,58 @@ a.rp-sidebar-link-active {
 
   .rp-dash-proj-img {
     width: 100% !important;
+  }
+
+  /* Text inside project/plan cards should wrap freely instead of clipping
+     inside the fixed design-width boxes. */
+  .rp-dash-proj-title,
+  .rp-dash-proj-meta,
+  .rp-plan-actions {
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  .rp-dash-proj-title,
+  .rp-dash-proj-meta {
+    height: auto !important;
+  }
+
+  /* "Upgrade Now" (client) fills its panel on tablets/mobile. */
+  .rp-button.rp-upgrade-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Billing plan actions stay on one row but flex so the fixed-width
+     buttons (490px + 86px) shrink instead of overflowing narrow tablets. */
+  .rp-plan-actions {
+    flex-wrap: wrap;
+  }
+
+  .rp-button.rp-plan-upgrade {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .rp-button.rp-plan-cancel {
+    flex: 0 0 auto;
+  }
+
+  /* Admin action bars (Cancel/Save/Discard/Send Invite) are 696px wide by
+     design; fill the column on tablets so they never spill off-screen. */
+  .rp-dash-actions-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Filter card selects keep a fixed 238px width by design; inside a
+     100%-width filter card on tablets they must fill the cell instead of
+     overflowing it. */
+  .rp-filter-select,
+  .rp-filter-value {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
   }
 }
 
@@ -305,5 +365,15 @@ a.rp-sidebar-link-active {
     height: auto !important;
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* Shared notice banner ("attention" strip on project overview): the design
+   height clips wrapped text on narrow screens, so let it grow. */
+@media (max-width: 767px) {
+  .rp-notice-banner {
+    height: auto !important;
+    min-height: 64px;
+    padding: 12px 16px !important;
   }
 }

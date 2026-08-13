@@ -9,6 +9,7 @@ import {
   detailContentTabs as CONTENT_TABS,
 } from "../data/serviceDetail";
 import {
+  Check,
   CheckCircle2,
   Clock,
   FileText,
@@ -272,21 +273,17 @@ export default function ServiceDetail() {
 
           {activeTab === "Timeline" && (
             <div className="max-w-2xl pt-8">
-              <h2 className="section-heading">Milestone Timeline</h2>
-              <div className="relative">
-                <div className="timeline-connector" />
-                {SERVICE.timeline.map((t, i) => (
-                  <div key={i} className="timeline-row">
-                    <div className={`timeline-marker ${t.status}`}>
-                      {t.status === "completed" ? (
-                        <CheckCircle2 size={14} fill="#0F9D58" color="#ffffff" />
-                      ) : (
-                        i + 1
-                      )}
+              <div className="timeline-heading">Milestone Timeline</div>
+              <div className="timeline-list">
+                {SERVICE.timeline.map((item, i) => (
+                  <div className="timeline-row" key={i}>
+                    <div className={`timeline-marker timeline-marker--${item.status}`}>
+                      {item.status === "completed" && <Check size={12} />}
+                      {item.status !== "completed" && (i + 1)}
                     </div>
                     <div className="timeline-content">
-                      <p className="timeline-title">{t.step}: {t.title}</p>
-                      <p className="timeline-desc">{t.detail}</p>
+                      <p className="timeline-title">{item.step}: {item.title}</p>
+                      <p className="timeline-desc">{item.detail}</p>
                     </div>
                   </div>
                 ))}
