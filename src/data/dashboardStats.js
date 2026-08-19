@@ -16,19 +16,19 @@ import clientdash3 from '../assets/clientdash3.png';
  * `variant` optionally drives the danger styling on StatCard.
  */
 export const adminStats = [
-  { icon: FileText, value: '2', label: 'New Today', compact: true },
-  { icon: ClipboardCheck, value: '4', label: 'Active Projects', compact: true },
-  { icon: Clock, value: '4', label: 'Overdue Tasks', variant: 'danger', compact: true },
-  { icon: Star, value: '£1,5054', label: 'Revenue MTD', compact: true },
-  { icon: Activity, value: '4', label: 'Avg Completion', compact: true },
-  { icon: Zap, value: '100%', label: 'Compliance', compact: true },
+  { id: 'stat-new-today', icon: FileText, value: '2', label: 'New Today', compact: true },
+  { id: 'stat-active-projects', icon: ClipboardCheck, value: '4', label: 'Active Projects', compact: true },
+  { id: 'stat-overdue-tasks', icon: Clock, value: '4', label: 'Overdue Tasks', variant: 'danger', compact: true },
+  { id: 'stat-revenue-mtd', icon: Star, value: '£1,5054', label: 'Revenue MTD', compact: true },
+  { id: 'stat-avg-completion', icon: Activity, value: '4', label: 'Avg Completion', compact: true },
+  { id: 'stat-compliance', icon: Zap, value: '100%', label: 'Compliance', compact: true },
 ];
 
 export const clientStats = [
-  { icon: ClipboardCheck, value: '2', label: 'Active Projects' },
-  { icon: CheckCircle2, value: '4', label: 'Completed' },
-  { icon: Star, value: '£1,5054', label: 'Funding Secured' },
-  { icon: Zap, value: '100%', label: 'Compliance' },
+  { id: 'stat-active-projects', icon: ClipboardCheck, value: '2', label: 'Active Projects' },
+  { id: 'stat-completed', icon: CheckCircle2, value: '4', label: 'Completed' },
+  { id: 'stat-funding-secured', icon: Star, value: '£1,5054', label: 'Funding Secured' },
+  { id: 'stat-compliance', icon: Zap, value: '100%', label: 'Compliance' },
 ];
 
 export const clientProjectImages = [clientdash1, clientdash2, clientdash3];

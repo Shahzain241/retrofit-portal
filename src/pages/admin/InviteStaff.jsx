@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 import Toggle from '../../components/Toggle';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/InviteStaff.css';
 
 /**
@@ -9,6 +10,7 @@ import '../../styles/InviteStaff.css';
  */
 export default function InviteStaff() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   return (
     <div>
@@ -19,17 +21,18 @@ export default function InviteStaff() {
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="is-label block mb-2">
+            <label htmlFor="invite-email" className="is-label block mb-2">
               Email Address
             </label>
             <input
+              id="invite-email"
               placeholder="e.g. johnsmith@gmail.com"
               className="w-full rounded-xl border border-line px-4 py-3 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-ink mb-2">Role</label>
-            <select className="w-full rounded-xl border border-line px-4 py-3 text-sm">
+            <label htmlFor="invite-role" className="block text-sm font-semibold text-ink mb-2">Role</label>
+            <select id="invite-role" className="w-full rounded-xl border border-line px-4 py-3 text-sm">
               <option>John Smith</option>
               <option>Coordinator</option>
               <option>Designer</option>
@@ -46,13 +49,13 @@ export default function InviteStaff() {
             <span className="is-perm-label">
               View all projects
             </span>
-            <Toggle on size="lg" />
+            <Toggle aria-label="View all projects permission" on size="lg" />
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="is-perm-label">
               Assign to specific projects
             </span>
-            <Toggle on={false} size="lg" />
+            <Toggle aria-label="Assign to specific projects permission" on={false} size="lg" />
           </div>
         </div>
       </div>
@@ -68,6 +71,7 @@ export default function InviteStaff() {
         <Button
           variant="green"
           className="flex-1 rp-dash-action rp-dash-action-save"
+          onClick={() => showToast({ type: 'success', message: 'Invitation sent' })}
         >
           Send Invite
         </Button>

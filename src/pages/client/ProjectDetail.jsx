@@ -20,10 +20,10 @@ export default function ProjectDetail() {
       <div className="flex items-center gap-2 text-sm text-muted mb-2">
         <Link to="/projects" className="hover:text-ink">Project</Link>
         <ChevronRight size={14} />
-        <span className="text-ink font-medium">{project.code}</span>
+        <span className="text-ink font-medium">{project.id}</span>
       </div>
-      <h1 className="text-3xl font-bold text-ink mb-1">{project.code}</h1>
-      <p className="text-body mb-6">{project.title}</p>
+      <h1 className="text-3xl font-bold text-ink mb-1">{project.id}</h1>
+      <p className="text-body mb-6">{project.name}</p>
 
       <ProjectHeaderCard project={project} />
 

@@ -1,10 +1,28 @@
 /* Service Detail page — extracted inline styles.
-   `hero-title` / `hero-subtitle` / `compliance-title`
-   are intentionally left unstyled (inert hooks). */
+   `hero-subtitle` / `compliance-title` are intentionally left unstyled
+   (inert hooks). */
 
 .sd-hero-badge {
   width: 168.83px;
   height: 32.25px;
+}
+
+.hero-title {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 48px;
+  line-height: 52.8px;
+  letter-spacing: -0.96px;
+  vertical-align: middle;
+  text-align: center;
+  text-transform: capitalize;
+  width: 821px;
+  max-width: 100%;
+  height: 106px;
+  opacity: 1;
+  color: #0B1C30;
+  margin: 16px auto 0;
 }
 
 .section-heading {
@@ -124,4 +142,54 @@
   font-size: 14px;
   color: #6B7280;
   margin: 0;
+}
+
+/* Loading skeleton (reuses the .skeleton-block shimmer from PublicServices.css). */
+.sd-skeleton-title {
+  width: 320px;
+  max-width: 80%;
+  height: 44px;
+  margin: 0 auto 16px;
+  border-radius: 10px;
+}
+
+.sd-skeleton-subtitle {
+  width: 460px;
+  max-width: 90%;
+  height: 20px;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.sd-skeleton-gallery {
+  width: 100%;
+  height: 240px;
+  border-radius: 16px;
+}
+
+.sd-skeleton-pricing {
+  width: 100%;
+  height: 400px;
+  border-radius: 16px;
+}
+
+@media (min-width: 640px) {
+  .sd-skeleton-gallery {
+    height: 360px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sd-skeleton-gallery {
+    height: 420px;
+  }
+}
+
+/* Mobile: let the hero title wrap to more than two lines without clipping. */
+@media (max-width: 640px) {
+  .hero-title {
+    height: auto;
+    font-size: 32px;
+    line-height: 40px;
+  }
 }

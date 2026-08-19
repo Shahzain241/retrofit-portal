@@ -1,3 +1,5 @@
+import { label, INVOICE_STATUS } from '../data/enums';
+
 function escapeText(s) {
   return String(s)
     .replace(/\\/g, '\\\\')
@@ -45,7 +47,7 @@ export function downloadInvoicePdf(invoice, index) {
     '------------------------------',
     `Date: ${invoice.date}`,
     `Amount: ${invoice.amount}`,
-    `Status: ${invoice.status}`,
+    `Status: ${label(INVOICE_STATUS, invoice.status)}`,
     '------------------------------',
     'Retrofit Portal',
     'Thank you for your business.',

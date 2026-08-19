@@ -1,0 +1,100 @@
+/* Toast notification system — fixed bottom-right stack.
+   Colors follow the project palette: success green #0f9d58, error #e0432c,
+   warning #f2a900, info blue #2563eb. */
+
+.rp-toast-viewport {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  pointer-events: none;
+}
+
+.rp-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid var(--color-line, #e5e7eb);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  animation: rp-toast-in 0.2s ease-out;
+}
+
+.rp-toast-success {
+  border-left: 3px solid #0f9d58;
+}
+.rp-toast-error {
+  border-left: 3px solid #e0432c;
+}
+.rp-toast-warning {
+  border-left: 3px solid #f2a900;
+}
+.rp-toast-info {
+  border-left: 3px solid #2563eb;
+}
+
+.rp-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.rp-toast-success .rp-toast-icon {
+  color: #0f9d58;
+}
+.rp-toast-error .rp-toast-icon {
+  color: #e0432c;
+}
+.rp-toast-warning .rp-toast-icon {
+  color: #f2a900;
+}
+.rp-toast-info .rp-toast-icon {
+  color: #2563eb;
+}
+
+.rp-toast-message {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-ink, #101828);
+}
+
+.rp-toast-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: var(--color-muted, #667085);
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+.rp-toast-close:hover {
+  color: var(--color-ink, #101828);
+  background: var(--color-surface, #f7f8fa);
+}
+
+@keyframes rp-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

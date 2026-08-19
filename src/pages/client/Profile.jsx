@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
-import { Pencil, Upload, Check, FileText } from 'lucide-react';
+import { Upload, Check, FileText } from 'lucide-react';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
 import Toggle from '../../components/Toggle';
 import { useProfile, fileToDataUrl } from '../../context/ProfileContext';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/Profile.css';
 
 /**
@@ -13,6 +14,7 @@ import '../../styles/Profile.css';
 
 export default function Profile() {
   const { profile, updateProfile, updateProperty, toggleNotification } = useProfile();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     firstName: profile.firstName,
@@ -42,8 +44,13 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
     fileToDataUrl(file)
-      .then((url) => updateProfile({ avatar: url }))
-      .catch(() => {});
+      .then((url) => {
+        updateProfile({ avatar: url });
+        showToast({ type: 'success', message: 'Profile photo updated' });
+      })
+      .catch(() => {
+        showToast({ type: 'error', message: 'Could not upload photo' });
+      });
     e.target.value = '';
   }
 
@@ -51,28 +58,33 @@ export default function Profile() {
     e.preventDefault();
     updateProfile(form);
     flashSaved();
+    showToast({ type: 'success', message: 'Profile updated' });
   }
 
   function handleSaveProperty(e) {
     e.preventDefault();
     updateProperty(property);
     flashSaved();
+    showToast({ type: 'success', message: 'Property details updated' });
   }
 
   function handleSaveAll() {
     updateProfile(form);
     updateProperty(property);
     flashSaved();
+    showToast({ type: 'success', message: 'Profile saved' });
   }
 
   function handlePasswordChange(e) {
     e.preventDefault();
     if (pwForm.next.length < 6) {
       setPwError('New password must be at least 6 characters.');
+      showToast({ type: 'error', message: 'New password must be at least 6 characters' });
       return;
     }
     if (pwForm.next !== pwForm.confirm) {
       setPwError('Passwords do not match.');
+      showToast({ type: 'error', message: 'Passwords do not match' });
       return;
     }
     setPwError('');
@@ -80,6 +92,7 @@ export default function Profile() {
     setPwForm({ current: '', next: '', confirm: '' });
     setShowPassword(false);
     flashSaved();
+    showToast({ type: 'success', message: 'Password updated' });
   }
 
   function handleEpcUpload(e) {
@@ -87,6 +100,7 @@ export default function Profile() {
     if (!file) return;
     setEpcFile(file.name);
     flashSaved();
+    showToast({ type: 'success', message: 'EPC certificate uploaded' });
     e.target.value = '';
   }
 
@@ -94,51 +108,54 @@ export default function Profile() {
   const setPropertyField = (key) => (e) => setProperty((p) => ({ ...p, [key]: e.target.value }));
 
   return (
-    <div>
+    <div className="w-full">
       <h1 className="text-2xl font-bold text-ink">Profile & Settings</h1>
       <p className="text-body mt-1 mb-6">
         Manage your personal identity, property portfolio, and security preferences.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile card (top-left) */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-line/60 shadow-sm p-6">
           <div className="relative w-24 h-24 mb-6">
             <img
               src={profile.avatar}
-              alt="avatar"
+              alt="Profile photo"
               className="w-24 h-24 rounded-full object-cover"
             />
             <button
               onClick={() => fileRef.current?.click()}
+              aria-label="Change profile photo"
               className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-brand-green text-white flex items-center justify-center hover:opacity-90"
             >
-              <Pencil size={12} />
+              <Check size={12} />
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
           </div>
 
           <form onSubmit={handleSaveIdentity} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-semibold text-ink mb-2">First Name</label>
-                <input
-                  value={form.firstName}
-                  onChange={set('firstName')}
-                  className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-ink mb-2">Last Name</label>
-                <input
-                  value={form.lastName}
-                  onChange={set('lastName')}
-                  className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                />
-              </div>
+            <div>
+              <label htmlFor="profile-first-name" className="block text-sm font-semibold text-ink mb-2">First Name</label>
+              <input
+                id="profile-first-name"
+                value={form.firstName}
+                onChange={set('firstName')}
+                className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+              />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-ink mb-2">Email Address</label>
+              <label htmlFor="profile-last-name" className="block text-sm font-semibold text-ink mb-2">Last Name</label>
               <input
+                id="profile-last-name"
+                value={form.lastName}
+                onChange={set('lastName')}
+                className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+              />
+            </div>
+            <div>
+              <label htmlFor="profile-email" className="block text-sm font-semibold text-ink mb-2">Email Address</label>
+              <input
+                id="profile-email"
                 type="email"
                 value={form.email}
                 onChange={set('email')}
@@ -146,8 +163,9 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-ink mb-2">Phone Number</label>
+              <label htmlFor="profile-phone" className="block text-sm font-semibold text-ink mb-2">Phone Number</label>
               <input
+                id="profile-phone"
                 value={form.phone}
                 onChange={set('phone')}
                 className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
@@ -159,6 +177,7 @@ export default function Profile() {
           </form>
         </div>
 
+        {/* Right column */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6">
             <h4 className="font-bold text-ink mb-1">Password & Security</h4>
@@ -181,8 +200,9 @@ export default function Profile() {
             {showPassword && (
               <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-ink mb-2">Current Password</label>
+                  <label htmlFor="profile-current-password" className="block text-sm font-semibold text-ink mb-2">Current Password</label>
                   <input
+                    id="profile-current-password"
                     type="password"
                     value={pwForm.current}
                     onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))}
@@ -190,8 +210,9 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-ink mb-2">New Password</label>
+                  <label htmlFor="profile-new-password" className="block text-sm font-semibold text-ink mb-2">New Password</label>
                   <input
+                    id="profile-new-password"
                     type="password"
                     value={pwForm.next}
                     onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
@@ -199,8 +220,9 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-ink mb-2">Confirm New Password</label>
+                  <label htmlFor="profile-confirm-password" className="block text-sm font-semibold text-ink mb-2">Confirm New Password</label>
                   <input
+                    id="profile-confirm-password"
                     type="password"
                     value={pwForm.confirm}
                     onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))}
@@ -224,21 +246,13 @@ export default function Profile() {
                   Receive alerts when your retrofit project hits a major milestone.
                 </p>
               </div>
-              <Toggle on={profile.notifications.push} onClick={() => toggleNotification('push')} />
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-ink">Email Alerts</p>
-                <p className="text-xs text-muted mt-1">
-                  Get project updates delivered straight to your inbox.
-                </p>
-              </div>
-              <Toggle on={profile.notifications.email} onClick={() => toggleNotification('email')} />
+              <Toggle aria-label="Receive push notifications" on={profile.notifications.push} onClick={() => { toggleNotification('push'); showToast({ type: 'success', message: 'Notification preferences updated' }); }} />
             </div>
           </div>
         </div>
       </div>
 
+      {/* Primary Property Details (below profile card) */}
       <form onSubmit={handleSaveProperty} className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 mt-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-bold text-ink">Primary Property Details</h4>
@@ -246,8 +260,9 @@ export default function Profile() {
         </div>
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-ink mb-2">Address</label>
+            <label htmlFor="profile-address" className="block text-sm font-semibold text-ink mb-2">Address</label>
             <input
+              id="profile-address"
               value={property.address}
               onChange={setPropertyField('address')}
               className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
@@ -255,16 +270,18 @@ export default function Profile() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-semibold text-ink mb-2">Property Type</label>
+              <label htmlFor="profile-property-type" className="block text-sm font-semibold text-ink mb-2">Property Type</label>
               <input
+                id="profile-property-type"
                 value={property.type}
                 onChange={setPropertyField('type')}
                 className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-ink mb-2">EPC Number</label>
+              <label htmlFor="profile-epc-number" className="block text-sm font-semibold text-ink mb-2">EPC Number</label>
               <input
+                id="profile-epc-number"
                 value={property.epcNumber}
                 onChange={setPropertyField('epcNumber')}
                 className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
@@ -294,7 +311,8 @@ export default function Profile() {
         </div>
       </form>
 
-      <div className="flex items-center justify-center gap-3 mt-6">
+      {/* Save button (bottom, full-width) */}
+      <div className="mt-6">
         <Button
           variant="green"
           onClick={handleSaveAll}
@@ -303,9 +321,11 @@ export default function Profile() {
           Save
         </Button>
         {saved && (
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green">
-            <Check size={16} /> Saved!
-          </span>
+          <div className="flex justify-center mt-2">
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green">
+              <Check size={16} /> Saved!
+            </span>
+          </div>
         )}
       </div>
     </div>

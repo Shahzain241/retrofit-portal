@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Bold, Italic, List } from 'lucide-react';
 import Button from '../../components/Button';
 import { useProfile } from '../../context/ProfileContext';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/Settings.css';
 
 /**
@@ -10,6 +11,7 @@ import '../../styles/Settings.css';
  */
 export default function Settings() {
   const { settings, updateSettings } = useProfile();
+  const { showToast } = useToast();
   const [template, setTemplate] = useState(settings.emailTemplate);
   const [integrations, setIntegrations] = useState(settings.integrations);
   const [saved, setSaved] = useState(false);
@@ -30,12 +32,14 @@ export default function Settings() {
   function save() {
     updateSettings({ emailTemplate: template, integrations });
     flash('saved');
+    showToast({ type: 'success', message: 'Settings saved' });
   }
 
   function discard() {
     setTemplate(settings.emailTemplate);
     setIntegrations(settings.integrations);
     flash('discarded');
+    showToast({ type: 'info', message: 'Changes discarded' });
   }
 
   const previewBody = template.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -91,7 +95,9 @@ export default function Settings() {
               <Italic size={14} className="text-body" />
               <List size={14} className="text-body" />
             </div>
+            <label htmlFor="email-template-editor" className="sr-only">Email template</label>
             <textarea
+              id="email-template-editor"
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
               rows={10}

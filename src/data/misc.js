@@ -1,97 +1,201 @@
+/**
+ * Misc dashboard mock data — notifications, activity, users, admin services,
+ * invoices, deliverables, documents, milestones, chat and subscription plans.
+ *
+ * Every entity below follows one consistent shape (unique `id`, lowercase
+ * enum keys for status/role, no duplicated nested objects).
+ */
+
 export const topbarNotifications = [
-  { title: 'Technical Survey Uploaded', meta: 'Mike Ross • 2h ago' },
-  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
-  { title: 'Milestone completed: Assessment', meta: 'System • 1d ago' },
+  {
+    id: 'ntf-1001',
+    title: 'Technical Survey Uploaded',
+    meta: 'Mike Ross • 2h ago',
+    timestamp: '2026-05-18T08:15:00Z',
+  },
+  {
+    id: 'ntf-1002',
+    title: 'Comment on Invoice #902',
+    meta: 'Sarah Jenkins • 5h ago',
+    timestamp: '2026-05-18T05:10:00Z',
+  },
+  {
+    id: 'ntf-1003',
+    title: 'Milestone completed: Assessment',
+    meta: 'System • 1d ago',
+    timestamp: '2026-05-17T09:00:00Z',
+  },
 ];
 
 export const topbarApps = ['Dashboard', 'Projects', 'Services', 'Billing', 'Support', 'Docs'];
 
 export const recentActivity = [
-  { title: 'Technical Survey Uploaded', meta: 'Mike Ross • 2h ago' },
-  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
-  { title: 'Comment on Invoice #902', meta: 'Sarah Jenkins • 5h ago' },
+  {
+    id: 'act-1001',
+    title: 'Technical Survey Uploaded',
+    meta: 'Mike Ross • 2h ago',
+    timestamp: '2026-05-18T08:15:00Z',
+  },
+  {
+    id: 'act-1002',
+    title: 'Comment on Invoice #902',
+    meta: 'Sarah Jenkins • 5h ago',
+    timestamp: '2026-05-18T05:10:00Z',
+  },
+  {
+    id: 'act-1003',
+    title: 'Milestone completed: Assessment',
+    meta: 'System • 1d ago',
+    timestamp: '2026-05-17T09:00:00Z',
+  },
 ];
 
 export const users = [
   {
+    id: 'usr-1001',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Super Admin',
+    role: 'super-admin',
     projects: 'All',
     lastLogin: 'Just Now',
-    status: 'Active',
+    status: 'active',
   },
   {
+    id: 'usr-1002',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Coordinator',
+    role: 'coordinator',
     projects: '12',
     lastLogin: '2 hours ago',
-    status: 'Offline',
+    status: 'offline',
   },
   {
+    id: 'usr-1003',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Designer',
+    role: 'designer',
     projects: '2',
-    lastLogin: 'Yesteray',
-    status: 'Active',
+    lastLogin: 'Yesterday',
+    status: 'active',
   },
   {
+    id: 'usr-1004',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Assessor',
+    role: 'assessor',
     projects: '3',
     lastLogin: 'May 18, 2026',
-    status: 'Offline',
+    status: 'offline',
   },
   {
+    id: 'usr-1005',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Designer',
+    role: 'designer',
     projects: '3',
     lastLogin: 'May 18, 2026',
-    status: 'Active',
+    status: 'active',
   },
   {
+    id: 'usr-1006',
     name: 'John Smith',
     email: 'johnsmith123@gmail.com',
-    role: 'Designer',
+    role: 'designer',
     projects: '1',
     lastLogin: 'May 18, 2026',
-    status: 'Active',
+    status: 'active',
   },
 ];
 
 export const services = [
-  { title: 'House thermal Inspection', price: 245, days: 3, updated: 'Just Now', deliverables: 4, status: 'Active' },
-  { title: 'House thermal Inspection', price: 12, days: 3, updated: '2 hours ago', deliverables: 4, status: 'Inactive' },
-  { title: 'House thermal Inspection', price: 2, days: 3, updated: 'Yesteray', deliverables: 4, status: 'Active' },
-  { title: 'House thermal Inspection', price: 3, days: 3, updated: 'May 18, 2026', deliverables: 4, status: 'Inactive' },
-  { title: 'House thermal Inspection', price: 3, days: 3, updated: 'May 18, 2026', deliverables: 4, status: 'Active' },
-  { title: 'House thermal Inspection', price: 1, days: 3, updated: 'May 18, 2026', deliverables: 4, status: 'Active' },
+  {
+    id: 'srv-1001',
+    title: 'House thermal Inspection',
+    price: 245,
+    currency: 'GBP',
+    days: 3,
+    updated: 'Just Now',
+    deliverables: 4,
+    status: 'active',
+  },
+  {
+    id: 'srv-1002',
+    title: 'House thermal Inspection',
+    price: 12,
+    currency: 'GBP',
+    days: 3,
+    updated: '2 hours ago',
+    deliverables: 4,
+    status: 'inactive',
+  },
+  {
+    id: 'srv-1003',
+    title: 'House thermal Inspection',
+    price: 2,
+    currency: 'GBP',
+    days: 3,
+    updated: 'Yesterday',
+    deliverables: 4,
+    status: 'active',
+  },
+  {
+    id: 'srv-1004',
+    title: 'House thermal Inspection',
+    price: 3,
+    currency: 'GBP',
+    days: 3,
+    updated: 'May 18, 2026',
+    deliverables: 4,
+    status: 'inactive',
+  },
+  {
+    id: 'srv-1005',
+    title: 'House thermal Inspection',
+    price: 3,
+    currency: 'GBP',
+    days: 3,
+    updated: 'May 18, 2026',
+    deliverables: 4,
+    status: 'active',
+  },
+  {
+    id: 'srv-1006',
+    title: 'House thermal Inspection',
+    price: 1,
+    currency: 'GBP',
+    days: 3,
+    updated: 'May 18, 2026',
+    deliverables: 4,
+    status: 'active',
+  },
 ];
 
-export const invoices = Array.from({ length: 6 }).map(() => ({
-  date: 'Sep 12, 2024',
-  amount: '£29.00',
-  status: 'Paid',
-}));
+export const invoices = [
+  { id: 'inv-902', number: '#INV-902', date: 'Sep 12, 2024', amount: '£29.00', status: 'paid' },
+  { id: 'inv-901', number: '#INV-901', date: 'Aug 12, 2024', amount: '£29.00', status: 'paid' },
+  { id: 'inv-900', number: '#INV-900', date: 'Jul 12, 2024', amount: '£29.00', status: 'paid' },
+  { id: 'inv-899', number: '#INV-899', date: 'Jun 12, 2024', amount: '£29.00', status: 'paid' },
+  { id: 'inv-898', number: '#INV-898', date: 'May 12, 2024', amount: '£29.00', status: 'paid' },
+  { id: 'inv-897', number: '#INV-897', date: 'Apr 12, 2024', amount: '£29.00', status: 'paid' },
+];
 
 export const deliverables = [
   {
+    id: 'dlv-1001',
     title: 'EPC Pre-Retrofit Report',
     desc: 'Baseline energy performance certificate.',
     icon: 'pdf',
     ready: true,
   },
   {
+    id: 'dlv-1002',
     title: 'Funding Assessment #V2',
     desc: 'ECO4 contribution breakdown.',
     icon: 'xls',
     ready: true,
   },
   {
+    id: 'dlv-1003',
     title: 'Technical Survey Report',
     desc: 'In progress • Est. July 5th',
     icon: 'doc',
@@ -100,21 +204,33 @@ export const deliverables = [
 ];
 
 export const documents = [
-  { name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
-  { name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
-  { name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
+  { id: 'doc-1001', name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
+  { id: 'doc-1002', name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
+  { id: 'doc-1003', name: 'Current EPC.pdf', meta: 'Version 1 • Today' },
 ];
 
 export const milestones = [
-  { title: 'Purchase Completed', date: '12/12/2026', state: 'done' },
-  { title: 'Assessment', date: '12/12/2026', state: 'done' },
-  { title: 'Survey', date: '', state: 'current' },
-  { title: 'Installation', date: '', state: 'upcoming' },
+  { id: 'ms-1001', title: 'Purchase Completed', date: '12/12/2026', state: 'done' },
+  { id: 'ms-1002', title: 'Assessment', date: '12/12/2026', state: 'done' },
+  { id: 'ms-1003', title: 'Survey', date: '', state: 'current' },
+  { id: 'ms-1004', title: 'Installation', date: '', state: 'upcoming' },
 ];
 
 export const chatMessages = [
-  { from: 'other', text: 'Hi Sarah, EPC received. Reviewing now.', time: '14:22', avatar: 'https://i.pravatar.cc/80?img=12' },
-  { from: 'me', text: 'Okay', time: '14:22', avatar: 'https://i.pravatar.cc/80?img=13' },
+  {
+    id: 'msg-1001',
+    from: 'other',
+    text: 'Hi Sarah, EPC received. Reviewing now.',
+    time: '14:22',
+    avatar: 'https://i.pravatar.cc/80?img=12',
+  },
+  {
+    id: 'msg-1002',
+    from: 'me',
+    text: 'Okay',
+    time: '14:22',
+    avatar: 'https://i.pravatar.cc/80?img=13',
+  },
 ];
 
 export const teamWorkload = [
@@ -149,38 +265,41 @@ export const revenueTrend = [
 
 export const plans = [
   {
+    id: 'plan-free',
     name: 'Free',
     price: '£0',
     desc: 'Essential tools for individuals.',
     features: [
-      { text: 'Up to 2 projects', ok: true },
-      { text: 'Basic PDF exports', ok: true },
-      { text: 'Advanced analytics', ok: false },
+      { id: 'free-1', text: 'Up to 2 projects', ok: true },
+      { id: 'free-2', text: 'Basic PDF exports', ok: true },
+      { id: 'free-3', text: 'Advanced analytics', ok: false },
     ],
     cta: 'Current Plan',
     highlight: false,
   },
   {
+    id: 'plan-priority',
     name: 'Priority',
     price: '£29',
     desc: 'Precision tools for growing teams.',
     features: [
-      { text: 'Unlimited projects', ok: true },
-      { text: 'Priority support', ok: true },
-      { text: 'Advanced energy models', ok: true },
+      { id: 'priority-1', text: 'Unlimited projects', ok: true },
+      { id: 'priority-2', text: 'Priority support', ok: true },
+      { id: 'priority-3', text: 'Advanced energy models', ok: true },
     ],
     cta: 'Upgrade Now',
     highlight: true,
     badge: 'MOST POPULAR',
   },
   {
+    id: 'plan-enterprise',
     name: 'Enterprise',
     price: '£149',
     desc: 'Institutional-grade control.',
     features: [
-      { text: 'SSO & SAML', ok: true },
-      { text: 'Custom API access', ok: true },
-      { text: 'Dedicated account manager', ok: true },
+      { id: 'enterprise-1', text: 'SSO & SAML', ok: true },
+      { id: 'enterprise-2', text: 'Custom API access', ok: true },
+      { id: 'enterprise-3', text: 'Dedicated account manager', ok: true },
     ],
     cta: 'Contact Sales',
     highlight: false,

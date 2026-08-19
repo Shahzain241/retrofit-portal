@@ -8,7 +8,7 @@ import imgCoordination from '../assets/Coordination.png';
  */
 export const landingServices = [
   {
-    id: 'whole-house-assessment-1',
+    id: 'service-assessment',
     tag: 'PAS 2035',
     title: 'Retrofit Assessment',
     price: '$69',
@@ -16,7 +16,7 @@ export const landingServices = [
     img: imgAssessment,
   },
   {
-    id: 'whole-house-assessment-2',
+    id: 'service-design',
     tag: 'PAS 2035',
     title: 'Design Package',
     price: '$69',
@@ -24,7 +24,7 @@ export const landingServices = [
     img: imgDesign,
   },
   {
-    id: 'whole-house-assessment-3',
+    id: 'service-coordination',
     tag: 'PAS 2035',
     title: 'Retrofit Coordination',
     price: '$69',

@@ -1,7 +1,6 @@
 /* Task Board (admin) — kanban columns extracted from inline styles. */
 
 .rp-board-col {
-  width: 260px;
   height: 490px;
   border-radius: 15px;
   background: #ffffff;
@@ -9,18 +8,91 @@
   padding: 16px;
 }
 
-/* On tablets/mobile the kanban grid collapses to fewer columns, so let each
-   column fill its grid cell and grow with its task list. The desktop 260x490
-   size is untouched at >= 1024px. */
-@media (max-width: 1023px) {
-  .rp-board-col {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+/* Highlight a column when a task is dragged over it. */
+.rp-board-col-over {
+  outline: 2px solid #1fae5c;
+  outline-offset: -2px;
+  background: #f6fcf9;
 }
 
+/* On mobile the kanban columns stack full-width and grow with their content.
+   Columns are equal-width (1fr grid tracks) at every breakpoint. */
 @media (max-width: 767px) {
   .rp-board-col {
     height: auto !important;
+  }
+}
+
+/* ---------- Slide-over Task Board modal (renders over the Dashboard) ---------- */
+.tb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(11, 28, 48, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  animation: tb-fade-in 0.2s ease;
+}
+
+.tb-panel {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  overflow-y: auto;
+  background: #f7f8fa;
+  box-shadow: -16px 0 40px rgba(11, 28, 48, 0.25);
+  animation: tb-slide-in 0.25s ease;
+}
+
+.tb-panel-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  background: #f7f8fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tb-panel-body {
+  padding: 0 24px 32px;
+}
+
+.tb-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #667085;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1);
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.tb-close:hover {
+  color: #101828;
+  background: #f2f4f7;
+}
+
+@keyframes tb-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tb-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }

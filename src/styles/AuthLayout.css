@@ -44,3 +44,49 @@
     max-width: 100%;
   }
 }
+
+/* Shared form controls (Login / Signup). */
+.form-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #101828;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1fae5c;
+  box-shadow: 0 0 0 2px rgba(31, 174, 92, 0.3);
+}
+
+.form-input--password {
+  padding-right: 44px;
+}
+
+.form-input-error {
+  border-color: #e85d3c;
+}
+
+.form-input-error:focus {
+  border-color: #e85d3c;
+  box-shadow: 0 0 0 2px rgba(232, 93, 60, 0.25);
+}
+
+.form-error-text {
+  color: #e85d3c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.form-required {
+  color: #e85d3c;
+}

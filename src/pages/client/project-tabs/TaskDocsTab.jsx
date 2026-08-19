@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { FileText, Upload, FilePenLine, Download, X, Send } from 'lucide-react';
 import Button from '../../../components/Button';
 import { documents as initialDocuments } from '../../../data/misc';
+import { useToast } from '../../../context/ToastContext';
 
 export default function TaskDocsTab() {
   const [documents, setDocuments] = useState(initialDocuments);
@@ -9,6 +10,7 @@ export default function TaskDocsTab() {
   const [revisionText, setRevisionText] = useState('');
   const [feedback, setFeedback] = useState('');
   const fileInputRef = useRef(null);
+  const { showToast } = useToast();
 
   function handleUpload(e) {
     const files = Array.from(e.target.files || []);
@@ -19,14 +21,19 @@ export default function TaskDocsTab() {
     }));
     setDocuments((d) => [...d, ...added]);
     setFeedback(`Uploaded ${added.length} document${added.length > 1 ? 's' : ''}.`);
+    showToast({ type: 'success', message: `Uploaded ${added.length} document${added.length > 1 ? 's' : ''}` });
     e.target.value = '';
   }
 
   function submitRevision() {
-    if (!revisionText.trim()) return;
+    if (!revisionText.trim()) {
+      showToast({ type: 'error', message: 'Please describe your revision' });
+      return;
+    }
     setFeedback('Revision request sent to your project team.');
     setRevisionOpen(false);
     setRevisionText('');
+    showToast({ type: 'success', message: 'Revision request sent' });
   }
 
   function downloadReport() {
@@ -42,6 +49,7 @@ export default function TaskDocsTab() {
     a.remove();
     URL.revokeObjectURL(url);
     setFeedback('Report downloaded.');
+    showToast({ type: 'success', message: 'Report downloaded' });
   }
 
   return (
@@ -98,23 +106,24 @@ export default function TaskDocsTab() {
         </Button>
         {revisionOpen && (
           <div className="border border-line rounded-xl p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-ink">Describe your revision</p>
-              <button
-                onClick={() => setRevisionOpen(false)}
-                className="text-muted hover:text-ink"
-                aria-label="Close"
-              >
-                <X size={14} />
-              </button>
-            </div>
-            <textarea
-              value={revisionText}
-              onChange={(e) => setRevisionText(e.target.value)}
-              rows={3}
-              placeholder="e.g. Please update the EPC figures..."
-              className="w-full rounded-xl bg-surface px-4 py-3 text-sm focus:outline-none resize-none"
-            />
+              <div className="flex items-center justify-between">
+                <label htmlFor="revision-text" className="text-xs font-semibold text-ink">Describe your revision</label>
+                <button
+                  onClick={() => setRevisionOpen(false)}
+                  className="text-muted hover:text-ink"
+                  aria-label="Close"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <textarea
+                id="revision-text"
+                value={revisionText}
+                onChange={(e) => setRevisionText(e.target.value)}
+                rows={3}
+                placeholder="e.g. Please update the EPC figures..."
+                className="w-full rounded-xl bg-surface px-4 py-3 text-sm focus:outline-none resize-none"
+              />
             <Button
               variant="primary"
               icon={Send}

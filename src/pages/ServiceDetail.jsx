@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import imgTick from "../assets/tick.png";
@@ -9,6 +9,7 @@ import {
   detailContentTabs as CONTENT_TABS,
 } from "../data/serviceDetail";
 import {
+  AlertTriangle,
   Check,
   CheckCircle2,
   Clock,
@@ -17,7 +18,10 @@ import {
   SquareCheck,
   Shield,
 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 import "../styles/ServicesDetail.css";
+import "../styles/PublicServices.css";
 
 /**
  * Retrofit Portal — Service Detail Page
@@ -29,10 +33,61 @@ import "../styles/ServicesDetail.css";
  * a real fetch keyed on the :id route param once a backend is ready.
  */
 
+const FETCH_DELAY_MS = 700;
+
+const TAB_SLUGS = {
+  Overview: "overview",
+  "What's Included": "whats-included",
+  Timeline: "timeline",
+  Compliance: "compliance",
+};
+
+const TAB_BY_SLUG = Object.fromEntries(
+  Object.entries(TAB_SLUGS).map(([tab, slug]) => [slug, tab])
+);
+
 export default function ServiceDetail() {
   const [activeTier, setActiveTier] = useState("Basic");
-  const [activeTab, setActiveTab] = useState("Overview");
   const [selectedAddons, setSelectedAddons] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = TAB_BY_SLUG[searchParams.get("tab")] ?? "Overview";
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const { showToast } = useToast();
+
+  const fetchService = useCallback(() => {
+    setIsLoading(true);
+    setHasError(false);
+    window.setTimeout(() => {
+      setIsLoading(false);
+    }, FETCH_DELAY_MS);
+  }, []);
+
+  useEffect(() => {
+    fetchService();
+  }, [fetchService]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+
+    const onKeyDown = (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "e" && event.shiftKey && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        setHasError((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const retryFetch = () => fetchService();
+
+  function setTab(tab) {
+    const slug = TAB_SLUGS[tab];
+    setSearchParams(slug === "overview" ? {} : { tab: slug }, { replace: false });
+  }
 
   const tier = SERVICE.tiers[activeTier];
 
@@ -59,6 +114,17 @@ export default function ServiceDetail() {
       <Header />
 
       <main>
+        {hasError ? (
+          <div className="error-state">
+            <AlertTriangle size={40} className="error-state-icon" />
+            <p className="error-state-title">Couldn't load this service</p>
+            <p className="error-state-desc">Something went wrong. Please try again.</p>
+            <button onClick={retryFetch} className="error-state-action">Retry</button>
+          </div>
+        ) : isLoading ? (
+          <ServiceDetailSkeleton />
+        ) : (
+        <>
         {/* Hero */}
         <section className="max-w-[860px] mx-auto text-center pt-12 sm:pt-16 pb-10 sm:pb-12 px-4">
           <span
@@ -180,7 +246,7 @@ export default function ServiceDetail() {
 
               <button
                 onClick={() =>
-                  alert(`Starting project — total £${total.toFixed(2)}`)
+                  showToast({ type: "success", message: `Booking confirmed — total £${total.toFixed(2)}` })
                 }
                 className="mt-6 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0B1E36] to-[#0E4F5C] hover:opacity-90 transition text-white text-[14px] font-medium py-3.5 rounded-xl"
               >
@@ -201,7 +267,7 @@ export default function ServiceDetail() {
             {CONTENT_TABS.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setTab(tab)}
                 className={`pb-4 text-[14px] sm:text-[16px] font-semibold transition relative whitespace-nowrap ${
                   activeTab === tab
                     ? "text-[#0B1E36]"
@@ -218,7 +284,7 @@ export default function ServiceDetail() {
         </section>
 
         {/* Tab content */}
-        <section className="max-w-5xl mx-auto px-4 py-12">
+        <section key={activeTab} className="max-w-5xl mx-auto px-4 py-12 tab-fade">
           {activeTab === "Overview" && (
             <div>
               <h2 className="section-heading">{SERVICE.overview.heading}</h2>
@@ -318,9 +384,27 @@ export default function ServiceDetail() {
             </div>
           )}
         </section>
+        </>
+        )}
       </main>
 
       <Footer />
+    </div>
+  );
+}
+
+function ServiceDetailSkeleton() {
+  return (
+    <div>
+      <section className="max-w-[860px] mx-auto text-center pt-12 sm:pt-16 pb-10 sm:pb-12 px-4">
+        <div className="skeleton-block sd-skeleton-title" />
+        <div className="skeleton-block sd-skeleton-subtitle" />
+      </section>
+
+      <section className="max-w-5xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+        <div className="skeleton-block sd-skeleton-gallery" />
+        <div className="skeleton-block sd-skeleton-pricing" />
+      </section>
     </div>
   );
 }

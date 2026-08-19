@@ -30,8 +30,10 @@ export default function Topbar() {
     <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 rp-dash-topbar" ref={ref}>
       <div className="rp-dash-topbar-search">
         <div className="relative rp-dash-topbar-search-field">
+          <label htmlFor="topbar-search-input" className="sr-only">Search retrofit services</label>
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
           <input
+            id="topbar-search-input"
             placeholder="Search retrofit services..."
             className="rp-topbar-search-input w-full bg-white pl-11 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
           />
@@ -40,6 +42,7 @@ export default function Topbar() {
 
       <div className="relative shrink-0">
         <button
+          aria-label="Open notifications"
           onClick={() => {
             setOpenNotif((v) => !v);
             setOpenGrid(false);
@@ -66,6 +69,7 @@ export default function Topbar() {
 
       <div className="relative shrink-0 hidden sm:block">
         <button
+          aria-label="Open apps menu"
           onClick={() => {
             setOpenGrid((v) => !v);
             setOpenNotif(false);
@@ -94,7 +98,7 @@ export default function Topbar() {
       <div className="flex items-center gap-3 pl-1 border-l border-line shrink-0">
         <img
           src={profile.avatar}
-          alt="avatar"
+          alt="User avatar"
           className="w-11 h-11 rounded-full object-cover"
         />
       </div>

@@ -3,6 +3,7 @@
  */
 export const testimonials = [
   {
+    id: 'tst-1001',
     name: 'James Sterling',
     role: 'Homeowner, London',
     rating: 5,
@@ -10,6 +11,7 @@ export const testimonials = [
     avatar: 'https://i.pravatar.cc/100?img=12',
   },
   {
+    id: 'tst-1002',
     name: 'Amara Whitfield',
     role: 'Homeowner, Manchester',
     rating: 5,
@@ -17,6 +19,7 @@ export const testimonials = [
     avatar: 'https://i.pravatar.cc/100?img=32',
   },
   {
+    id: 'tst-1003',
     name: 'Oliver Bancroft',
     role: 'Homeowner, Bristol',
     rating: 5,
@@ -24,6 +27,7 @@ export const testimonials = [
     avatar: 'https://i.pravatar.cc/100?img=51',
   },
   {
+    id: 'tst-1004',
     name: 'Priya Nandan',
     role: 'Local Authority, Leeds',
     rating: 4,
@@ -31,6 +35,7 @@ export const testimonials = [
     avatar: 'https://i.pravatar.cc/100?img=47',
   },
   {
+    id: 'tst-1005',
     name: 'Callum Reyes',
     role: 'Homeowner, Leeds',
     rating: 5,

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, X, Plus, Bold, Italic, List } from 'lucide-react';
 import Button from '../../components/Button';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/ServiceForm.css';
 
 export default function ServiceForm() {
@@ -8,6 +9,7 @@ export default function ServiceForm() {
     'On-site property inspection',
     'Basic energy efficiency report',
   ]);
+  const { showToast } = useToast();
 
   return (
     <div>
@@ -21,11 +23,13 @@ export default function ServiceForm() {
 
         <div>
           <label
+            htmlFor="service-title"
             className="block font-['Inter'] mb-2 sf-label"
           >
             Service Title
           </label>
           <input
+            id="service-title"
             placeholder="e.g. Comprehensive Energy Audit"
             className="w-full rounded-xl border border-line px-4 py-3 text-sm"
           />
@@ -33,6 +37,7 @@ export default function ServiceForm() {
 
         <div>
           <label
+            htmlFor="service-description"
             className="block font-['Inter'] mb-2 sf-label"
           >
             Description
@@ -44,6 +49,7 @@ export default function ServiceForm() {
               <List size={14} className="text-body" />
             </div>
             <textarea
+              id="service-description"
               placeholder="Describe the service..."
               rows={5}
               className="w-full px-4 py-3 text-sm focus:outline-none resize-none"
@@ -82,16 +88,16 @@ export default function ServiceForm() {
           <div className="border border-line rounded-xl p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <p className="text-[11px] font-semibold text-muted mb-1.5">TIER NAME</p>
-                <input defaultValue="Standard" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <label htmlFor="tier-name" className="block text-[11px] font-semibold text-muted mb-1.5">TIER NAME</label>
+                <input id="tier-name" defaultValue="Standard" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
               </div>
               <div>
-                <p className="text-[11px] font-semibold text-muted mb-1.5">PRICE</p>
-                <input defaultValue="290" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <label htmlFor="tier-price" className="block text-[11px] font-semibold text-muted mb-1.5">PRICE</label>
+                <input id="tier-price" defaultValue="290" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
               </div>
               <div>
-                <p className="text-[11px] font-semibold text-muted mb-1.5">DAYS TO COMPLETE</p>
-                <input defaultValue="3" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <label htmlFor="tier-days" className="block text-[11px] font-semibold text-muted mb-1.5">DAYS TO COMPLETE</label>
+                <input id="tier-days" defaultValue="3" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
               </div>
             </div>
 
@@ -100,9 +106,10 @@ export default function ServiceForm() {
               <div className="space-y-2">
                 {deliverables.map((d, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <input defaultValue={d} className="flex-1 rounded-lg border border-line px-3 py-2.5 text-sm" />
+                    <input aria-label={`Deliverable ${i + 1}`} defaultValue={d} className="flex-1 rounded-lg border border-line px-3 py-2.5 text-sm" />
                     <button
                       onClick={() => setDeliverables((arr) => arr.filter((_, idx) => idx !== i))}
+                      aria-label={`Remove deliverable ${i + 1}`}
                       className="text-muted"
                     >
                       <X size={16} />
@@ -141,6 +148,7 @@ export default function ServiceForm() {
         <Button
           variant="green"
           className="sf-save-btn"
+          onClick={() => showToast({ type: 'success', message: 'Service saved' })}
         >
           Save
         </Button>

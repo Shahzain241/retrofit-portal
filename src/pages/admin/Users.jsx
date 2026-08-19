@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { UserPlus, LogIn, Pencil, Ban } from 'lucide-react';
 import Button from '../../components/Button';
 import { users } from '../../data/misc';
+import { label, USER_ROLE, USER_STATUS } from '../../data/enums';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/Users.css';
 
 /**
@@ -9,6 +11,7 @@ import '../../styles/Users.css';
  * management actions. Styled via Users.css + shared dashboard classes.
  */
 export default function Users() {
+  const { showToast } = useToast();
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -49,7 +52,7 @@ export default function Users() {
                   <p className="text-xs text-muted">{u.email}</p>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="rp-table-td">{u.role}</span>
+                  <span className="rp-table-td">{label(USER_ROLE, u.role)}</span>
                 </td>
                 <td className="px-6 py-4">
                   <span className="rp-table-td">{u.projects}</span>
@@ -58,15 +61,21 @@ export default function Users() {
                   <span className="rp-table-td">{u.lastLogin}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`rp-table-td ${u.status === 'Active' ? 'rp-table-td-success' : ''}`}>
-                    {u.status}
+                  <span className={`rp-table-td ${u.status === 'active' ? 'rp-table-td-success' : ''}`}>
+                    {label(USER_STATUS, u.status)}
                   </span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3 text-muted">
-                    <LogIn size={16} className="cursor-pointer hover:text-ink" />
-                    <Pencil size={16} className="cursor-pointer hover:text-ink" />
-                    <Ban size={16} className="cursor-pointer hover:text-ink" />
+                    <button type="button" aria-label="Log in as user" className="cursor-pointer hover:text-ink" onClick={() => showToast({ type: 'info', message: 'Impersonating user' })}>
+                      <LogIn size={16} />
+                    </button>
+                    <button type="button" aria-label="Edit user" className="cursor-pointer hover:text-ink" onClick={() => showToast({ type: 'info', message: 'Editing user' })}>
+                      <Pencil size={16} />
+                    </button>
+                    <button type="button" aria-label="Ban user" className="cursor-pointer hover:text-ink" onClick={() => showToast({ type: 'warning', message: 'User banned' })}>
+                      <Ban size={16} />
+                    </button>
                   </div>
                 </td>
               </tr>

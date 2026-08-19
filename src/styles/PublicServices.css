@@ -57,3 +57,120 @@
     max-width: 100% !important;
   }
 }
+
+/* ---------- Loading skeleton (matches the service-card layout) ---------- */
+.service-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.skeleton-block {
+  background: linear-gradient(90deg, #eef1ef 25%, #f7f8f7 50%, #eef1ef 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-image {
+  height: 176px;
+  width: 100%;
+  border-radius: 0;
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 55%;
+  margin: 20px 20px 0;
+}
+
+.skeleton-text {
+  height: 14px;
+  width: 85%;
+  margin: 10px 20px 0;
+}
+
+.skeleton-button {
+  height: 42px;
+  width: 70%;
+  margin: 16px auto 20px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- Empty state ---------- */
+.empty-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.empty-state-icon {
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.error-state-icon {
+  color: #e85d3c;
+  margin-bottom: 16px;
+}
+
+.empty-state-title,
+.error-state-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b1c30;
+  margin: 0 0 8px;
+}
+
+.empty-state-desc,
+.error-state-desc {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 20px;
+}
+
+.empty-state-action {
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: linear-gradient(269.98deg, #12b14e -214.32%, #003366 99.98%);
+  color: #ffffff;
+  transition: opacity 0.15s;
+}
+.empty-state-action:hover {
+  opacity: 0.9;
+}
+
+.error-state-action {
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0b1e36;
+  transition: background 0.15s;
+}
+.error-state-action:hover {
+  background: #f9fafb;
+}

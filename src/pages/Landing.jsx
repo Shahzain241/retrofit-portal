@@ -71,6 +71,7 @@ export default function LandingPage() {
     <div className="rp-root">
       <Header />
 
+      <main>
       {/* ================= HERO ================= */}
       <section className="rp-hero" id="top">
         <div className="rp-container">
@@ -226,7 +227,16 @@ export default function LandingPage() {
                     key={t.name + i}
                     ref={(el) => (cardRefs.current[i] = el)}
                     style={cardStyle}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Show testimonial from ${t.name}`}
                     onClick={() => setActiveTestimonial(i)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveTestimonial(i);
+                      }
+                    }}
                   >
                     <div className="rp-stars">{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
                     <p className="rp-test-text">&ldquo;{t.text}&rdquo;</p>
@@ -254,6 +264,7 @@ export default function LandingPage() {
 
       {/* ================= CTA BANNER ================= */}
       <CtaBanner id="cta" ctaTo="/signup" />
+      </main>
 
       {/* ================= FOOTER ================= */}
       <Footer />

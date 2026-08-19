@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CheckCircle2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Toggle from '../../components/Toggle';
 import ProgressBar from '../../components/ProgressBar';
-import { directoryProjects } from '../../data/projects';
+import { directoryProjects, clientById, formatAddress } from '../../data/projects';
 import { directoryFilterFields } from '../../data/projectsDirectory';
 import '../../styles/ProjectsDirectory.css';
 
@@ -22,11 +22,11 @@ export default function ProjectsDirectory() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         {directoryFilterFields.map((f) => (
           <div
-            key={f.label}
+            key={f.id}
             className="rp-filter-card"
           >
-            <p className="text-[11px] font-semibold text-muted mb-2">{f.label}</p>
-            <select className="rp-filter-select w-full text-sm text-ink bg-white focus:outline-none">
+            <label htmlFor={f.id} className="block text-[11px] font-semibold text-muted mb-2">{f.label}</label>
+            <select id={f.id} className="rp-filter-select w-full text-sm text-ink bg-white focus:outline-none">
               <option>{f.value}</option>
             </select>
           </div>
@@ -36,7 +36,7 @@ export default function ProjectsDirectory() {
         >
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-semibold text-muted">HAS ISSUES</p>
-            <Toggle on={hasIssues} onClick={() => setHasIssues((v) => !v)} size="sm" variant="brand" />
+            <Toggle aria-label="Filter by projects with issues" on={hasIssues} onClick={() => setHasIssues((v) => !v)} size="sm" variant="brand" />
           </div>
           <div className="rp-filter-value">
             <span className="text-sm text-ink">Critical Only</span>
@@ -72,44 +72,47 @@ export default function ProjectsDirectory() {
             </tr>
           </thead>
           <tbody>
-            {directoryProjects.map((p, i) => (
-              <tr key={i} className="border-b border-line/60 last:border-0">
+            {directoryProjects.map((p) => {
+              const client = clientById[p.clientId];
+              return (
+              <tr key={p.id} className="border-b border-line/60 last:border-0">
                 <td className="px-6 py-4">
                   <CheckCircle2
                     size={18}
-                    className={p.danger ? 'text-danger' : 'text-brand-green'}
-                    fill={p.danger ? 'transparent' : '#1fae5c'}
-                    color={p.danger ? '#e0432c' : 'white'}
+                    className={p.hasIssues ? 'text-danger' : 'text-brand-green'}
+                    fill={p.hasIssues ? 'transparent' : '#1fae5c'}
+                    color={p.hasIssues ? '#e0432c' : 'white'}
                   />
                 </td>
                 <td className="px-6 py-4 font-medium text-ink">{p.id}</td>
                 <td className="px-6 py-4">
-                  <p className="text-ink text-sm font-medium">{p.client}</p>
-                  <p className="text-xs text-muted">{p.email}</p>
+                  <p className="text-ink text-sm font-medium">{client.name}</p>
+                  <p className="text-xs text-muted">{client.email}</p>
                 </td>
-                <td className="px-6 py-4 text-body">{p.address}</td>
+                <td className="px-6 py-4 text-body">{formatAddress(p)}</td>
                 <td className="px-6 py-4 text-body">{p.service}</td>
                 <td className="px-6 py-4 w-52">
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <ProgressBar value={p.progress} size="sm" variant={p.danger ? 'danger' : 'green'} />
+                      <ProgressBar value={p.progress} size="sm" variant={p.hasIssues ? 'danger' : 'green'} />
                     </div>
-                    <span className={`text-sm font-bold ${p.danger ? 'text-danger' : 'text-brand-green'}`}>
+                    <span className={`text-sm font-bold ${p.hasIssues ? 'text-danger' : 'text-brand-green'}`}>
                       {p.progress}%
                     </span>
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
 
       <div className="flex items-center justify-end gap-3 mt-4">
-        <button className="w-9 h-9 rounded-full bg-navy-900 text-white flex items-center justify-center">
+        <button aria-label="Previous page" className="w-9 h-9 rounded-full bg-navy-900 text-white flex items-center justify-center">
           <ChevronLeft size={16} />
         </button>
-        <button className="w-9 h-9 rounded-full bg-navy-900 text-white flex items-center justify-center">
+        <button aria-label="Next page" className="w-9 h-9 rounded-full bg-navy-900 text-white flex items-center justify-center">
           <ChevronRight size={16} />
         </button>
       </div>

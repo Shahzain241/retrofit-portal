@@ -4,6 +4,8 @@ import Button from '../../components/Button';
 import Badge from '../../components/Badge';
 import PaymentMethodCard from '../../components/PaymentMethodCard';
 import { invoices } from '../../data/misc';
+import { label, INVOICE_STATUS } from '../../data/enums';
+import { useToast } from '../../context/ToastContext';
 import { downloadInvoicePdf } from '../../utils/pdf';
 import '../../styles/Billing.css';
 
@@ -12,6 +14,7 @@ import '../../styles/Billing.css';
  * Styled via Billing.css + shared dashboard classes.
  */
 export default function Billing() {
+  const { showToast } = useToast();
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -88,14 +91,17 @@ export default function Billing() {
                 <td className="px-6 py-4 text-ink">{inv.date}</td>
                 <td className="px-6 py-4 text-ink">{inv.amount}</td>
                 <td className="px-6 py-4">
-                  <span className="text-brand-green font-semibold text-sm">{inv.status}</span>
+                  <span className="text-brand-green font-semibold text-sm">{label(INVOICE_STATUS, inv.status)}</span>
                 </td>
                 <td className="px-6 py-4">
                   <Button
                     variant="gradient"
                     icon={Download}
                     className="rp-table-btn-pdf !py-2 !px-4 text-xs"
-                    onClick={() => downloadInvoicePdf(inv, i)}
+                    onClick={() => {
+                      downloadInvoicePdf(inv, i);
+                      showToast({ type: 'success', message: 'Invoice downloaded' });
+                    }}
                   >
                     PDF
                   </Button>

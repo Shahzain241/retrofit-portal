@@ -1,6 +1,7 @@
 import { Check, X } from 'lucide-react';
 import Button from '../../components/Button';
 import { plans } from '../../data/misc';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/Plans.css';
 
 /**
@@ -8,6 +9,7 @@ import '../../styles/Plans.css';
  * Plans.css + Tailwind utilities.
  */
 export default function Plans() {
+  const { showToast } = useToast();
   return (
     <div>
       <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Choose Your Transformation</h1>
@@ -51,6 +53,13 @@ export default function Plans() {
             <Button
               variant={gradientCta ? 'gradient' : 'outline'}
               className={`w-full ${gradientCta ? 'rp-plan-card-cta' : ''}`}
+              onClick={() => {
+                if (p.cta === 'Upgrade Now') {
+                  showToast({ type: 'success', message: 'Plan upgraded' });
+                } else if (p.cta === 'Contact Sales') {
+                  showToast({ type: 'info', message: 'Our sales team will contact you' });
+                }
+              }}
             >
               {p.cta}
             </Button>

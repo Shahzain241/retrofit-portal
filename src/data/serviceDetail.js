@@ -17,6 +17,7 @@ export const serviceDetail = {
   thumbnails: [imgCoordination, imgDesign, imgAssessment],
   tiers: {
     Basic: {
+      id: 'tier-basic',
       price: 450,
       tierLabel: 'Basic Tier',
       description:
@@ -29,6 +30,7 @@ export const serviceDetail = {
       ],
     },
     Standard: {
+      id: 'tier-standard',
       price: 750,
       tierLabel: 'Standard Tier',
       description:
@@ -42,6 +44,7 @@ export const serviceDetail = {
       ],
     },
     Premium: {
+      id: 'tier-premium',
       price: 1150,
       tierLabel: 'Premium Tier',
       description:
@@ -84,15 +87,15 @@ export const serviceDetail = {
     'Retrofit Coordinator oversight',
   ],
   timeline: [
-    { step: 'Day 1', title: 'Project Onboarding', detail: 'Gathering existing EPC data and scheduling site visit.', status: 'completed' },
-    { step: 'Day 3-5', title: 'Site Assessment', detail: 'Qualified assessor visits property for measurements and ventilation check.', status: 'active' },
-    { step: 'Day 10', title: 'Technical Report & MTIP', detail: 'Final delivery of all compliance documents and certified recommendations.', status: 'upcoming' },
+    { id: 'tl-1001', step: 'Day 1', title: 'Project Onboarding', detail: 'Gathering existing EPC data and scheduling site visit.', status: 'completed' },
+    { id: 'tl-1002', step: 'Day 3-5', title: 'Site Assessment', detail: 'Qualified assessor visits property for measurements and ventilation check.', status: 'active' },
+    { id: 'tl-1003', step: 'Day 10', title: 'Technical Report & MTIP', detail: 'Final delivery of all compliance documents and certified recommendations.', status: 'upcoming' },
   ],
   compliance: [
-    { icon: 'audit', title: 'Audit Readiness', text: 'Full documentation prepared for potential TrustMark audits or funding body inspections.' },
-    { icon: 'shield', title: 'Qualified Leads', text: 'All assessments are performed by Level 3 or higher accredited Retrofit Assessors.' },
-    { icon: 'audit', title: 'Audit Readiness', text: 'Full documentation prepared for potential TrustMark audits or funding body inspections.' },
-    { icon: 'shield', title: 'Qualified Leads', text: 'All assessments are performed by Level 3 or higher accredited Retrofit Assessors.' },
+    { id: 'cmp-1001', icon: 'audit', title: 'Audit Readiness', text: 'Full documentation prepared for potential TrustMark audits or funding body inspections.' },
+    { id: 'cmp-1002', icon: 'shield', title: 'Qualified Leads', text: 'All assessments are performed by Level 3 or higher accredited Retrofit Assessors.' },
+    { id: 'cmp-1003', icon: 'audit', title: 'Audit Readiness', text: 'Full documentation prepared for potential TrustMark audits or funding body inspections.' },
+    { id: 'cmp-1004', icon: 'shield', title: 'Qualified Leads', text: 'All assessments are performed by Level 3 or higher accredited Retrofit Assessors.' },
   ],
 };
 

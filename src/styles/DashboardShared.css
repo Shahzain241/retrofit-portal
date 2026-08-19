@@ -51,7 +51,7 @@
 
 /* ---------- Shared sidebar ---------- */
 .rp-sidebar {
-  background-color: #0b1c30;
+  background-color: #0a1628;
 }
 
 .rp-sidebar-brand {
@@ -81,15 +81,30 @@
   border-image-slice: 1;
 }
 
-/* Active nav link — green right/bottom edge (specificity beats Tailwind utils). */
+/* Active nav link — solid white pill with dark ink text (no green outline). */
 a.rp-sidebar-link-active {
   gap: 12px;
   padding: 16px;
   height: 47px;
-  border-top: none;
-  border-left: none;
-  border-right: 1.5px solid #12b14e;
-  border-bottom: 1.5px solid #12b14e;
+  background: #ffffff;
+  color: #0b1c30;
+}
+
+/* Collapsed sidebar — icon-only rail. */
+.rp-sidebar.is-collapsed .rp-sidebar-brand {
+  margin-left: 0;
+  justify-content: center;
+}
+
+.rp-sidebar.is-collapsed .rp-sidebar-divider {
+  width: 100%;
+  margin-left: 0;
+}
+
+.rp-sidebar.is-collapsed a.rp-sidebar-link-active {
+  height: auto;
+  padding: 12px 0;
+  gap: 0;
 }
 
 /* "New Project" button (client sidebar). */

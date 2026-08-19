@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import Button from '../../components/Button';
 import StatusPill from '../../components/StatusPill';
 import { services } from '../../data/misc';
+import { label, SERVICE_STATUS } from '../../data/enums';
 import '../../styles/Services.css';
 
 /**
@@ -53,7 +54,7 @@ export default function Services() {
                 <td className="px-6 py-4 text-body">{s.updated}</td>
                 <td className="px-6 py-4 text-body">{s.deliverables}</td>
                 <td className="px-6 py-4">
-                  <StatusPill>{s.status}</StatusPill>
+                  <StatusPill>{label(SERVICE_STATUS, s.status)}</StatusPill>
                 </td>
               </tr>
             ))}

@@ -105,6 +105,12 @@
   background: #ffffff;
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
   opacity: 1;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.rp-dash-proj-card:hover {
+  box-shadow: 0px 10px 20px 0px #0b1c3033;
+  transform: translateY(-2px);
 }
 
 .rp-dash-proj-img {
@@ -123,8 +129,9 @@
   line-height: 28px;
   letter-spacing: 0px;
   vertical-align: middle;
-  width: 168.03px;
-  height: 28px;
+  width: auto;
+  height: auto;
+  margin-bottom: 8px;
   opacity: 1;
   color: #0b1c30;
 }
@@ -136,8 +143,8 @@
   line-height: 24px;
   letter-spacing: 0px;
   vertical-align: middle;
-  width: 243.44px;
-  height: 24px;
+  width: auto;
+  height: auto;
   opacity: 1;
   color: #45464d;
 }
@@ -170,4 +177,34 @@
   border-radius: 8px;
   padding: 10px 32px;
   background: #12b14e;
+}
+
+/* Loading skeleton for stat cards (reuses the .skeleton-block shimmer from
+   PublicServices.css, which this page imports). */
+.stat-card-skeleton {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 16px 24px;
+}
+
+.stat-card-skeleton .skeleton-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.stat-card-skeleton .skeleton-stat-value {
+  width: 56px;
+  height: 30px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.stat-card-skeleton .skeleton-stat-label {
+  width: 88px;
+  height: 12px;
+  border-radius: 4px;
 }

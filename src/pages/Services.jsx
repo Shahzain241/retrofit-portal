@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, Clock } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Search, Clock, SearchX, AlertTriangle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CtaBanner from "../components/CtaBanner";
@@ -22,10 +22,68 @@ import "../styles/PublicServices.css";
  * src/data/services.js — replace with real API data whenever it's ready.
  */
 
+// Flip to `true` to simulate a failed fetch (error state) for manual testing.
+const SIMULATE_FETCH_ERROR = false;
+
+// Simulated fetch delay standing in for a real API round-trip.
+const FETCH_DELAY_MS = 700;
+
 export default function Services() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All Services");
-  const [budget, setBudget] = useState("under500");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
+  const category = searchParams.get("category") ?? "All Services";
+  const budget = searchParams.get("budget") ?? "under500";
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  function setQueryParam(key, value, replace = false) {
+    const defaults = { search: "", category: "All Services", budget: "under500" };
+    const next = new URLSearchParams(searchParams);
+    if (value === defaults[key] || value === "") {
+      next.delete(key);
+    } else {
+      next.set(key, value);
+    }
+    setSearchParams(next, { replace });
+  }
+
+  const fetchServices = useCallback(() => {
+    setIsLoading(true);
+    setHasError(false);
+    window.setTimeout(() => {
+      if (SIMULATE_FETCH_ERROR) {
+        setHasError(true);
+      }
+      setIsLoading(false);
+    }, FETCH_DELAY_MS);
+  }, []);
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  // Dev-only test trigger: press Ctrl/Cmd + Shift + E to toggle the error
+  // state manually (no real API failure needed). Disabled in production builds.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+
+    const onKeyDown = (event) => {
+      const key = event.key.toLowerCase();
+      if (key === "e" && event.shiftKey && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        setHasError((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const retryFetch = () => fetchServices();
+
+  const resetFilters = () => {
+    setSearchParams({}, { replace: false });
+  };
 
   const filtered = useMemo(() => {
     return SERVICES.filter((s) => {
@@ -67,10 +125,12 @@ export default function Services() {
               className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
               size={18}
             />
+            <label htmlFor="services-search-input" className="sr-only">Search retrofit services</label>
             <input
+              id="services-search-input"
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setQueryParam("search", e.target.value, true)}
               placeholder="Search retrofit services..."
               className="ps-search-input rounded-xl bg-white pl-12 pr-5 text-[14px] placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-[#0F9D58]/25 transition"
             />
@@ -89,7 +149,7 @@ export default function Services() {
                 <Pill
                   key={c}
                   active={category === c}
-                  onClick={() => setCategory(c)}
+                  onClick={() => setQueryParam("category", c)}
                 >
                   {c}
                 </Pill>
@@ -103,7 +163,7 @@ export default function Services() {
                 <Pill
                   key={b.key}
                   active={budget === b.key}
-                  onClick={() => setBudget(budget === b.key ? "" : b.key)}
+                  onClick={() => setQueryParam("budget", budget === b.key ? "" : b.key)}
                 >
                   {b.label}
                 </Pill>
@@ -118,10 +178,16 @@ export default function Services() {
 
         {/* Service grid */}
         <section className="max-w-5xl mx-auto px-4 mt-9 pb-8">
-          {filtered.length === 0 ? (
-            <p className="text-center text-slate-400 py-16 text-sm">
-              No services match your search or filters.
-            </p>
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ServiceCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : hasError ? (
+            <ErrorState onRetry={retryFetch} />
+          ) : filtered.length === 0 ? (
+            <EmptyState onReset={resetFilters} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((s) => (
@@ -173,9 +239,9 @@ function Pill({ active, onClick, children }) {
   );
 }
 
-function ServiceCard({ service }) {
+export function ServiceCard({ service }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200">
       <div className="relative h-44">
         <img
           src={service.image}
@@ -189,7 +255,7 @@ function ServiceCard({ service }) {
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-2 text-[#0F9D58] mb-2">
-          <img src={imgTick} alt="tick" className="w-3.5 h-3.5 shrink-0" />
+          <img src={imgTick} alt="" className="w-3.5 h-3.5 shrink-0" />
           <span className="font-['Inter'] font-semibold text-[12px] leading-[12px] tracking-[0.6px] uppercase text-[#12B14E] whitespace-nowrap">
             VERIFIED PROFESSIONAL
           </span>
@@ -230,6 +296,39 @@ function ServiceCard({ service }) {
           </span>
         </Link>
       </div>
+    </div>
+  );
+}
+
+function ServiceCardSkeleton() {
+  return (
+    <div className="service-card-skeleton">
+      <div className="skeleton-block skeleton-image" />
+      <div className="skeleton-block skeleton-title" />
+      <div className="skeleton-block skeleton-text" />
+      <div className="skeleton-block skeleton-button" />
+    </div>
+  );
+}
+
+function EmptyState({ onReset }) {
+  return (
+    <div className="empty-state">
+      <SearchX size={40} className="empty-state-icon" />
+      <p className="empty-state-title">No services found</p>
+      <p className="empty-state-desc">Try adjusting your search or filters.</p>
+      <button onClick={onReset} className="empty-state-action">Clear filters</button>
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }) {
+  return (
+    <div className="error-state">
+      <AlertTriangle size={40} className="error-state-icon" />
+      <p className="error-state-title">Couldn't load services</p>
+      <p className="error-state-desc">Something went wrong. Please try again.</p>
+      <button onClick={onRetry} className="error-state-action">Retry</button>
     </div>
   );
 }

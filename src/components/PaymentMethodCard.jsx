@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import Button from './Button';
+import { useToast } from '../context/ToastContext';
 import '../styles/PaymentMethodCard.css';
 
 /**
@@ -7,6 +8,7 @@ import '../styles/PaymentMethodCard.css';
  * an "Add Backup Method" CTA. Styled via styles/PaymentMethodCard.css.
  */
 export default function PaymentMethodCard() {
+  const { showToast } = useToast();
   return (
     <div className="rp-pay-card">
       <h4 className="font-['Inter'] font-semibold text-[20px] leading-[28px] tracking-[0px] text-[#0B1C30] mb-4">Payment Method</h4>
@@ -18,7 +20,12 @@ export default function PaymentMethodCard() {
             <p className="text-xs text-muted">Expires 12/2026</p>
           </div>
         </div>
-        <button className="text-brand-green text-sm font-semibold">UPDATE</button>
+        <button
+          className="text-brand-green text-sm font-semibold"
+          onClick={() => showToast({ type: 'success', message: 'Payment method updated' })}
+        >
+          UPDATE
+        </button>
       </div>
       <p className="text-xs text-muted border-t border-dashed border-line pt-4 mb-4">
         Your default payment method is used for all recurring subscription charges and project extras.
@@ -27,6 +34,7 @@ export default function PaymentMethodCard() {
         variant="primary"
         icon={Plus}
         className="w-full rp-pay-add"
+        onClick={() => showToast({ type: 'success', message: 'Backup payment method added' })}
       >
         Add Backup Method
       </Button>

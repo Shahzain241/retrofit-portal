@@ -4,8 +4,9 @@ import Button from '../../components/Button';
 import StatusPill from '../../components/StatusPill';
 import ProgressBar from '../../components/ProgressBar';
 import { Plus } from 'lucide-react';
-import { projects } from '../../data/projects';
+import { projects, formatAddress } from '../../data/projects';
 import { projectFilters } from '../../data/projectFilters';
+import { useToast } from '../../context/ToastContext';
 import '../../styles/MyProjects.css';
 
 /**
@@ -14,11 +15,12 @@ import '../../styles/MyProjects.css';
  */
 export default function MyProjects() {
   const [filter, setFilter] = useState('All');
+  const { showToast } = useToast();
 
   const list = projects.filter((p) => {
     if (filter === 'All') return true;
-    if (filter === 'Active') return p.status !== 'Completed';
-    return p.status === 'Completed';
+    if (filter === 'Active') return p.status !== 'completed';
+    return p.status === 'completed';
   });
 
   return (
@@ -32,6 +34,7 @@ export default function MyProjects() {
           variant="gradientEdge"
           icon={Plus}
           className="rp-dash-cta rp-new-project-btn shrink-0"
+          onClick={() => showToast({ type: 'success', message: 'New project created' })}
         >
           New Project
         </Button>
@@ -66,7 +69,7 @@ export default function MyProjects() {
             {list.map((p, i) => (
               <tr key={i} className="border-b border-line/60 last:border-0">
                 <td className="px-6 py-5 font-medium text-ink">{p.id}</td>
-                <td className="px-6 py-5 text-body">{p.fullAddress}</td>
+                <td className="px-6 py-5 text-body">{formatAddress(p)}</td>
                 <td className="px-6 py-5 w-64">
                   <div className="flex items-center gap-3">
                     <div className="flex-1">
@@ -76,7 +79,7 @@ export default function MyProjects() {
                   </div>
                 </td>
                 <td className="px-6 py-5">
-                  <StatusPill>{p.status === 'Completed' ? 'Completed' : 'Coordination'}</StatusPill>
+                  <StatusPill>{p.status === 'completed' ? 'Completed' : 'Coordination'}</StatusPill>
                 </td>
                 <td className="px-6 py-5 text-right">
                   <Link to={`/projects/${p.id}`}>
