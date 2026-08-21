@@ -39,10 +39,7 @@ export default function Header() {
           >
             Services
           </Link>
-          <Link
-            to="/how-it-works"
-            className={location.pathname === "/how-it-works" ? "active" : ""}
-          >
+          <Link to="/" state={{ scrollTo: "how-it-works" }}>
             How it Works
           </Link>
         </nav>
@@ -51,7 +48,7 @@ export default function Header() {
           <Link to="/login" className="header-btn header-btn-login">
             Login
           </Link>
-          <Link to="/get-started" className="header-btn header-btn-primary">
+          <Link to="/signup" className="header-btn header-btn-primary">
             Get Started
           </Link>
         </div>
@@ -82,11 +79,7 @@ export default function Header() {
           >
             Services
           </Link>
-          <Link
-            to="/how-it-works"
-            className={location.pathname === "/how-it-works" ? "active" : ""}
-            onClick={closeMenu}
-          >
+          <Link to="/" state={{ scrollTo: "how-it-works" }} onClick={closeMenu}>
             How it Works
           </Link>
           <Link
@@ -97,7 +90,7 @@ export default function Header() {
             Login
           </Link>
           <Link
-            to="/get-started"
+            to="/signup"
             className="header-mobile-link header-mobile-link-primary"
             onClick={closeMenu}
           >

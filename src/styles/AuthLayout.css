@@ -90,3 +90,13 @@
 .form-required {
   color: #e85d3c;
 }
+
+/* Shared primary submit button (Login & Signup) — same background/hover. */
+.auth-submit-btn {
+  background: #0f1b2e;
+  color: #ffffff;
+}
+
+.auth-submit-btn:hover {
+  background: #142238;
+}

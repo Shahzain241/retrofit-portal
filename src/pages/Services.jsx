@@ -198,7 +198,7 @@ export default function Services() {
         </section>
 
         {/* CTA banner */}
-        <CtaBanner />
+        <CtaBanner ctaTo="/signup" />
       </main>
 
       <Footer />

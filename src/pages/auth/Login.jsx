@@ -149,7 +149,7 @@ export default function Login() {
           type="submit"
           variant="navy"
           disabled={isInvalid || isSubmitting}
-          className="w-full !rounded-2xl !py-4"
+          className="w-full !rounded-2xl !py-4 auth-submit-btn"
         >
           {isSubmitting ? (
             <>
