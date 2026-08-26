@@ -15,24 +15,43 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { MoreHorizontal, AlertTriangle, Inbox } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  ClipboardCheck,
+  Inbox,
+  MoreHorizontal,
+  UserPlus,
+  Users,
+  Zap,
+} from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
 import TaskBoardModal from '../../components/TaskBoardModal';
-import { teamWorkload, projectByStatus, revenueTrend } from '../../data/misc';
-import { priorityQueue } from '../../data/projects';
-import { adminStats } from '../../data/dashboardStats';
-import { label, PRIORITY } from '../../data/enums';
+import { teamWorkload, revenueTrend } from '../../data/misc';
+import { label, PRIORITY, PROJECT_STATUS } from '../../data/enums';
+import { supabase } from '../../lib/supabaseClient';
 import { useProfile } from '../../context/ProfileContext';
 import '../../styles/AdminDashboard.css';
 import '../../styles/PublicServices.css';
 
 /**
  * Admin Dashboard — headline stats, workload/status/revenue charts and the
- * priority queue table. Styled via AdminDashboard.css, DashboardShared.css
- * and Tailwind utilities.
+ * priority queue table, backed by live Supabase data. Styled via
+ * AdminDashboard.css, DashboardShared.css and Tailwind utilities.
  */
-const FETCH_DELAY_MS = 700;
+
+const STATUS_COLORS = { active: '#1fae5c', completed: '#0f1b2e' };
+const RECENT_ACTIVITY_LIMIT = 5;
+const RECENT_SIGNUP_DAYS = 7;
+
+function formatDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
 export default function AdminDashboard() {
   const { profile } = useProfile();
@@ -42,12 +61,96 @@ export default function AdminDashboard() {
   const [taskBoardProjectId, setTaskBoardProjectId] = useState(null);
   const [revenueHover, setRevenueHover] = useState(null);
 
-  const fetchDashboard = useCallback(() => {
+  const [totalClients, setTotalClients] = useState(0);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [activeProjects, setActiveProjects] = useState(0);
+  const [completedProjects, setCompletedProjects] = useState(0);
+  const [activeServices, setActiveServices] = useState(0);
+  const [recentSignups, setRecentSignups] = useState(0);
+  const [needsAttention, setNeedsAttention] = useState(0);
+  const [projectByStatus, setProjectByStatus] = useState([]);
+  const [priorityQueue, setPriorityQueue] = useState([]);
+
+  const stats = [
+    { id: 'stat-total-clients', icon: Users, value: totalClients, label: 'Total Clients' },
+    { id: 'stat-total-projects', icon: ClipboardCheck, value: totalProjects, label: 'Total Projects' },
+    { id: 'stat-active-services', icon: Zap, value: activeServices, label: 'Active Services' },
+    { id: 'stat-active-projects', icon: Activity, value: activeProjects, label: 'In Progress' },
+    { id: 'stat-completed-projects', icon: CheckCircle2, value: completedProjects, label: 'Completed' },
+    { id: 'stat-recent-signups', icon: UserPlus, value: recentSignups, label: 'Recent Signups' },
+  ];
+
+  const fetchDashboard = useCallback(async () => {
     setIsLoading(true);
     setHasError(false);
-    window.setTimeout(() => {
+    try {
+      const since = new Date(Date.now() - RECENT_SIGNUP_DAYS * 24 * 60 * 60 * 1000).toISOString();
+      const [clients, services, signups, projects] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('role', 'client'),
+        supabase
+          .from('services')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'active'),
+        supabase
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', since),
+        supabase
+          .from('projects')
+          .select('id, status, has_issues, due_date, address_line1, address_city, address_postcode, updated_at')
+          .order('updated_at', { ascending: false }),
+      ]);
+      if (clients.error || services.error || signups.error || projects.error) {
+        const message =
+          clients.error?.message ||
+          services.error?.message ||
+          signups.error?.message ||
+          projects.error?.message ||
+          'Could not load dashboard data.';
+        throw new Error(message);
+      }
+
+      const projectRows = projects.data ?? [];
+      const statusCounts = projectRows.reduce((acc, p) => {
+        acc[p.status] = (acc[p.status] || 0) + 1;
+        return acc;
+      }, {});
+      const total = projectRows.length;
+
+      setTotalClients(clients.count ?? 0);
+      setActiveServices(services.count ?? 0);
+      setRecentSignups(signups.count ?? 0);
+      setTotalProjects(total);
+      setActiveProjects(statusCounts.active ?? 0);
+      setCompletedProjects(statusCounts.completed ?? 0);
+      setNeedsAttention(projectRows.filter((p) => p.has_issues).length);
+      setProjectByStatus(
+        Object.entries(statusCounts).map(([status, count]) => ({
+          name: label(PROJECT_STATUS, status),
+          value: total ? Math.round((count / total) * 100) : 0,
+          color: STATUS_COLORS[status] ?? '#d9dce1',
+        })),
+      );
+      setPriorityQueue(
+        projectRows.slice(0, RECENT_ACTIVITY_LIMIT).map((p) => ({
+          id: p.id,
+          projectId: p.id,
+          property: [p.address_line1, p.address_city, p.address_postcode].filter(Boolean).join(', '),
+          issue: p.has_issues ? 'Issues flagged' : 'On track',
+          dueDate: formatDate(p.due_date),
+          priority: p.has_issues ? 'high' : 'low',
+          assignedTo: null,
+          action: 'Review',
+        })),
+      );
+    } catch {
+      setHasError(true);
+    } finally {
       setIsLoading(false);
-    }, FETCH_DELAY_MS);
+    }
   }, []);
 
   useEffect(() => {
@@ -77,7 +180,7 @@ export default function AdminDashboard() {
         <div className="dashboard-banner-glow" />
         <h1 className="text-2xl sm:text-3xl font-bold relative z-10">Good morning {profile.firstName}!</h1>
         <p className="text-white/70 mt-2 relative z-10">
-          You have <span className="text-brand-green font-semibold">2 pending projects</span> that
+          You have <span className="text-brand-green font-semibold">{needsAttention} pending {needsAttention === 1 ? 'project' : 'projects'}</span> that
           require attention today.
         </p>
       </div>
@@ -92,8 +195,8 @@ export default function AdminDashboard() {
       ) : (
         <div className="admin-stats-grid">
           {isLoading
-            ? adminStats.map((_, i) => <AdminStatCardSkeleton key={i} />)
-            : adminStats.map((s, i) => (
+            ? stats.map((_, i) => <AdminStatCardSkeleton key={i} />)
+            : stats.map((s, i) => (
                 <StatCard key={i} icon={s.icon} value={s.value} label={s.label} variant={s.variant} compact />
               ))}
         </div>
@@ -160,7 +263,7 @@ export default function AdminDashboard() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-2xl font-bold text-ink">142</p>
+                <p className="text-2xl font-bold text-ink">{totalProjects}</p>
                 <p className="text-xs text-muted">Total</p>
               </div>
             </div>

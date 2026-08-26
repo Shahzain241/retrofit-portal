@@ -1,8 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
+import { AuthProvider } from './context/AuthContext';
 import DashboardLayout from './components/DashboardLayout';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Page components are lazy-loaded per route to keep the initial bundle small.
 // Small shared components (DashboardLayout, ErrorBoundary, Toast) stay eager.
@@ -34,9 +36,11 @@ function Placeholder({ label }) {
 export default function App() {
   return (
     <ToastProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </ToastProvider>
   );
 }
@@ -59,7 +63,7 @@ function AppRoutes() {
             <Route path="/terms" element={<Placeholder label="Terms &amp; Conditions" />} />
             <Route path="/changelog" element={<Placeholder label="Changelog" />} />
 
-            <Route element={<ErrorBoundary><DashboardLayout variant="client" /></ErrorBoundary>}>
+            <Route element={<ProtectedRoute><ErrorBoundary><DashboardLayout variant="client" /></ErrorBoundary></ProtectedRoute>}>
               <Route path="/dashboard" element={<ClientDashboard />} />
               <Route path="/projects" element={<MyProjects />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
@@ -68,12 +72,13 @@ function AppRoutes() {
               <Route path="/billing/plans" element={<Plans />} />
             </Route>
 
-            <Route element={<ErrorBoundary><DashboardLayout variant="admin" /></ErrorBoundary>}>
+            <Route element={<ProtectedRoute><ErrorBoundary><DashboardLayout variant="admin" /></ErrorBoundary></ProtectedRoute>}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/projects" element={<ProjectsDirectory />} />
               <Route path="/admin/projects/:id/board" element={<TaskBoard />} />
               <Route path="/admin/services" element={<AdminServices />} />
               <Route path="/admin/services/new" element={<ServiceForm />} />
+              <Route path="/admin/services/:id/edit" element={<ServiceForm />} />
               <Route path="/admin/users" element={<Users />} />
               <Route path="/admin/users/invite" element={<InviteStaff />} />
               <Route path="/admin/settings" element={<Settings />} />

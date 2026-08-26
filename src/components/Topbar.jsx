@@ -4,11 +4,7 @@ import { useProfile } from '../context/ProfileContext';
 import { topbarNotifications as notifications, topbarApps as apps } from '../data/misc';
 import '../styles/DashboardShared.css';
 
-/**
- * Dashboard topbar — search, notification & app grid dropdowns, user chip.
- * Rendered on every dashboard page via DashboardLayout. Styled with
- * DashboardShared.css + Tailwind utilities.
- */
+
 export default function Topbar() {
   const [openNotif, setOpenNotif] = useState(false);
   const [openGrid, setOpenGrid] = useState(false);

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckCircle2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Toggle from '../../components/Toggle';
 import ProgressBar from '../../components/ProgressBar';
-import { directoryProjects, clientById, formatAddress } from '../../data/projects';
+import { supabase } from '../../lib/supabaseClient';
 import { directoryFilterFields } from '../../data/projectsDirectory';
 import '../../styles/ProjectsDirectory.css';
 
@@ -12,6 +12,26 @@ import '../../styles/ProjectsDirectory.css';
  */
 export default function ProjectsDirectory() {
   const [hasIssues, setHasIssues] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*, client:profiles(full_name, email)')
+        .order('created_at', { ascending: false });
+      if (error) {
+        setError(error.message);
+      } else {
+        setProjects(data);
+      }
+      setLoading(false);
+    };
+    fetchProjects();
+  }, []);
+
   return (
     <div>
       <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Projects Directory</h1>
@@ -72,38 +92,48 @@ export default function ProjectsDirectory() {
             </tr>
           </thead>
           <tbody>
-            {directoryProjects.map((p) => {
-              const client = clientById[p.clientId];
-              return (
-              <tr key={p.id} className="border-b border-line/60 last:border-0">
-                <td className="px-6 py-4">
-                  <CheckCircle2
-                    size={18}
-                    className={p.hasIssues ? 'text-danger' : 'text-brand-green'}
-                    fill={p.hasIssues ? 'transparent' : '#1fae5c'}
-                    color={p.hasIssues ? '#e0432c' : 'white'}
-                  />
-                </td>
-                <td className="px-6 py-4 font-medium text-ink">{p.id}</td>
-                <td className="px-6 py-4">
-                  <p className="text-ink text-sm font-medium">{client.name}</p>
-                  <p className="text-xs text-muted">{client.email}</p>
-                </td>
-                <td className="px-6 py-4 text-body">{formatAddress(p)}</td>
-                <td className="px-6 py-4 text-body">{p.service}</td>
-                <td className="px-6 py-4 w-52">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1">
-                      <ProgressBar value={p.progress} size="sm" variant={p.hasIssues ? 'danger' : 'green'} />
-                    </div>
-                    <span className={`text-sm font-bold ${p.hasIssues ? 'text-danger' : 'text-brand-green'}`}>
-                      {p.progress}%
-                    </span>
-                  </div>
-                </td>
+            {loading ? (
+              <tr>
+                <td className="px-6 py-4 text-body" colSpan={6}>Loading projects...</td>
               </tr>
-              );
-            })}
+            ) : error ? (
+              <tr>
+                <td className="px-6 py-4 text-body" colSpan={6}>Could not load projects.</td>
+              </tr>
+            ) : (
+              projects.map((p) => {
+                const client = p.client;
+                return (
+                <tr key={p.id} className="border-b border-line/60 last:border-0">
+                  <td className="px-6 py-4">
+                    <CheckCircle2
+                      size={18}
+                      className={p.has_issues ? 'text-danger' : 'text-brand-green'}
+                      fill={p.has_issues ? 'transparent' : '#1fae5c'}
+                      color={p.has_issues ? '#e0432c' : 'white'}
+                    />
+                  </td>
+                  <td className="px-6 py-4 font-medium text-ink">{p.id}</td>
+                  <td className="px-6 py-4">
+                    <p className="text-ink text-sm font-medium">{client ? client.full_name : 'Unassigned'}</p>
+                    {client && <p className="text-xs text-muted">{client.email}</p>}
+                  </td>
+                  <td className="px-6 py-4 text-body">{`${p.address_line1}, ${p.address_city} ${p.address_postcode}`}</td>
+                  <td className="px-6 py-4 text-body">{p.service}</td>
+                  <td className="px-6 py-4 w-52">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <ProgressBar value={p.progress} size="sm" variant={p.has_issues ? 'danger' : 'green'} />
+                      </div>
+                      <span className={`text-sm font-bold ${p.has_issues ? 'text-danger' : 'text-brand-green'}`}>
+                        {p.progress}%
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

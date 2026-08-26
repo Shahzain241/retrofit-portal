@@ -5,11 +5,11 @@ import AuthLayout from './AuthLayout';
 import Button from '../../components/Button';
 import { useProfile } from '../../context/ProfileContext';
 import { useToast } from '../../context/ToastContext';
+import { supabase } from '../../lib/supabaseClient';
 import loginImg from '../../assets/login.png';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN = 6;
-const SUBMIT_DELAY_MS = 800;
 
 function validateLogin({ email, password }) {
   const errors = {};
@@ -56,7 +56,7 @@ export default function Login() {
     return Boolean(errors[field] && (submitted || touched[field]));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validateLogin({ email, password });
     setErrors(errs);
@@ -64,16 +64,18 @@ export default function Login() {
     if (Object.keys(errs).length > 0) return;
 
     setIsSubmitting(true);
-    window.setTimeout(() => {
-      setIsSubmitting(false);
-      if (email.trim().toLowerCase().includes('fail')) {
-        showToast({ type: 'error', message: 'Invalid email or password. Please try again.' });
-        return;
-      }
-      updateProfile({ email: email.trim() });
-      showToast({ type: 'success', message: 'Logged in successfully' });
-      navigate(role === 'admin' ? '/admin/dashboard' : '/dashboard');
-    }, SUBMIT_DELAY_MS);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setIsSubmitting(false);
+    if (error) {
+      showToast({ type: 'error', message: error.message || 'Invalid email or password. Please try again.' });
+      return;
+    }
+    updateProfile({ email: email.trim() });
+    showToast({ type: 'success', message: 'Logged in successfully' });
+    navigate(role === 'admin' ? '/admin/dashboard' : '/dashboard');
   }
 
   return (

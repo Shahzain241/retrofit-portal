@@ -4,11 +4,11 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import AuthLayout from './AuthLayout';
 import Button from '../../components/Button';
 import { useToast } from '../../context/ToastContext';
+import { supabase } from '../../lib/supabaseClient';
 import signupImg from '../../assets/signup.png';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN = 6;
-const SUBMIT_DELAY_MS = 800;
 
 function validateSignup({ email, password, confirmPassword }) {
   const errors = {};
@@ -61,7 +61,7 @@ export default function Signup() {
     return Boolean(errors[field] && (submitted || touched[field]));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validateSignup({ email, password, confirmPassword });
     setErrors(errs);
@@ -69,15 +69,17 @@ export default function Signup() {
     if (Object.keys(errs).length > 0) return;
 
     setIsSubmitting(true);
-    window.setTimeout(() => {
-      setIsSubmitting(false);
-      if (email.trim().toLowerCase().includes('fail')) {
-        showToast({ type: 'error', message: 'Could not create account. Please try again.' });
-        return;
-      }
-      showToast({ type: 'success', message: 'Account created successfully' });
-      navigate('/dashboard');
-    }, SUBMIT_DELAY_MS);
+    const { error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+    });
+    setIsSubmitting(false);
+    if (error) {
+      showToast({ type: 'error', message: error.message || 'Could not create account. Please try again.' });
+      return;
+    }
+    showToast({ type: 'success', message: 'Account created successfully' });
+    navigate('/dashboard');
   }
 
   return (

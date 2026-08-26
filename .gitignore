@@ -24,4 +24,8 @@ dist-ssr
 *.sw?
 
 .vercel
-.env*
+
+# Environment files — ignore all real env files, but keep the template trackable.
+.env
+.env.*
+!.env.example

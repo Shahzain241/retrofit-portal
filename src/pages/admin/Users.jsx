@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { UserPlus, LogIn, Pencil, Ban } from 'lucide-react';
 import Button from '../../components/Button';
-import { users } from '../../data/misc';
+import { supabase } from '../../lib/supabaseClient';
 import { label, USER_ROLE, USER_STATUS } from '../../data/enums';
 import { useToast } from '../../context/ToastContext';
 import '../../styles/Users.css';
@@ -12,6 +13,26 @@ import '../../styles/Users.css';
  */
 export default function Users() {
   const { showToast } = useToast();
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        setError(error.message);
+      } else {
+        setProfiles(data);
+      }
+      setLoading(false);
+    };
+    fetchProfiles();
+  }, []);
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -45,20 +66,29 @@ export default function Users() {
             </tr>
           </thead>
           <tbody>
-            {users.map((u, i) => (
-              <tr key={i} className="border-b border-line/60 last:border-0">
+            {loading ? (
+              <tr>
+                <td className="px-6 py-4 rp-table-td" colSpan={6}>Loading users...</td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td className="px-6 py-4 rp-table-td" colSpan={6}>Could not load users.</td>
+              </tr>
+            ) : (
+              profiles.map((u) => (
+              <tr key={u.id} className="border-b border-line/60 last:border-0">
                 <td className="px-6 py-4">
-                  <p className="rp-table-td font-semibold">{u.name}</p>
+                  <p className="rp-table-td font-semibold">{u.full_name}</p>
                   <p className="text-xs text-muted">{u.email}</p>
                 </td>
                 <td className="px-6 py-4">
                   <span className="rp-table-td">{label(USER_ROLE, u.role)}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="rp-table-td">{u.projects}</span>
+                  <span className="rp-table-td">{'—'}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="rp-table-td">{u.lastLogin}</span>
+                  <span className="rp-table-td">{'—'}</span>
                 </td>
                 <td className="px-6 py-4">
                   <span className={`rp-table-td ${u.status === 'active' ? 'rp-table-td-success' : ''}`}>
@@ -79,7 +109,8 @@ export default function Users() {
                   </div>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>

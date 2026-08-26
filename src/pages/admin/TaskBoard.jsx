@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import { GripVertical, Plus, Pencil, Search } from 'lucide-react';
@@ -6,26 +6,20 @@ import Modal from '../../components/ui/Modal';
 import Button from '../../components/Button';
 import { taskBoardColumns } from '../../data/projects';
 import { useToast } from '../../context/ToastContext';
+import { supabase } from '../../lib/supabaseClient';
 import '../../styles/TaskBoard.css';
 
 const PRIORITIES = ['Low', 'Medium', 'High'];
 const PRIORITY_TEXT = { High: 'text-danger', Medium: 'text-warning', Low: 'text-muted' };
-
-let taskSeq = 0;
-function nextTaskId() {
-  taskSeq += 1;
-  return `task-${Date.now()}-${taskSeq}`;
-}
+const BACKLOG = 'backlog';
 
 export default function TaskBoard({ projectId }) {
   const params = useParams();
   const activeProjectId = projectId || params.id || 'RET-2026-0042';
   const [columns, setColumns] = useState(() =>
-    taskBoardColumns.map((col) => ({
-      ...col,
-      tasks: col.tasks.map((t) => ({ assignee: '', priority: 'Medium', dueDate: '', tags: [], ...t })),
-    })),
+    taskBoardColumns.map((col) => ({ ...col, tasks: [] })),
   );
+  const [staffProfiles, setStaffProfiles] = useState([]);
   const [priorityFilter, setPriorityFilter] = useState('All');
   const [assigneeFilter, setAssigneeFilter] = useState('All');
   const [search, setSearch] = useState('');
@@ -53,6 +47,78 @@ export default function TaskBoard({ projectId }) {
     });
   }, [columns, priorityFilter, assigneeFilter, search]);
 
+  const fetchTasks = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*, assignee_profile:profiles(id, full_name, email)')
+        .eq('project_id', activeProjectId)
+        .order('created_at', { ascending: true });
+      if (error) throw new Error(error.message);
+
+      const byStatus = {};
+      (data ?? []).forEach((t) => {
+        byStatus[t.status] = byStatus[t.status] || [];
+        byStatus[t.status].push({
+          id: t.id,
+          title: t.title,
+          priority: t.priority,
+          dueDate: t.due_date || '',
+          tags: Array.isArray(t.tags) ? t.tags : [],
+          assignee: t.assignee_profile ? t.assignee_profile.full_name || t.assignee_profile.email || '' : '',
+          assignee_id: t.assignee_id,
+          status: t.status,
+        });
+      });
+      setColumns(taskBoardColumns.map((col) => ({ ...col, tasks: byStatus[col.id] ?? [] })));
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not load tasks.' });
+    }
+  }, [activeProjectId, showToast]);
+
+  const fetchStaff = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, role')
+        .in('role', ['coordinator', 'designer', 'assessor', 'super-admin']);
+      if (error) throw new Error(error.message);
+      setStaffProfiles(data ?? []);
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not load staff.' });
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchStaff();
+    fetchTasks();
+  }, [fetchStaff, fetchTasks]);
+
+  // The UI's "Assignee" input is a free-text name; resolve it to a profiles.id.
+  function resolveAssigneeId(name) {
+    const trimmed = (name || '').trim().toLowerCase();
+    if (!trimmed) return null;
+    const match = staffProfiles.find(
+      (p) =>
+        (p.full_name || '').toLowerCase() === trimmed ||
+        (p.email || '').toLowerCase() === trimmed,
+    );
+    return match?.id ?? null;
+  }
+
+  async function persistStatusChange(taskId, status) {
+    try {
+      const { error } = await supabase.from('tasks').update({ status }).eq('id', taskId);
+      if (error) {
+        showToast({ type: 'error', message: error.message || 'Could not update task status.' });
+        fetchTasks();
+      }
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not update task status.' });
+      fetchTasks();
+    }
+  }
+
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over) return;
@@ -76,37 +142,54 @@ export default function TaskBoard({ projectId }) {
         return col;
       });
     });
+    persistStatusChange(taskId, targetColId);
   }
 
-  function handleCreate(data) {
-    const task = { id: nextTaskId(), tags: [], ...data, columnId: undefined };
-    setColumns((cols) =>
-      cols.map((col) => (col.id === 'backlog' ? { ...col, tasks: [...col.tasks, task] } : col)),
-    );
-    setModal(null);
-    showToast({ type: 'success', message: 'Task created' });
-  }
-
-  function handleEditSave(columnId, taskId, updates, newColumnId) {
-    const targetId = newColumnId || columnId;
-    setColumns((cols) => {
-      let task = null;
-      for (const col of cols) {
-        const found = col.tasks.find((t) => t.id === taskId);
-        if (found) {
-          task = { ...found, ...updates };
-          break;
-        }
+  async function handleCreate(data) {
+    try {
+      const { error } = await supabase.from('tasks').insert({
+        title: data.title,
+        priority: data.priority,
+        due_date: data.dueDate || null,
+        assignee_id: resolveAssigneeId(data.assignee),
+        status: BACKLOG,
+        project_id: activeProjectId,
+        tags: [],
+      });
+      if (error) {
+        showToast({ type: 'error', message: error.message || 'Could not create the task.' });
+        return;
       }
-      if (!task) return cols;
-      return cols
-        .map((col) =>
-          col.id === columnId ? { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) } : col,
-        )
-        .map((col) => (col.id === targetId ? { ...col, tasks: [...col.tasks, task] } : col));
-    });
-    setModal(null);
-    showToast({ type: 'success', message: 'Task updated' });
+      setModal(null);
+      showToast({ type: 'success', message: 'Task created' });
+      fetchTasks();
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not create the task.' });
+    }
+  }
+
+  async function handleEditSave(columnId, taskId, updates, newColumnId) {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          title: updates.title,
+          priority: updates.priority,
+          due_date: updates.dueDate || null,
+          assignee_id: resolveAssigneeId(updates.assignee),
+          status: newColumnId || columnId,
+        })
+        .eq('id', taskId);
+      if (error) {
+        showToast({ type: 'error', message: error.message || 'Could not update the task.' });
+        return;
+      }
+      setModal(null);
+      showToast({ type: 'success', message: 'Task updated' });
+      fetchTasks();
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not update the task.' });
+    }
   }
 
   return (
