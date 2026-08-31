@@ -9,7 +9,7 @@ import { label, USER_ROLE } from '../data/enums';
  * image, address/tag, coordinator, and progress. Uses the shared ProgressBar.
  */
 export default function ProjectHeaderCard({ project }) {
-  const coordinator = coordinatorById[project.coordinatorId];
+  const coordinator = project.coordinator ?? coordinatorById[project.coordinatorId];
   return (
     <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 flex flex-col md:flex-row gap-6">
       <img

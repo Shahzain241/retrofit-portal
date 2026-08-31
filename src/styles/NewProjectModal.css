@@ -1,0 +1,77 @@
+/* Create New Project modal — shared by the Sidebar button and MyProjects.jsx. */
+
+.npm-hint {
+  font-size: 13px;
+  color: #667085;
+  margin-bottom: 16px;
+}
+
+.npm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.npm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.npm-row {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .npm-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+.npm-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #45464d;
+}
+
+.npm-required {
+  color: #e85d3c;
+}
+
+.npm-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #101828;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.npm-input::placeholder {
+  color: #9ca3af;
+}
+
+.npm-input:focus {
+  outline: none;
+  border-color: #1fae5c;
+  box-shadow: 0 0 0 2px rgba(31, 174, 92, 0.3);
+}
+
+.npm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.npm-btn {
+  flex: 1;
+}

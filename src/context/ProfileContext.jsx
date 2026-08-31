@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
 const PROFILE_KEY = 'retrofit.portal.profile';
 const SETTINGS_KEY = 'retrofit.portal.settings';
@@ -18,6 +19,9 @@ const defaultProfile = {
     type: 'Mid Terrace Flat',
     epcNumber: '8821-0293-1402-4211-1025',
   },
+  epcCertificatePath: null,
+  plan: 'Free',
+  nextBillingDate: null,
 };
 
 const defaultSettings = {
@@ -51,6 +55,14 @@ const ProfileContext = createContext(null);
 export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(() => load(PROFILE_KEY, defaultProfile));
   const [settings, setSettings] = useState(() => load(SETTINGS_KEY, defaultSettings));
+  const [hydrated, setHydrated] = useState(false);
+
+  // Latest profile for the auth-state listener below (the effect subscribes
+  // once, so a ref avoids stale-closure reads of `profile`).
+  const profileRef = useRef(profile);
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
 
   useEffect(() => {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -60,10 +72,97 @@ export function ProfileProvider({ children }) {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   }, [settings]);
 
+  // Hydrate the profile from the live `profiles` row (merging over the
+  // localStorage-seeded defaults) once a session is available.
+  useEffect(() => {
+    let mounted = true;
+
+    const hydrate = async (userId) => {
+      if (!userId) return;
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        if (error || !data) return;
+        if (!mounted) return;
+        setProfile((prev) => ({
+          ...prev,
+          firstName: data.first_name ?? prev.firstName,
+          lastName: data.last_name ?? prev.lastName,
+          email: data.email ?? prev.email,
+          phone: data.phone ?? prev.phone,
+          avatar: data.avatar_url ?? prev.avatar,
+          notifications: {
+            push: data.notifications?.push ?? prev.notifications.push,
+          },
+          property: {
+            ...prev.property,
+            address: data.property_address ?? prev.property.address,
+            type: data.property_type ?? prev.property.type,
+            epcNumber: data.epc_number ?? prev.property.epcNumber,
+          },
+          epcCertificatePath: data.epc_certificate_path ?? prev.epcCertificatePath,
+          plan: data.plan ?? prev.plan,
+          nextBillingDate: data.next_billing_date ?? prev.nextBillingDate,
+        }));
+      } catch {
+        // Keep localStorage defaults on any failure.
+      } finally {
+        if (mounted) setHydrated(true);
+      }
+    };
+
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!mounted) return;
+      if (session?.user) {
+        await hydrate(session.user.id);
+      } else {
+        setHydrated(true);
+      }
+    })();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      // After a confirmed email change (USER_UPDATED) the authenticated email
+      // can differ from profiles.email — mirror it back to the profiles row so
+      // the profile stays in sync with auth.users. Profile.jsx intentionally
+      // defers the profiles write until the user clicks the confirmation link;
+      // this is that post-confirmation step.
+      if (
+        event === 'USER_UPDATED' &&
+        session?.user?.email &&
+        session.user.email !== profileRef.current.email
+      ) {
+        supabase
+          .from('profiles')
+          .update({ email: session.user.email })
+          .eq('id', session.user.id)
+          .then(() => {
+            if (mounted) hydrate(session.user.id);
+          });
+        return;
+      }
+      hydrate(session?.user?.id ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
+
   const value = useMemo(
     () => ({
       profile,
       settings,
+      hydrated,
       updateProfile: (patch) => setProfile((prev) => ({ ...prev, ...patch })),
       updateProperty: (patch) =>
         setProfile((prev) => ({ ...prev, property: { ...prev.property, ...patch } })),
@@ -74,7 +173,7 @@ export function ProfileProvider({ children }) {
         })),
       updateSettings: (patch) => setSettings((prev) => ({ ...prev, ...patch })),
     }),
-    [profile, settings],
+    [profile, settings, hydrated],
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

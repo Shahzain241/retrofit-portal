@@ -21,7 +21,7 @@ export const clientLinks = [
 
 export const adminLinks = [
   { id: 'nav-admin-dashboard', to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'nav-admin-projects', to: '/admin/projects', label: 'My Projects', icon: ClipboardList },
+  { id: 'nav-admin-projects', to: '/admin/projects', label: 'Projects Directory', icon: ClipboardList },
   { id: 'nav-admin-services', to: '/admin/services', label: 'Services', icon: Wrench },
   { id: 'nav-admin-users', to: '/admin/users', label: 'User', icon: Users },
   { id: 'nav-admin-settings', to: '/admin/settings', label: 'Settings', icon: Settings },

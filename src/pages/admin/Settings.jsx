@@ -58,6 +58,9 @@ export default function Settings() {
         <h4 className="st-section-title mb-4">
           Integration Health
         </h4>
+        <p className="text-xs text-muted mb-4">
+          Demo data — no live integrations are configured in this environment.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {integrations.map((it) => (
             <div key={it.name} className="border border-line rounded-xl p-4">
@@ -91,9 +94,9 @@ export default function Settings() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="border border-line rounded-xl overflow-hidden">
             <div className="flex items-center gap-3 bg-surface px-4 py-2 border-b border-line">
-              <Bold size={14} className="text-body" />
-              <Italic size={14} className="text-body" />
-              <List size={14} className="text-body" />
+              <Bold size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
+              <Italic size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
+              <List size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
             </div>
             <label htmlFor="email-template-editor" className="sr-only">Email template</label>
             <textarea
@@ -103,10 +106,13 @@ export default function Settings() {
               rows={10}
               className="w-full px-4 py-3 text-sm font-mono focus:outline-none resize-none"
             />
-            <div className="flex justify-end p-3">
+            <div className="flex items-center justify-between gap-2 p-3">
+              <p className="text-[11px] text-muted">
+                Demo — saved locally in this browser, not synced to a database.
+              </p>
               <Button
                 variant="green"
-                className="rp-update-btn"
+                className="rp-update-btn shrink-0"
                 onClick={save}
               >
                 Update

@@ -195,6 +195,11 @@ a.rp-sidebar-link-active {
   transition: background-color 0.2s;
 }
 
+.rp-toggle-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .rp-toggle-lg {
   width: 44px;
   height: 24px;

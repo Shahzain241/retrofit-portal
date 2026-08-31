@@ -93,6 +93,12 @@ export default function InviteStaff() {
         return;
       }
       if (resetError) {
+        console.error('[InviteStaff] resetPasswordForEmail failed', {
+          message: resetError.message,
+          status: resetError.status,
+          code: resetError.code,
+          raw: resetError,
+        });
         showToast({
           type: 'warning',
           message: 'Invitation sent, but the password-set email could not be delivered.',
@@ -137,7 +143,6 @@ export default function InviteStaff() {
               onChange={(e) => setRole(e.target.value)}
               className="w-full rounded-xl border border-line px-4 py-3 text-sm"
             >
-              <option>John Smith</option>
               <option>Coordinator</option>
               <option>Designer</option>
               <option>Assessor</option>
@@ -153,14 +158,23 @@ export default function InviteStaff() {
             <span className="is-perm-label">
               View all projects
             </span>
-            <Toggle aria-label="View all projects permission" on size="lg" />
+            <div className="flex items-center gap-2">
+              <Toggle aria-label="View all projects permission" on size="lg" disabled />
+              <span className="text-[10px] font-semibold uppercase text-muted">Coming soon</span>
+            </div>
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="is-perm-label">
               Assign to specific projects
             </span>
-            <Toggle aria-label="Assign to specific projects permission" on={false} size="lg" />
+            <div className="flex items-center gap-2">
+              <Toggle aria-label="Assign to specific projects permission" on={false} size="lg" disabled />
+              <span className="text-[10px] font-semibold uppercase text-muted">Coming soon</span>
+            </div>
           </div>
+          <p className="text-[11px] text-muted mt-2">
+            Permissions are not saved yet — there is no permissions table in this environment.
+          </p>
         </div>
       </div>
 

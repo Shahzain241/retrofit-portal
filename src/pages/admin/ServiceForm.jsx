@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Upload, X, Plus, Bold, Italic, List } from 'lucide-react';
+import { Upload, Plus, Bold, Italic, List } from 'lucide-react';
 import Button from '../../components/Button';
 import { useToast } from '../../context/ToastContext';
 import { supabase } from '../../lib/supabaseClient';
@@ -15,22 +15,24 @@ export default function ServiceForm() {
   const serviceId = params.id;
 
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [workingDays, setWorkingDays] = useState('');
-  const [deliverables, setDeliverables] = useState([
-    'On-site property inspection',
-    'Basic energy efficiency report',
-  ]);
+  // Tier fields get their OWN local state so editing them never corrupts the
+  // main price/workingDays fields (tiers aren't persisted yet — demo only).
+  const [tierPrice, setTierPrice] = useState('');
+  const [tierDays, setTierDays] = useState('');
+  const [deliverablesCount, setDeliverablesCount] = useState(0);
   const [active, setActive] = useState(true);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   function applyService(s) {
     setTitle(s.title ?? '');
+    setDescription(s.description ?? '');
     setPrice(s.price != null ? String(s.price) : '');
     setWorkingDays(s.working_days != null ? String(s.working_days) : '');
-    const count = Number(s.deliverables) || 0;
-    setDeliverables(Array.from({ length: count }, () => ''));
+    setDeliverablesCount(Number(s.deliverables) || 0);
     setActive(s.status === 'active');
   }
 
@@ -69,18 +71,6 @@ export default function ServiceForm() {
     };
   }, [serviceId, location.state?.service, showToast]);
 
-  function updateDeliverable(index, value) {
-    setDeliverables((arr) => arr.map((d, i) => (i === index ? value : d)));
-  }
-
-  function removeDeliverable(index) {
-    setDeliverables((arr) => arr.filter((_, idx) => idx !== index));
-  }
-
-  function addDeliverable() {
-    setDeliverables((arr) => [...arr, '']);
-  }
-
   function validate() {
     const missing = [];
     if (!title.trim()) missing.push('Service Title');
@@ -99,9 +89,10 @@ export default function ServiceForm() {
     setSubmitting(true);
     const payload = {
       title: title.trim(),
+      description: description.trim(),
       price: Number(price),
       working_days: Number(workingDays),
-      deliverables: deliverables.filter((d) => d.trim() !== '').length,
+      deliverables: deliverablesCount,
       status: active ? 'active' : 'inactive',
     };
 
@@ -161,13 +152,15 @@ export default function ServiceForm() {
           </label>
           <div className="border border-line rounded-xl overflow-hidden">
             <div className="flex items-center gap-3 bg-surface px-4 py-2 border-b border-line">
-              <Bold size={14} className="text-body" />
-              <Italic size={14} className="text-body" />
-              <List size={14} className="text-body" />
+              <Bold size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
+              <Italic size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
+              <List size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
             </div>
             <textarea
               id="service-description"
               placeholder="Describe the service..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={5}
               className="w-full px-4 py-3 text-sm focus:outline-none resize-none"
             />
@@ -180,9 +173,9 @@ export default function ServiceForm() {
           >
             Media
           </label>
-          <div className="border-2 border-dashed border-line rounded-xl py-10 flex flex-col items-center justify-center text-center">
+          <div className="border-2 border-dashed border-line rounded-xl py-10 flex flex-col items-center justify-center text-center opacity-60 cursor-not-allowed" title="Coming soon">
             <Upload size={22} className="text-ink mb-3" />
-            <p className="font-semibold text-ink text-sm">Upload New EPC Certificate</p>
+            <p className="font-semibold text-ink text-sm">Media upload — coming soon</p>
             <p className="text-xs text-muted mt-1">PDF, JPEG, or PNG up to 10MB</p>
           </div>
         </div>
@@ -198,57 +191,40 @@ export default function ServiceForm() {
               variant="navy"
               icon={Plus}
               className="sf-mini-btn sf-btn-add-tier"
+              disabled
+              title="Coming soon"
             >
-              Add Tier
+              Add Tier (coming soon)
             </Button>
           </div>
           <div className="border border-line rounded-xl p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label htmlFor="tier-name" className="block text-[11px] font-semibold text-muted mb-1.5">TIER NAME</label>
-                <input id="tier-name" defaultValue="Standard" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <input id="tier-name" placeholder="Coming soon" disabled title="Coming soon" className="w-full rounded-lg border border-line px-3 py-2.5 text-sm opacity-60 cursor-not-allowed" />
               </div>
               <div>
                 <label htmlFor="tier-price" className="block text-[11px] font-semibold text-muted mb-1.5">PRICE</label>
-                <input id="tier-price" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <input id="tier-price" value={tierPrice} onChange={(e) => setTierPrice(e.target.value)} className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
               </div>
               <div>
                 <label htmlFor="tier-days" className="block text-[11px] font-semibold text-muted mb-1.5">DAYS TO COMPLETE</label>
-                <input id="tier-days" value={workingDays} onChange={(e) => setWorkingDays(e.target.value)} className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
+                <input id="tier-days" value={tierDays} onChange={(e) => setTierDays(e.target.value)} className="w-full rounded-lg border border-line px-3 py-2.5 text-sm" />
               </div>
             </div>
+            <p className="text-[11px] text-muted">Tier pricing is demo-only and is not saved yet.</p>
 
             <div>
               <p className="text-[11px] font-semibold text-muted mb-2">DELIVERABLES</p>
-              <div className="space-y-2">
-                {deliverables.map((d, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      aria-label={`Deliverable ${i + 1}`}
-                      value={d}
-                      onChange={(e) => updateDeliverable(i, e.target.value)}
-                      className="flex-1 rounded-lg border border-line px-3 py-2.5 text-sm"
-                    />
-                    <button
-                      onClick={() => removeDeliverable(i)}
-                      aria-label={`Remove deliverable ${i + 1}`}
-                      className="text-muted"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end mt-3">
-                <Button
-                  variant="navy"
-                  icon={Plus}
-                  className="sf-mini-btn sf-btn-add-deliverable"
-                  onClick={addDeliverable}
-                >
-                  Add Deliverable
-                </Button>
-              </div>
+              <p className="text-xs text-muted mb-2">Number of deliverables included with this service.</p>
+              <input
+                id="service-deliverables"
+                type="number"
+                min={0}
+                value={deliverablesCount}
+                onChange={(e) => setDeliverablesCount(Math.max(0, Number(e.target.value)))}
+                className="w-32 rounded-lg border border-line px-3 py-2.5 text-sm"
+              />
             </div>
           </div>
         </div>

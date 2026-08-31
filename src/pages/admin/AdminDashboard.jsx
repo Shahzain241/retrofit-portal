@@ -29,7 +29,6 @@ import {
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
 import TaskBoardModal from '../../components/TaskBoardModal';
-import { teamWorkload, revenueTrend } from '../../data/misc';
 import { label, PRIORITY, PROJECT_STATUS } from '../../data/enums';
 import { supabase } from '../../lib/supabaseClient';
 import { useProfile } from '../../context/ProfileContext';
@@ -45,6 +44,36 @@ import '../../styles/PublicServices.css';
 const STATUS_COLORS = { active: '#1fae5c', completed: '#0f1b2e' };
 const RECENT_ACTIVITY_LIMIT = 5;
 const RECENT_SIGNUP_DAYS = 7;
+const REVENUE_MONTHS = 12;
+
+/** Aggregate invoice rows into a zero-filled 12-month { month, value } series. */
+function buildRevenueTrend(invoices) {
+  const months = [];
+  const byKey = {};
+  const now = new Date();
+  for (let i = REVENUE_MONTHS - 1; i >= 0; i -= 1) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const entry = {
+      key,
+      month: d.toLocaleString('en-US', { month: 'short' }),
+      value: 0,
+    };
+    months.push(entry);
+    byKey[key] = entry;
+  }
+  (invoices ?? []).forEach((inv) => {
+    const d = new Date(inv.date);
+    if (Number.isNaN(d.getTime())) return;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const entry = byKey[key];
+    if (entry) entry.value += Number(inv.amount) || 0;
+  });
+  months.forEach((m) => {
+    m.value = Math.round(m.value * 100) / 100;
+  });
+  return months;
+}
 
 function formatDate(value) {
   if (!value) return '—';
@@ -60,6 +89,9 @@ export default function AdminDashboard() {
   const [isTaskBoardOpen, setIsTaskBoardOpen] = useState(false);
   const [taskBoardProjectId, setTaskBoardProjectId] = useState(null);
   const [revenueHover, setRevenueHover] = useState(null);
+  const [revenueTrend, setRevenueTrend] = useState([]);
+  const [revenueTotal, setRevenueTotal] = useState(0);
+  const [workload, setWorkload] = useState([]);
 
   const [totalClients, setTotalClients] = useState(0);
   const [totalProjects, setTotalProjects] = useState(0);
@@ -85,7 +117,7 @@ export default function AdminDashboard() {
     setHasError(false);
     try {
       const since = new Date(Date.now() - RECENT_SIGNUP_DAYS * 24 * 60 * 60 * 1000).toISOString();
-      const [clients, services, signups, projects] = await Promise.all([
+      const [clients, services, signups, projects, invoices, staffTasks, staffProfiles] = await Promise.all([
         supabase
           .from('profiles')
           .select('id', { count: 'exact', head: true })
@@ -102,13 +134,30 @@ export default function AdminDashboard() {
           .from('projects')
           .select('id, status, has_issues, due_date, address_line1, address_city, address_postcode, updated_at')
           .order('updated_at', { ascending: false }),
+        supabase.from('invoices').select('date, amount'),
+        supabase.from('tasks').select('assignee_id, status').neq('status', 'done'),
+        supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('role', ['coordinator', 'designer', 'assessor', 'super-admin']),
       ]);
-      if (clients.error || services.error || signups.error || projects.error) {
+      if (
+        clients.error ||
+        services.error ||
+        signups.error ||
+        projects.error ||
+        invoices.error ||
+        staffTasks.error ||
+        staffProfiles.error
+      ) {
         const message =
           clients.error?.message ||
           services.error?.message ||
           signups.error?.message ||
           projects.error?.message ||
+          invoices.error?.message ||
+          staffTasks.error?.message ||
+          staffProfiles.error?.message ||
           'Could not load dashboard data.';
         throw new Error(message);
       }
@@ -119,6 +168,25 @@ export default function AdminDashboard() {
         return acc;
       }, {});
       const total = projectRows.length;
+
+      const monthlyRevenue = buildRevenueTrend(invoices.data ?? []);
+      setRevenueTrend(monthlyRevenue);
+      setRevenueTotal(monthlyRevenue.reduce((acc, m) => acc + m.value, 0));
+
+      // Team workload: open (non-done) tasks per staff member, real data.
+      const taskCounts = {};
+      (staffTasks.data ?? []).forEach((t) => {
+        if (t.assignee_id) taskCounts[t.assignee_id] = (taskCounts[t.assignee_id] || 0) + 1;
+      });
+      setWorkload(
+        (staffProfiles.data ?? [])
+          .map((s) => ({
+            name: s.full_name || s.email,
+            value: taskCounts[s.id] || 0,
+          }))
+          .filter((w) => w.value > 0)
+          .sort((a, b) => b.value - a.value),
+      );
 
       setTotalClients(clients.count ?? 0);
       setActiveServices(services.count ?? 0);
@@ -208,22 +276,22 @@ export default function AdminDashboard() {
             <h4 className="font-bold text-ink">Team Workload</h4>
             <MoreHorizontal size={18} className="text-muted" />
           </div>
-          {teamWorkload.length === 0 ? (
+          {workload.length === 0 ? (
             <div className="empty-state">
               <Inbox size={40} className="empty-state-icon" />
-              <p className="empty-state-title">No project data yet</p>
+              <p className="empty-state-title">No active tasks yet</p>
               <p className="empty-state-desc">Team workload will appear here.</p>
               <Link to="/admin/projects" className="empty-state-action">View Projects</Link>
             </div>
           ) : (
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={teamWorkload}>
+            <BarChart data={workload}>
               <CartesianGrid vertical={false} stroke="#eef0f2" />
               <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#667085' }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#667085' }} />
               <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                {teamWorkload.map((d, i) => (
-                  <Cell key={i} fill={i === teamWorkload.length - 1 ? '#1fae5c' : '#c7cbe0'} />
+                {workload.map((d, i) => (
+                  <Cell key={i} fill={i === workload.length - 1 ? '#1fae5c' : '#c7cbe0'} />
                 ))}
               </Bar>
             </BarChart>
@@ -289,6 +357,13 @@ export default function AdminDashboard() {
           <h4 className="font-bold text-ink">Revenue Trend</h4>
           <MoreHorizontal size={18} className="text-muted" />
         </div>
+        {revenueTotal === 0 ? (
+          <div className="empty-state">
+            <Inbox size={40} className="empty-state-icon" />
+            <p className="empty-state-title">No revenue data yet</p>
+            <p className="empty-state-desc">Invoice revenue will appear here.</p>
+          </div>
+        ) : (
         <ResponsiveContainer width="100%" height={240}>
           <AreaChart data={revenueTrend} margin={{ top: 20, right: 8, left: 0, bottom: 0 }}>
             <defs>
@@ -316,9 +391,7 @@ export default function AdminDashboard() {
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 12, fill: '#9ca3af' }}
-              tickFormatter={(v) => `£${v}K`}
-              domain={[0, 10]}
-              ticks={[0, 2, 4, 6, 8, 10]}
+              tickFormatter={(v) => `£${v}`}
               width={46}
             />
 
@@ -345,6 +418,7 @@ export default function AdminDashboard() {
             />
           </AreaChart>
         </ResponsiveContainer>
+        )}
       </div>
 
       <h3 className="text-xl font-bold text-ink mb-4">Priority Queue</h3>
@@ -426,7 +500,7 @@ function RevenueTooltip({ active, payload, onActiveChange }) {
 
   return (
     <div className="revenue-tooltip-pill">
-      £{payload[0].value}K
+      £{payload[0].value}
     </div>
   );
 }

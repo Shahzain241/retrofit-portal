@@ -111,7 +111,7 @@ export default function ServiceDetail() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#0B1E36] font-sans">
-      <Header />
+      <Header hideWhenAuthed />
 
       <main>
         {hasError ? (

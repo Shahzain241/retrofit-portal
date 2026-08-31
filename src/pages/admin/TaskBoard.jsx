@@ -16,6 +16,7 @@ const BACKLOG = 'backlog';
 export default function TaskBoard({ projectId }) {
   const params = useParams();
   const activeProjectId = projectId || params.id || 'RET-2026-0042';
+  const [projectName, setProjectName] = useState('');
   const [columns, setColumns] = useState(() =>
     taskBoardColumns.map((col) => ({ ...col, tasks: [] })),
   );
@@ -94,29 +95,63 @@ export default function TaskBoard({ projectId }) {
     fetchTasks();
   }, [fetchStaff, fetchTasks]);
 
-  // The UI's "Assignee" input is a free-text name; resolve it to a profiles.id.
-  function resolveAssigneeId(name) {
-    const trimmed = (name || '').trim().toLowerCase();
-    if (!trimmed) return null;
-    const match = staffProfiles.find(
-      (p) =>
-        (p.full_name || '').toLowerCase() === trimmed ||
-        (p.email || '').toLowerCase() === trimmed,
-    );
-    return match?.id ?? null;
-  }
+  useEffect(() => {
+    let mounted = true;
+    supabase
+      .from('projects')
+      .select('name')
+      .eq('id', activeProjectId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (mounted && data?.name) setProjectName(data.name);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [activeProjectId]);
 
-  async function persistStatusChange(taskId, status) {
+  async function persistStatusChange(taskId, newStatus, sourceStatus) {
     try {
-      const { error } = await supabase.from('tasks').update({ status }).eq('id', taskId);
-      if (error) {
-        showToast({ type: 'error', message: error.message || 'Could not update task status.' });
-        fetchTasks();
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({ status: newStatus })
+        .eq('id', taskId)
+        .select('id');
+      // RLS can silently filter the row out (0 rows, no error) — e.g. a staff
+      // user dragging a task that isn't assigned to them. Detect it and revert
+      // the optimistic move instead of letting the UI look successful.
+      if (error || (data ?? []).length === 0) {
+        revertTaskMove(taskId, newStatus, sourceStatus);
+        showToast({
+          type: 'error',
+          message: error?.message || 'Could not update task status — you may not have permission to move this task.',
+        });
+        return;
       }
     } catch (err) {
+      revertTaskMove(taskId, newStatus, sourceStatus);
       showToast({ type: 'error', message: err?.message || 'Could not update task status.' });
-      fetchTasks();
     }
+  }
+
+  // Move a card back from one column to another after a failed persist.
+  function revertTaskMove(taskId, fromStatus, toStatus) {
+    setColumns((cols) => {
+      let task = null;
+      const without = cols.map((col) => {
+        if (col.id === fromStatus) {
+          const found = col.tasks.find((t) => t.id === taskId);
+          if (found) task = found;
+          return { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) };
+        }
+        return col;
+      });
+      if (!task) return cols;
+      return without.map((col) =>
+        col.id === toStatus ? { ...col, tasks: [...col.tasks, task] } : col,
+      );
+    });
   }
 
   function handleDragEnd(event) {
@@ -124,25 +159,28 @@ export default function TaskBoard({ projectId }) {
     if (!over) return;
     const taskId = active.id;
     const targetColId = over.id;
-    setColumns((cols) => {
-      let sourceColId = null;
-      let task = null;
-      for (const col of cols) {
-        const found = col.tasks.find((t) => t.id === taskId);
-        if (found) {
-          sourceColId = col.id;
-          task = found;
-          break;
-        }
+
+    let sourceColId = null;
+    let task = null;
+    for (const col of columns) {
+      const found = col.tasks.find((t) => t.id === taskId);
+      if (found) {
+        sourceColId = col.id;
+        task = found;
+        break;
       }
-      if (!task || sourceColId === targetColId) return cols;
-      return cols.map((col) => {
+    }
+    if (!task || sourceColId === targetColId) return;
+
+    // Optimistic move.
+    setColumns((cols) =>
+      cols.map((col) => {
         if (col.id === sourceColId) return { ...col, tasks: col.tasks.filter((t) => t.id !== taskId) };
         if (col.id === targetColId) return { ...col, tasks: [...col.tasks, task] };
         return col;
-      });
-    });
-    persistStatusChange(taskId, targetColId);
+      }),
+    );
+    persistStatusChange(taskId, targetColId, sourceColId);
   }
 
   async function handleCreate(data) {
@@ -151,7 +189,7 @@ export default function TaskBoard({ projectId }) {
         title: data.title,
         priority: data.priority,
         due_date: data.dueDate || null,
-        assignee_id: resolveAssigneeId(data.assignee),
+        assignee_id: data.assigneeId || null,
         status: BACKLOG,
         project_id: activeProjectId,
         tags: [],
@@ -170,18 +208,25 @@ export default function TaskBoard({ projectId }) {
 
   async function handleEditSave(columnId, taskId, updates, newColumnId) {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('tasks')
         .update({
           title: updates.title,
           priority: updates.priority,
           due_date: updates.dueDate || null,
-          assignee_id: resolveAssigneeId(updates.assignee),
+          assignee_id: updates.assigneeId || null,
           status: newColumnId || columnId,
         })
-        .eq('id', taskId);
-      if (error) {
-        showToast({ type: 'error', message: error.message || 'Could not update the task.' });
+        .eq('id', taskId)
+        .select('id');
+      // 0 rows back = RLS blocked it (e.g. a staff user editing a task not
+      // assigned to them) or the task vanished — never claim success for a
+      // write that didn't land.
+      if (error || (data ?? []).length === 0) {
+        showToast({
+          type: 'error',
+          message: error?.message || 'Could not update the task — you may not have permission to edit it.',
+        });
         return;
       }
       setModal(null);
@@ -195,7 +240,7 @@ export default function TaskBoard({ projectId }) {
   return (
     <div className="max-w-[1120px] mx-auto">
       <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">{activeProjectId}</h1>
-      <p className="text-body mt-1 mb-6">High-Efficiency Heat Pump Installation Cluster</p>
+      <p className="text-body mt-1 mb-6">{projectName || 'Task board'}</p>
 
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-['Inter'] font-semibold text-[20px] leading-[28px] tracking-[0px] text-[#0B1C30]">Task Board</h3>
@@ -259,21 +304,27 @@ export default function TaskBoard({ projectId }) {
       >
         {modal?.mode === 'edit' ? (
           <TaskForm
-            initial={{ ...modal.task, columnId: modal.columnId }}
+            initial={{
+              ...modal.task,
+              columnId: modal.columnId,
+              assigneeId: modal.task.assignee_id,
+              assigneeName: modal.task.assignee,
+            }}
+            staff={staffProfiles}
             columns={columns}
             showStatus
             onSubmit={(data) =>
               handleEditSave(
                 modal.columnId,
                 modal.task.id,
-                { title: data.title, assignee: data.assignee, priority: data.priority, dueDate: data.dueDate },
+                { title: data.title, assigneeId: data.assigneeId, priority: data.priority, dueDate: data.dueDate },
                 data.columnId,
               )
             }
             onCancel={() => setModal(null)}
           />
         ) : (
-          <TaskForm onSubmit={handleCreate} onCancel={() => setModal(null)} />
+          <TaskForm staff={staffProfiles} onSubmit={handleCreate} onCancel={() => setModal(null)} />
         )}
       </Modal>
     </div>
@@ -362,9 +413,11 @@ function DraggableTask({ task, onEdit }) {
   );
 }
 
-function TaskForm({ initial = {}, columns = [], showStatus = false, onSubmit, onCancel }) {
+function TaskForm({ initial = {}, staff = [], columns = [], showStatus = false, onSubmit, onCancel }) {
   const [title, setTitle] = useState(initial.title || '');
-  const [assignee, setAssignee] = useState(initial.assignee || '');
+  // Real assignee picker: only staff profiles (ids) can be selected, never an
+  // arbitrary typed name. Empty string = explicit "Unassigned".
+  const [assigneeId, setAssigneeId] = useState(initial.assigneeId || '');
   const [priority, setPriority] = useState(initial.priority || 'Medium');
   const [dueDate, setDueDate] = useState(initial.dueDate || '');
   const [columnId, setColumnId] = useState(initial.columnId || 'backlog');
@@ -372,7 +425,7 @@ function TaskForm({ initial = {}, columns = [], showStatus = false, onSubmit, on
   function handleSubmit(e) {
     e.preventDefault();
     if (!title.trim()) return;
-    onSubmit({ title: title.trim(), assignee: assignee.trim(), priority, dueDate, columnId });
+    onSubmit({ title: title.trim(), assigneeId, priority, dueDate, columnId });
   }
 
   const inputClass =
@@ -392,13 +445,22 @@ function TaskForm({ initial = {}, columns = [], showStatus = false, onSubmit, on
       </div>
       <div>
         <label htmlFor="task-assignee" className="block text-sm font-semibold text-ink mb-1">Assignee</label>
-        <input
+        <select
           id="task-assignee"
-          value={assignee}
-          onChange={(e) => setAssignee(e.target.value)}
-          placeholder="Assignee name"
+          value={assigneeId}
+          onChange={(e) => setAssigneeId(e.target.value)}
           className={inputClass}
-        />
+        >
+          <option value="">Unassigned</option>
+          {staff.map((s) => (
+            <option key={s.id} value={s.id}>{s.full_name || s.email}</option>
+          ))}
+          {/* If the staff list isn't loaded yet, keep the task's current
+              assignee selectable so a save never silently nulls it out. */}
+          {initial.assigneeId && !staff.some((s) => s.id === initial.assigneeId) && (
+            <option value={initial.assigneeId}>{initial.assigneeName || 'Current assignee'}</option>
+          )}
+        </select>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>

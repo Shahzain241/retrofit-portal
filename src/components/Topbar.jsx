@@ -1,39 +1,270 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Grid3x3 } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
-import { topbarNotifications as notifications, topbarApps as apps } from '../data/misc';
+import { publicServices } from '../data/services';
+import { supabase } from '../lib/supabaseClient';
 import '../styles/DashboardShared.css';
 
+// Apps that map to real internal routes are wired to react-router. Anything
+// with no page in this app is an explicit "Coming soon" — never a silent no-op.
+const TOPBAR_APPS = [
+  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'Projects', to: '/projects' },
+  { label: 'Services', to: '/services' },
+  { label: 'Billing', to: '/billing' },
+  { label: 'Support', comingSoon: true },
+  { label: 'Docs', comingSoon: true },
+];
+
+// Staff/admin variant — points at the admin panel routes instead of the client
+// pages (the shared Topbar renders in both layouts).
+const ADMIN_APPS = [
+  { label: 'Dashboard', to: '/admin/dashboard' },
+  { label: 'Projects', to: '/admin/projects' },
+  { label: 'Services', to: '/admin/services' },
+  { label: 'Users', to: '/admin/users' },
+  { label: 'Settings', to: '/admin/settings' },
+  { label: 'Support', comingSoon: true },
+];
+
+const STAFF_ROLES = ['super-admin', 'coordinator', 'designer', 'assessor'];
+
+const SEARCH_DEBOUNCE_MS = 300;
+const SEARCH_MIN_CHARS = 2;
+const SEARCH_LIMIT = 5;
+
+/** Format a timestamp as a short time, e.g. "14:22". */
+function formatNotifTime(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 export default function Topbar() {
   const [openNotif, setOpenNotif] = useState(false);
   const [openGrid, setOpenGrid] = useState(false);
   const ref = useRef(null);
   const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  const [userId, setUserId] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  // Staff/admin users get all-project search + the admin apps menu; clients
+  // keep the own-projects scope and client apps menu.
+  const [isStaff, setIsStaff] = useState(false);
+
+  // Search — the client's own projects (Supabase, RLS-scoped) + the public
+  // services catalogue (src/data/services.js; the services table is staff-only).
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState({ projects: [], services: [] });
+  const [searching, setSearching] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Real unread notifications for the logged-in user (RLS: own rows only).
+  const loadNotifications = useCallback(async (uid) => {
+    if (!uid) return;
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', uid)
+      .eq('is_read', false)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) {
+      console.error('[Topbar] failed to load notifications', error.message, error);
+      return;
+    }
+    setNotifications(data ?? []);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!mounted) return;
+      const uid = data?.user?.id ?? null;
+      setUserId(uid);
+      if (uid) {
+        loadNotifications(uid);
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', uid)
+          .maybeSingle();
+        if (mounted) {
+          setIsStaff(!!profile?.role && STAFF_ROLES.includes(profile.role));
+        }
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [loadNotifications]);
+
+  // Debounced search: own projects (Supabase) + services (static catalogue).
+  const runSearch = useCallback(async (query) => {
+    const q = query.trim();
+    if (q.length < SEARCH_MIN_CHARS) {
+      setSearchResults({ projects: [], services: [] });
+      setSearchOpen(false);
+      setSearching(false);
+      return;
+    }
+
+    const ql = q.toLowerCase();
+    const services = publicServices
+      .filter((s) => s.title.toLowerCase().includes(ql))
+      .slice(0, SEARCH_LIMIT)
+      .map((s) => ({ id: s.id, title: s.title, category: s.category, price: s.price, currency: s.currency }));
+
+    let projects = [];
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      // Staff/admin search ALL projects; clients only their own (RLS-scoped).
+      let query = supabase
+        .from('projects')
+        .select('id, name, address_line1, address_city')
+        .or(`name.ilike.%${q}%,address_line1.ilike.%${q}%,address_city.ilike.%${q}%,id.ilike.%${q}%`)
+        .limit(SEARCH_LIMIT);
+      if (!isStaff) query = query.eq('client_id', user.id);
+      const { data, error } = await query;
+      if (!error) {
+        projects = (data ?? []).map((p) => ({
+          id: p.id,
+          name: p.name,
+          address: [p.address_line1, p.address_city].filter(Boolean).join(', '),
+        }));
+      }
+    }
+
+    setSearchResults({ projects, services });
+    setSearchOpen(true);
+    setSearching(false);
+  }, [isStaff]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length < SEARCH_MIN_CHARS) {
+      setSearchResults({ projects: [], services: [] });
+      setSearchOpen(false);
+      setSearching(false);
+      return undefined;
+    }
+    setSearching(true);
+    const timer = window.setTimeout(() => runSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, runSearch]);
+
+  function selectResult(type, id) {
+    setSearchQuery('');
+    setSearchOpen(false);
+    if (type === 'project') {
+      // Staff/admin land on the project's task board; clients on their project.
+      if (isStaff) navigate(`/admin/projects/${id}/board`);
+      else navigate(`/projects/${id}`);
+    } else navigate(`/services/${id}`);
+  }
 
   useEffect(() => {
     function onClick(e) {
       if (ref.current && !ref.current.contains(e.target)) {
         setOpenNotif(false);
         setOpenGrid(false);
+        setSearchOpen(false);
       }
     }
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  // Mark read + navigate to the notification's link (if present).
+  async function handleNotificationClick(n) {
+    if (userId && !n.is_read) {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', n.id)
+        .eq('user_id', userId);
+      if (!error) {
+        setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+      }
+    }
+    if (n.link) navigate(n.link);
+    setOpenNotif(false);
+  }
+
+  const unreadCount = notifications.length;
+
   return (
     <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 rp-dash-topbar" ref={ref}>
-      <div className="rp-dash-topbar-search">
+      <div className="rp-dash-topbar-search relative">
         <div className="relative rp-dash-topbar-search-field">
-          <label htmlFor="topbar-search-input" className="sr-only">Search retrofit services</label>
+          <label htmlFor="topbar-search-input" className="sr-only">Search projects and services</label>
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
           <input
             id="topbar-search-input"
-            placeholder="Search retrofit services..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              if (searchQuery.trim().length >= SEARCH_MIN_CHARS) setSearchOpen(true);
+            }}
+            placeholder="Search projects & services..."
             className="rp-topbar-search-input w-full bg-white pl-11 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
           />
         </div>
+
+        {searchOpen && (
+          <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-xl border border-line py-2 max-h-80 overflow-y-auto">
+            {searching ? (
+              <p className="px-4 py-3 text-sm text-muted">Searching...</p>
+            ) : searchResults.projects.length === 0 && searchResults.services.length === 0 ? (
+              <p className="px-4 py-3 text-sm text-muted">No results for "{searchQuery.trim()}".</p>
+            ) : (
+              <>
+                {searchResults.projects.length > 0 && (
+                  <div>
+                    <div className="px-4 py-1.5 text-[10px] font-bold uppercase text-muted border-b border-line/60">Projects</div>
+                    {searchResults.projects.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => selectResult('project', p.id)}
+                        className="w-full text-left px-4 py-2.5 hover:bg-surface cursor-pointer"
+                      >
+                        <p className="text-sm font-medium text-ink">{p.name || p.id}</p>
+                        {p.address && <p className="text-xs text-muted">{p.address}</p>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchResults.services.length > 0 && (
+                  <div>
+                    <div className="px-4 py-1.5 text-[10px] font-bold uppercase text-muted border-b border-line/60">Services</div>
+                    {searchResults.services.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => selectResult('service', s.id)}
+                        className="w-full text-left px-4 py-2.5 hover:bg-surface cursor-pointer"
+                      >
+                        <p className="text-sm font-medium text-ink">{s.title}</p>
+                        <p className="text-xs text-muted">
+                          {s.category}
+                          {s.price ? ` • ${s.currency} ${s.price}` : ''}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="relative shrink-0">
@@ -42,23 +273,37 @@ export default function Topbar() {
           onClick={() => {
             setOpenNotif((v) => !v);
             setOpenGrid(false);
+            if (!openNotif) loadNotifications(userId);
           }}
           className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-line flex items-center justify-center"
         >
           <Bell size={18} className="text-ink" />
-          <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-danger" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-white text-[10px] font-bold flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
         </button>
         {openNotif && (
           <div className="fixed right-4 top-16 sm:absolute sm:top-auto sm:right-0 sm:mt-2 w-72 max-w-[calc(100vw-32px)] bg-white rounded-2xl shadow-xl border border-line py-2 z-50">
             <div className="px-4 py-2 text-sm font-semibold text-ink border-b border-line">
               Notifications
             </div>
-            {notifications.map((n, i) => (
-              <div key={i} className="px-4 py-3 hover:bg-surface cursor-pointer">
-                <p className="text-sm font-medium text-ink">{n.title}</p>
-                <p className="text-xs text-muted mt-0.5">{n.meta}</p>
-              </div>
-            ))}
+            {notifications.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-muted">No unread notifications.</div>
+            ) : (
+              notifications.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => handleNotificationClick(n)}
+                  className="w-full text-left px-4 py-3 hover:bg-surface cursor-pointer"
+                >
+                  <p className="text-sm font-medium text-ink">{n.title}</p>
+                  <p className="text-xs text-muted mt-0.5">{n.body}</p>
+                  <p className="text-[10px] text-muted mt-1">{formatNotifTime(n.created_at)}</p>
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>
@@ -76,17 +321,35 @@ export default function Topbar() {
         </button>
         {openGrid && (
           <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-line p-3 grid grid-cols-3 gap-2 z-50">
-            {apps.map((a) => (
-              <div
-                key={a}
-                className="flex flex-col items-center gap-1 text-center p-2 rounded-xl hover:bg-surface cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
-                  {a[0]}
+            {(isStaff ? ADMIN_APPS : TOPBAR_APPS).map((a) =>
+              a.comingSoon ? (
+                <div
+                  key={a.label}
+                  title="Coming soon"
+                  className="flex flex-col items-center gap-1 text-center p-2 rounded-xl cursor-not-allowed opacity-60"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
+                    {a.label[0]}
+                  </div>
+                  <span className="text-[11px] text-body">{a.label}</span>
+                  <span className="text-[9px] font-semibold text-brand-green uppercase">Coming soon</span>
                 </div>
-                <span className="text-[11px] text-body">{a}</span>
-              </div>
-            ))}
+              ) : (
+                <button
+                  key={a.label}
+                  onClick={() => {
+                    setOpenGrid(false);
+                    navigate(a.to);
+                  }}
+                  className="flex flex-col items-center gap-1 text-center p-2 rounded-xl hover:bg-surface cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
+                    {a.label[0]}
+                  </div>
+                  <span className="text-[11px] text-body">{a.label}</span>
+                </button>
+              ),
+            )}
           </div>
         )}
       </div>

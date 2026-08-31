@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Header.css";
 
 /**
@@ -13,11 +14,24 @@ import "../styles/Header.css";
  *   ...
  *   <Header />
  *
- * Update the logo import path if your logo file lives elsewhere.
+ * Props:
+ *   hideWhenAuthed (bool, default false) — when true AND the user has an active
+ *   session (useAuth → getSession + onAuthStateChange, the same source
+ *   ProtectedRoute uses), the WHOLE header renders nothing. Used by
+ *   Services/ServiceDetail so signed-in users don't see the public navbar.
+ *   Landing intentionally does NOT pass it: its header + Login/Get Started
+ *   always render regardless of auth state.
+ *
+ * When not hidden, Login + Get Started are ALWAYS shown (no auth gating).
  */
-export default function Header() {
+export default function Header({ hideWhenAuthed = false }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { session } = useAuth();
+
+  if (hideWhenAuthed && session) {
+    return null;
+  }
 
   const closeMenu = () => setMenuOpen(false);
 

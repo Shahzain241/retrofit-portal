@@ -1,21 +1,70 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import StatusPill from '../../components/StatusPill';
 import ProgressBar from '../../components/ProgressBar';
+import NewProjectModal from '../../components/NewProjectModal';
 import { Plus } from 'lucide-react';
-import { projects, formatAddress } from '../../data/projects';
 import { projectFilters } from '../../data/projectFilters';
-import { useToast } from '../../context/ToastContext';
+import { supabase } from '../../lib/supabaseClient';
 import '../../styles/MyProjects.css';
 
 /**
  * Client "My Projects" — filterable table of the current user's retrofit
- * projects. Styled via MyProjects.css + shared dashboard classes.
+ * projects, backed by live Supabase data scoped to the logged-in client
+ * (RLS: "Clients can view own projects"). Styled via MyProjects.css +
+ * shared dashboard classes.
  */
+
+/** Full single-line address, e.g. "42 Maple Avenue, London NW10 6RF". */
+function formatAddress(project) {
+  const { line1, city, postcode } = project.address;
+  return `${line1}, ${city} ${postcode}`;
+}
+
 export default function MyProjects() {
   const [filter, setFilter] = useState('All');
-  const { showToast } = useToast();
+  const [projects, setProjects] = useState([]);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
+
+  const fetchProjects = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('client_id', user.id)
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('[MyProjects] failed to load projects', error.message, error);
+      return;
+    }
+    setProjects((data ?? []).map((p) => ({
+      id: p.id,
+      name: p.name,
+      address: {
+        line1: p.address_line1,
+        city: p.address_city,
+        postcode: p.address_postcode,
+      },
+      progress: p.progress ?? 0,
+      status: p.status,
+    })));
+  }, []);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  // Refetch when a new project is created anywhere in the app (Sidebar or the
+  // New Project button here) so the table reflects it immediately.
+  useEffect(() => {
+    window.addEventListener('rp:project-created', fetchProjects);
+    return () => window.removeEventListener('rp:project-created', fetchProjects);
+  }, [fetchProjects]);
 
   const list = projects.filter((p) => {
     if (filter === 'All') return true;
@@ -34,7 +83,7 @@ export default function MyProjects() {
           variant="gradientEdge"
           icon={Plus}
           className="rp-dash-cta rp-new-project-btn shrink-0"
-          onClick={() => showToast({ type: 'success', message: 'New project created' })}
+          onClick={() => setNewProjectOpen(true)}
         >
           New Project
         </Button>
@@ -96,6 +145,11 @@ export default function MyProjects() {
           </tbody>
         </table>
       </div>
+
+      <NewProjectModal
+        isOpen={newProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+      />
     </div>
   );
 }

@@ -11,14 +11,17 @@ import '../styles/DashboardShared.css';
  *   size     - 'lg' (44x24, default) | 'sm' (40x20)
  *   variant  - 'navy' (default) | 'brand' (green "on" fill)
  */
-export default function Toggle({ on = false, onClick, size = 'lg', variant = 'navy', 'aria-label': ariaLabel }) {
+export default function Toggle({ on = false, onClick, disabled = false, size = 'lg', variant = 'navy', 'aria-label': ariaLabel }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-pressed={on}
       aria-label={ariaLabel}
-      className={`rp-toggle rp-toggle-${size} ${on ? `rp-toggle-on rp-toggle-${variant}-on` : 'rp-toggle-off'}`}
+      className={`rp-toggle rp-toggle-${size} ${on ? `rp-toggle-on rp-toggle-${variant}-on` : 'rp-toggle-off'} ${
+        disabled ? 'rp-toggle-disabled' : ''
+      }`}
     >
       <span className={`rp-toggle-knob rp-toggle-knob-${size}`} />
     </button>

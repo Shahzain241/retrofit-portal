@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import logo from '../assets/clientlogo.png';
 import '../styles/DashboardShared.css';
 import { LogOut, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { clientLinks, adminLinks } from '../data/sidebarLinks';
-import { useToast } from '../context/ToastContext';
+import NewProjectModal from './NewProjectModal';
 
 /**
  * Shared Sidebar — the dashboard navigation rail (client/admin variants).
@@ -13,7 +13,7 @@ import { useToast } from '../context/ToastContext';
  */
 export default function Sidebar({ variant = 'client', open = false, onClose, collapsed = false, onToggleCollapse }) {
   const links = variant === 'admin' ? adminLinks : clientLinks;
-  const { showToast } = useToast();
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
   const onCloseRef = useRef(onClose);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
           {variant === 'client' && !collapsed && (
             <button
               className="rp-sidebar-newproject"
-              onClick={() => showToast({ type: 'success', message: 'New project created' })}
+              onClick={() => setNewProjectOpen(true)}
             >
               <Plus size={16} /> New Project
             </button>
@@ -122,6 +122,11 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
           </NavLink>
         </div>
       </aside>
+
+      <NewProjectModal
+        isOpen={newProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+      />
     </>
   );
 }

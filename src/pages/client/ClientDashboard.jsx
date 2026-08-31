@@ -1,37 +1,138 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, AlertTriangle, FolderOpen } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  FolderOpen,
+  Star,
+  Zap,
+} from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
-import { projects, coordinatorById } from '../../data/projects';
-import { clientStats, clientProjectImages } from '../../data/dashboardStats';
 import { label, USER_ROLE } from '../../data/enums';
 import { useProfile } from '../../context/ProfileContext';
+import { supabase } from '../../lib/supabaseClient';
+import clientdash1 from '../../assets/clientdash1.png';
+import clientdash2 from '../../assets/clientdash2.png';
+import clientdash3 from '../../assets/clientdash3.png';
 import '../../styles/ClientDashboard.css';
 import '../../styles/PublicServices.css';
 
 /**
  * Client Dashboard — welcome banner, headline stats, active project cards and
- * an upgrade-to-priority panel. Styled via ClientDashboard.css + Tailwind.
+ * an upgrade-to-priority panel, backed by live Supabase data scoped to the
+ * logged-in client (RLS: "Clients can view own projects"). Styled via
+ * ClientDashboard.css + Tailwind.
  */
-const FETCH_DELAY_MS = 700;
+
+// Fallback gallery used by the project cards (projects table has no image col).
+const clientProjectImages = [clientdash1, clientdash2, clientdash3];
+
+// Generic avatar placeholder (profiles table has no avatar column yet).
+const PLACEHOLDER_AVATAR =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="#e6e9ef"/><circle cx="32" cy="24" r="11" fill="#98a2b3"/><path d="M12 56c2-10 11-15 20-15s18 5 20 15z" fill="#98a2b3"/></svg>`,
+  );
+
+const PROJECT_COLUMNS =
+  'id, name, status, progress, address_line1, address_city, address_postcode, service, has_issues, created_at, client_id, due_date, updated_at';
+const STAFF_ROLES = ['coordinator', 'designer', 'assessor'];
 
 export default function ClientDashboard() {
   const { profile } = useProfile();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [clientStats, setClientStats] = useState([]);
+  const [coordinatorById, setCoordinatorById] = useState({});
 
-  const fetchDashboard = useCallback(() => {
+  const fetchDashboard = useCallback(async () => {
     setIsLoading(true);
     setHasError(false);
-    window.setTimeout(() => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
+      const { data: projectRows, error: projectsError } = await supabase
+        .from('projects')
+        .select(PROJECT_COLUMNS)
+        .eq('client_id', user.id)
+        .order('created_at', { ascending: false });
+      if (projectsError) throw new Error(projectsError.message);
+
+      const { data: staffRows, error: staffError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, role')
+        .in('role', STAFF_ROLES);
+      if (staffError) throw new Error(staffError.message);
+
+      const coordinators = (staffRows ?? []).map((c) => ({
+        id: c.id,
+        name: c.full_name || c.email || 'Coordinator',
+        role: c.role,
+        email: c.email,
+        avatar: PLACEHOLDER_AVATAR,
+      }));
+      const nextCoordinatorById = Object.fromEntries(coordinators.map((c) => [c.id, c]));
+      if (coordinators.length === 0) {
+        nextCoordinatorById.unassigned = {
+          id: 'unassigned',
+          name: 'Unassigned',
+          role: 'coordinator',
+          email: '',
+          avatar: PLACEHOLDER_AVATAR,
+        };
+      }
+      const primaryCoordinatorId = coordinators[0]?.id ?? 'unassigned';
+
+      const mapped = (projectRows ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        address: {
+          line1: p.address_line1,
+          city: p.address_city,
+          postcode: p.address_postcode,
+        },
+        progress: p.progress ?? 0,
+        status: p.status,
+        tag: p.service,
+        image: clientProjectImages[0],
+        coordinatorId: primaryCoordinatorId,
+      }));
+
+      setProjects(mapped);
+      setCoordinatorById(nextCoordinatorById);
+
+      const activeCount = mapped.filter((p) => p.status === 'active').length;
+      const completedCount = mapped.filter((p) => p.status === 'completed').length;
+      setClientStats([
+        { id: 'stat-active-projects', icon: ClipboardCheck, value: activeCount, label: 'Active Projects' },
+        { id: 'stat-completed', icon: CheckCircle2, value: completedCount, label: 'Completed' },
+        { id: 'stat-funding-secured', icon: Star, value: '—', label: 'Funding Secured' },
+        { id: 'stat-compliance', icon: Zap, value: '—', label: 'Compliance' },
+      ]);
+    } catch {
+      setHasError(true);
+    } finally {
       setIsLoading(false);
-    }, FETCH_DELAY_MS);
+    }
   }, []);
 
   useEffect(() => {
     fetchDashboard();
+  }, [fetchDashboard]);
+
+  // Refetch when a new project is created (Sidebar / MyProjects) so the stats
+  // and active-project cards update immediately.
+  useEffect(() => {
+    window.addEventListener('rp:project-created', fetchDashboard);
+    return () => window.removeEventListener('rp:project-created', fetchDashboard);
   }, [fetchDashboard]);
 
   useEffect(() => {
@@ -51,6 +152,10 @@ export default function ClientDashboard() {
 
   const retryFetch = () => fetchDashboard();
 
+  // Same live count rendered by the "Active Projects" stat card below — the
+  // greeting must never drift from it.
+  const activeCount = clientStats.find((s) => s.id === 'stat-active-projects')?.value ?? 0;
+
   return (
     <div>
       <div className="dashboard-banner dashboard-banner-client rounded-3xl text-white p-6 sm:p-8">
@@ -60,7 +165,7 @@ export default function ClientDashboard() {
         </div>
         <h1 className="font-['Inter'] font-bold text-[32px] leading-[40px] tracking-[-0.64px] align-middle text-white relative z-10">Good morning {profile.firstName}!</h1>
         <p className="text-white/70 mt-2 relative z-10">
-          You have <span className="text-brand-green font-semibold">2 active projects</span> that
+          You have <span className="text-brand-green font-semibold">{activeCount} active project{activeCount === 1 ? '' : 's'}</span> that
           require attention today.
         </p>
       </div>

@@ -39,8 +39,8 @@ function makePdf(lines) {
   return pdf;
 }
 
-export function downloadInvoicePdf(invoice, index) {
-  const number = `#INV-${String(902 - index)}`;
+export function downloadInvoicePdf(invoice) {
+  const number = invoice.number || `INV-${invoice.id}`;
   const lines = [
     '',
     `Invoice ${number}`,
@@ -56,7 +56,7 @@ export function downloadInvoicePdf(invoice, index) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `invoice-${number.replace('#', '').toLowerCase()}.pdf`;
+  a.download = `invoice-${String(number).toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`;
   document.body.appendChild(a);
   a.click();
   a.remove();
