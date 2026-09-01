@@ -1,0 +1,10 @@
+{
+  "name": "retrofit-portal-backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
+    "dotenv": "^16.4.5"
+  }
+}

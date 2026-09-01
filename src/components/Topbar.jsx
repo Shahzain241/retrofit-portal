@@ -3,30 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Grid3x3 } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { publicServices } from '../data/services';
+import { clientLinks, adminLinks } from '../data/sidebarLinks';
 import { supabase } from '../lib/supabaseClient';
 import '../styles/DashboardShared.css';
 
-// Apps that map to real internal routes are wired to react-router. Anything
-// with no page in this app is an explicit "Coming soon" — never a silent no-op.
-const TOPBAR_APPS = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Projects', to: '/projects' },
-  { label: 'Services', to: '/services' },
-  { label: 'Billing', to: '/billing' },
-  { label: 'Support', comingSoon: true },
-  { label: 'Docs', comingSoon: true },
-];
-
-// Staff/admin variant — points at the admin panel routes instead of the client
-// pages (the shared Topbar renders in both layouts).
-const ADMIN_APPS = [
-  { label: 'Dashboard', to: '/admin/dashboard' },
-  { label: 'Projects', to: '/admin/projects' },
-  { label: 'Services', to: '/admin/services' },
-  { label: 'Users', to: '/admin/users' },
-  { label: 'Settings', to: '/admin/settings' },
-  { label: 'Support', comingSoon: true },
-];
+// The apps menu is role-aware and driven by the SAME destination lists as the
+// dashboard sidebar (data/sidebarLinks.js) so the two can never drift or leak
+// between the client and admin dashboards. The active list is chosen by the
+// layout variant (which dashboard is currently rendered), not by user role.
+const CLIENT_APPS = clientLinks.map(({ to, label }) => ({ label, to }));
+const ADMIN_APPS = adminLinks.map(({ to, label }) => ({ label, to }));
 
 const STAFF_ROLES = ['super-admin', 'coordinator', 'designer', 'assessor'];
 
@@ -47,7 +33,7 @@ function formatNotifTime(value) {
   });
 }
 
-export default function Topbar() {
+export default function Topbar({ variant = 'client' }) {
   const [openNotif, setOpenNotif] = useState(false);
   const [openGrid, setOpenGrid] = useState(false);
   const ref = useRef(null);
@@ -321,45 +307,48 @@ export default function Topbar() {
         </button>
         {openGrid && (
           <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-line p-3 grid grid-cols-3 gap-2 z-50">
-            {(isStaff ? ADMIN_APPS : TOPBAR_APPS).map((a) =>
-              a.comingSoon ? (
-                <div
-                  key={a.label}
-                  title="Coming soon"
-                  className="flex flex-col items-center gap-1 text-center p-2 rounded-xl cursor-not-allowed opacity-60"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
-                    {a.label[0]}
-                  </div>
-                  <span className="text-[11px] text-body">{a.label}</span>
-                  <span className="text-[9px] font-semibold text-brand-green uppercase">Coming soon</span>
+            {(variant === 'admin' ? ADMIN_APPS : CLIENT_APPS).map((a) => (
+              <button
+                key={a.label}
+                onClick={() => {
+                  setOpenGrid(false);
+                  navigate(a.to);
+                }}
+                className="flex flex-col items-center gap-1 text-center p-2 rounded-xl hover:bg-surface cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
+                  {a.label[0]}
                 </div>
-              ) : (
-                <button
-                  key={a.label}
-                  onClick={() => {
-                    setOpenGrid(false);
-                    navigate(a.to);
-                  }}
-                  className="flex flex-col items-center gap-1 text-center p-2 rounded-xl hover:bg-surface cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-navy-900/5 flex items-center justify-center text-navy-900 text-xs font-semibold">
-                    {a.label[0]}
-                  </div>
-                  <span className="text-[11px] text-body">{a.label}</span>
-                </button>
-              ),
-            )}
+                <span className="text-[11px] text-body">{a.label}</span>
+              </button>
+            ))}
           </div>
         )}
       </div>
 
       <div className="flex items-center gap-3 pl-1 border-l border-line shrink-0">
-        <img
-          src={profile.avatar}
-          alt="User avatar"
-          className="w-11 h-11 rounded-full object-cover"
-        />
+        {variant === 'admin' ? (
+          // Admin dashboard: the avatar is a plain, inert display element —
+          // no click handler, no navigation, no clickable styling.
+          <img
+            src={profile.avatar}
+            alt="User avatar"
+            className="w-11 h-11 rounded-full object-cover"
+          />
+        ) : (
+          <button
+            type="button"
+            aria-label="Open profile"
+            onClick={() => navigate('/profile')}
+            className="p-0 rounded-full border-0 bg-transparent cursor-pointer"
+          >
+            <img
+              src={profile.avatar}
+              alt="User avatar"
+              className="w-11 h-11 rounded-full object-cover"
+            />
+          </button>
+        )}
       </div>
     </div>
   );

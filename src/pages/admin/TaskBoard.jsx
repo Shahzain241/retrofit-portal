@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import { GripVertical, Plus, Pencil, Search } from 'lucide-react';
+import { GripVertical, Plus, Pencil, Search, Trash2 } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/Button';
 import { taskBoardColumns } from '../../data/projects';
@@ -25,13 +25,22 @@ export default function TaskBoard({ projectId }) {
   const [assigneeFilter, setAssigneeFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const { showToast } = useToast();
 
+  // Real staff pool for the assignee filter (full_name || email, matching how
+  // task.assignee is displayed), unioned with any assignee names already on the
+  // board so legacy/current assignees remain filterable.
   const assignees = useMemo(() => {
     const set = new Set();
+    staffProfiles.forEach((s) => {
+      const name = s.full_name || s.email;
+      if (name) set.add(name);
+    });
     columns.forEach((col) => col.tasks.forEach((t) => t.assignee && set.add(t.assignee)));
     return [...set];
-  }, [columns]);
+  }, [staffProfiles, columns]);
 
   const visibleColumns = useMemo(() => {
     return columns.map((col) => {
@@ -237,6 +246,40 @@ export default function TaskBoard({ projectId }) {
     }
   }
 
+  // Delete a task after the confirmation modal. RLS: only super-admins have a
+  // DELETE policy on `tasks`, so a non-super-admin confirm is filtered out by
+  // RLS (0 rows, no error) — detect it and show a real error, never a false
+  // success. On success the card is removed from local state immediately, so
+  // the board + column count update with no reload.
+  async function handleDeleteTask() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', deleteTarget.id)
+        .select('id');
+      if (error || (data ?? []).length === 0) {
+        showToast({
+          type: 'error',
+          message: error?.message || 'Could not delete the task — you may not have permission to delete it.',
+        });
+        setDeleteTarget(null);
+        return;
+      }
+      setColumns((cols) =>
+        cols.map((col) => ({ ...col, tasks: col.tasks.filter((t) => t.id !== deleteTarget.id) })),
+      );
+      setDeleteTarget(null);
+      showToast({ type: 'success', message: 'Task deleted' });
+    } catch (err) {
+      showToast({ type: 'error', message: err?.message || 'Could not delete the task.' });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="max-w-[1120px] mx-auto">
       <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">{activeProjectId}</h1>
@@ -291,7 +334,9 @@ export default function TaskBoard({ projectId }) {
             <DroppableColumn
               key={col.id}
               col={col}
+              realCount={columns.find((c) => c.id === col.id)?.tasks.length ?? 0}
               onEdit={(task) => setModal({ mode: 'edit', columnId: col.id, task })}
+              onDelete={(task) => setDeleteTarget(task)}
             />
           ))}
         </div>
@@ -327,21 +372,49 @@ export default function TaskBoard({ projectId }) {
           <TaskForm staff={staffProfiles} onSubmit={handleCreate} onCancel={() => setModal(null)} />
         )}
       </Modal>
+
+      <Modal
+        isOpen={!!deleteTarget}
+        onClose={() => !deleting && setDeleteTarget(null)}
+        title="Delete Task"
+      >
+        <p className="mb-6">
+          Delete "{deleteTarget?.title}"? This action cannot be undone.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            variant="outline"
+            className="flex-1"
+            disabled={deleting}
+            onClick={() => setDeleteTarget(null)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="green"
+            className="flex-1"
+            disabled={deleting}
+            onClick={handleDeleteTask}
+          >
+            {deleting ? 'Deleting...' : 'Delete Task'}
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
 
-function DroppableColumn({ col, onEdit }) {
+function DroppableColumn({ col, realCount, onEdit, onDelete }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.id });
   return (
     <div ref={setNodeRef} className={`rp-board-col ${isOver ? 'rp-board-col-over' : ''}`}>
       <div className="flex items-center justify-between -mx-4 px-4 mb-4 border-b-2 border-gray-300 pb-3">
         <h4 className="font-['Inter'] font-semibold text-[12px] leading-[100%] tracking-[0px] text-[#0B1C30]">{col.title}</h4>
-        <span className="text-brand-green text-sm font-semibold">({col.tasks.length})</span>
+        <span className="text-brand-green text-sm font-semibold">({realCount})</span>
       </div>
       <div className="space-y-3">
         {col.tasks.map((t) => (
-          <DraggableTask key={t.id} task={t} onEdit={onEdit} />
+          <DraggableTask key={t.id} task={t} onEdit={onEdit} onDelete={onDelete} />
         ))}
         {col.tasks.length === 0 && (
           <div className="text-xs text-muted text-center py-8 border border-dashed border-line rounded-xl">
@@ -353,7 +426,7 @@ function DroppableColumn({ col, onEdit }) {
   );
 }
 
-function DraggableTask({ task, onEdit }) {
+function DraggableTask({ task, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id });
   const style = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
@@ -364,13 +437,24 @@ function DraggableTask({ task, onEdit }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`border border-line rounded-xl p-4 bg-white ${isDragging ? 'opacity-50 shadow-lg' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`Edit task: ${task.title}`}
+      onClick={() => onEdit(task)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onEdit(task);
+        }
+      }}
+      className={`border border-line rounded-xl p-4 bg-white cursor-pointer ${isDragging ? 'opacity-50 shadow-lg' : ''}`}
     >
       <div className="flex items-start gap-1.5">
         <button
           type="button"
           {...attributes}
           {...listeners}
+          onClick={(e) => e.stopPropagation()}
           aria-label="Drag task"
           className="mt-0.5 text-muted hover:text-ink cursor-grab active:cursor-grabbing shrink-0"
         >
@@ -379,14 +463,30 @@ function DraggableTask({ task, onEdit }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className="font-semibold text-ink text-sm">{task.title}</p>
-            <button
-              type="button"
-              onClick={() => onEdit(task)}
-              aria-label="Edit task"
-              className="text-muted hover:text-ink shrink-0"
-            >
-              <Pencil size={14} />
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(task);
+                }}
+                aria-label={`Delete task: ${task.title}`}
+                className="text-muted hover:text-danger shrink-0"
+              >
+                <Trash2 size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(task);
+                }}
+                aria-label="Edit task"
+                className="text-muted hover:text-ink shrink-0"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             {task.tags.map((tag) => (

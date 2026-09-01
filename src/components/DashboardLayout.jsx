@@ -32,7 +32,7 @@ export default function DashboardLayout({ variant = 'client' }) {
             Menu
           </button>
         </div>
-        <Topbar />
+        <Topbar variant={variant} />
         <Outlet />
       </main>
     </div>
