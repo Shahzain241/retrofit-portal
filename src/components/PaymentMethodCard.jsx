@@ -134,15 +134,15 @@ export default function PaymentMethodCard() {
         <p className="text-xs text-muted mb-4">Loading payment methods...</p>
       ) : (
         <>
-          <div className="border border-line rounded-xl px-4 py-3 flex items-center justify-between mb-4">
+          <div className="bg-surface border border-line rounded-xl px-4 py-3 flex items-center justify-between mb-4">
             {primary ? (
               <div className="flex items-center gap-3">
                 <span className="bg-navy-900 text-white text-[10px] font-bold px-2 py-1 rounded">
                   {primary.card_brand.toUpperCase().slice(0, 5)}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-ink">{primary.card_brand} •••• {primary.last4}</p>
-                  <p className="text-xs text-muted">Primary payment method</p>
+                  <p className="text-sm font-semibold text-ink">{primary.card_brand} **** {primary.last4}</p>
+                  <p className="text-xs text-muted">{primary.expiry ? `Expires ${primary.expiry}` : 'Primary payment method'}</p>
                 </div>
               </div>
             ) : (
@@ -157,10 +157,10 @@ export default function PaymentMethodCard() {
               </div>
             )}
             <button
-              className="text-brand-green text-sm font-semibold"
+              className="text-[#10B981] text-sm font-semibold"
               onClick={() => openModal('primary')}
             >
-              {primary ? 'UPDATE' : 'ADD CARD'}
+              {primary ? 'EDIT' : 'ADD CARD'}
             </button>
           </div>
 
@@ -176,7 +176,7 @@ export default function PaymentMethodCard() {
                       {c.card_brand.toUpperCase().slice(0, 5)}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-ink">{c.card_brand} •••• {c.last4}</p>
+                      <p className="text-sm font-semibold text-ink">{c.card_brand} **** {c.last4}</p>
                       <p className="text-xs text-muted">Backup payment method</p>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Upload, Check, FileText } from 'lucide-react';
+import { Upload, Check, FileText, Pencil, Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
 import Toggle from '../../components/Toggle';
@@ -34,7 +34,9 @@ export default function Profile() {
   const [epcViewing, setEpcViewing] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [pwForm, setPwForm] = useState({ next: '', confirm: '' });
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNext, setShowNext] = useState(false);
+  const [pwForm, setPwForm] = useState({ current: '', next: '' });
   const [pwError, setPwError] = useState('');
   const [lastChanged, setLastChanged] = useState('3 months ago');
   const [editingEmail, setEditingEmail] = useState(false);
@@ -245,22 +247,17 @@ export default function Profile() {
   function handlePasswordChange(e) {
     e.preventDefault();
     // Known simplification: Supabase's updateUser() does not require the
-    // current password by default and no re-auth flow exists yet, so we
-    // deliberately skip "current password" re-verification here.
-    const { next, confirm } = pwForm;
-    if (!next || !confirm) {
-      setPwError('Please fill in both password fields.');
-      showToast({ type: 'error', message: 'Please fill in both password fields.' });
+    // current password by default and no re-auth flow exists yet, so the
+    // "Current Password" field is collected but deliberately not re-verified.
+    const { next } = pwForm;
+    if (!next) {
+      setPwError('Please enter an account password.');
+      showToast({ type: 'error', message: 'Please enter an account password.' });
       return;
     }
     if (next.length < 6) {
       setPwError('New password must be at least 6 characters.');
       showToast({ type: 'error', message: 'New password must be at least 6 characters' });
-      return;
-    }
-    if (next !== confirm) {
-      setPwError('Passwords do not match.');
-      showToast({ type: 'error', message: 'Passwords do not match' });
       return;
     }
     setPwError('');
@@ -273,8 +270,10 @@ export default function Profile() {
           return;
         }
         setLastChanged('Just now');
-        setPwForm({ next: '', confirm: '' });
+        setPwForm({ current: '', next: '' });
         setShowPassword(false);
+        setShowCurrent(false);
+        setShowNext(false);
         flashSaved();
         showToast({ type: 'success', message: 'Password updated' });
       });
@@ -345,29 +344,33 @@ export default function Profile() {
   const setPropertyField = (key) => (e) => setProperty((p) => ({ ...p, [key]: e.target.value }));
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[1200px] mx-auto">
       <h1 className="text-2xl font-bold text-ink">Profile & Settings</h1>
       <p className="text-body mt-1 mb-6">
         Manage your personal identity, property portfolio, and security preferences.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile card (top-left) */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-          <div className="relative w-24 h-24 mb-6">
-            <img
-              src={profile.avatar}
-              alt="Profile photo"
-              className="w-24 h-24 rounded-full object-cover"
-            />
-            <button
-              onClick={() => fileRef.current?.click()}
-              aria-label="Change profile photo"
-              className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-brand-green text-white flex items-center justify-center hover:opacity-90"
-            >
-              <Check size={12} />
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
+      <div className="grid grid-cols-1 lg:grid-cols-[624px_1fr] gap-6">
+        {/* Left main column (~65%) */}
+        <div className="space-y-6">
+          {/* Profile Info card */}
+          <div className="rp-profile-info-card">
+          <div className="flex justify-center mb-5">
+            <div className="relative w-24 h-24 rounded-full bg-[#e6e9ef]">
+              <img
+                src={profile.avatar}
+                alt="Profile photo"
+                className="w-24 h-24 rounded-full object-cover bg-[#e6e9ef]"
+              />
+              <button
+                onClick={() => fileRef.current?.click()}
+                aria-label="Change profile photo"
+                className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-brand-green text-white flex items-center justify-center border-2 border-white hover:opacity-90"
+              >
+                <Pencil size={13} />
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
+            </div>
           </div>
 
           <form onSubmit={handleSaveIdentity} className="space-y-5">
@@ -449,18 +452,19 @@ export default function Profile() {
                 className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
               />
             </div>
-            <Button type="submit" variant="primary" className="w-full">
+            <Button type="submit" variant="primary" className="w-full rp-profile-update">
               Update
             </Button>
           </form>
+          </div>
         </div>
 
-        {/* Right column */}
+        {/* Right side column (~35%) */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6">
-            <h4 className="font-bold text-ink mb-1">Password & Security</h4>
-            <p className="text-sm text-body mb-4">
-              Change your password or manage two-factor authentication to keep your account secure.
+          <div className="rp-profile-security-card">
+            <h4 className="font-bold text-ink">Password & Security</h4>
+            <p className="text-sm text-body">
+              Change your password to keep your account secure.
             </p>
             <div className="flex items-center justify-between border border-line rounded-xl px-4 py-3">
               <div>
@@ -476,26 +480,46 @@ export default function Profile() {
               </button>
             </div>
             {showPassword && (
-              <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
+              <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
-                  <label htmlFor="profile-new-password" className="block text-sm font-semibold text-ink mb-2">New Password</label>
-                  <input
-                    id="profile-new-password"
-                    type="password"
-                    value={pwForm.next}
-                    onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
-                    className="w-full rounded-xl border border-line px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                  />
+                  <label htmlFor="profile-current-password" className="block text-sm font-semibold text-ink mb-2">Current Password</label>
+                  <div className="relative">
+                    <input
+                      id="profile-current-password"
+                      type={showCurrent ? 'text' : 'password'}
+                      value={pwForm.current}
+                      onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))}
+                      className="w-full rounded-xl border border-line px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrent((v) => !v)}
+                      aria-label="Toggle current password visibility"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
+                    >
+                      {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
                 <div>
-                  <label htmlFor="profile-confirm-password" className="block text-sm font-semibold text-ink mb-2">Confirm New Password</label>
-                  <input
-                    id="profile-confirm-password"
-                    type="password"
-                    value={pwForm.confirm}
-                    onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))}
-                    className="w-full rounded-xl border border-line px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                  />
+                  <label htmlFor="profile-account-password" className="block text-sm font-semibold text-ink mb-2">Account Password</label>
+                  <div className="relative">
+                    <input
+                      id="profile-account-password"
+                      type={showNext ? 'text' : 'password'}
+                      value={pwForm.next}
+                      onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
+                      className="w-full rounded-xl border border-line px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNext((v) => !v)}
+                      aria-label="Toggle account password visibility"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
+                    >
+                      {showNext ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
                 {pwError && <p className="text-sm text-danger">{pwError}</p>}
                 <Button type="submit" variant="navy" className="w-full !py-2.5 text-sm">
@@ -505,7 +529,7 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 space-y-4">
+          <div className="rp-profile-notif-card">
             <h4 className="font-bold text-ink">Notification Preferences</h4>
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -520,7 +544,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Primary Property Details (below profile card) */}
+      {/* Bottom section: Primary Property Details (large white card) */}
       <form onSubmit={handleSaveProperty} className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 mt-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-bold text-ink">Primary Property Details</h4>
@@ -536,49 +560,51 @@ export default function Profile() {
               className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="profile-property-type" className="block text-sm font-semibold text-ink mb-2">Property Type</label>
-              <input
-                id="profile-property-type"
-                value={property.type}
-                onChange={setPropertyField('type')}
-                className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-              />
-            </div>
-            <div>
-              <label htmlFor="profile-epc-number" className="block text-sm font-semibold text-ink mb-2">EPC Number</label>
-              <input
-                id="profile-epc-number"
-                value={property.epcNumber}
-                onChange={setPropertyField('epcNumber')}
-                className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-              />
-            </div>
+          <div>
+            <label htmlFor="profile-property-type" className="block text-sm font-semibold text-ink mb-2">Property Type</label>
+            <input
+              id="profile-property-type"
+              value={property.type}
+              onChange={setPropertyField('type')}
+              className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+            />
+          </div>
+          <div>
+            <label htmlFor="profile-epc-number" className="block text-sm font-semibold text-ink mb-2">EPC Number</label>
+            <input
+              id="profile-epc-number"
+              value={property.epcNumber}
+              onChange={setPropertyField('epcNumber')}
+              className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+            />
           </div>
           {epcPath ? (
-            <div className="flex items-center gap-3 bg-surface border border-line rounded-xl px-4 py-3">
-              <FileText size={18} className="text-brand-green" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-ink">{epcPath.split('/').pop()}</p>
-                <p className="text-xs text-muted">EPC Certificate</p>
+            <div className="rp-epc-uploaded">
+              <span className="rp-epc-uploaded-icon">
+                <FileText size={20} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="rp-epc-uploaded-name">{epcPath.split('/').pop()}</p>
+                <p className="rp-epc-uploaded-meta">EPC Certificate</p>
               </div>
-              <Button
-                type="button"
-                variant="navy"
-                onClick={handleViewEpc}
-                disabled={epcViewing}
-                className="!py-1.5 !px-3 text-xs"
-              >
-                {epcViewing ? 'Opening…' : 'View'}
-              </Button>
-              <button
-                type="button"
-                onClick={() => epcFileRef.current?.click()}
-                className="text-brand-green text-xs font-semibold"
-              >
-                REPLACE
-              </button>
+              <div className="flex items-center gap-3 shrink-0">
+                <Button
+                  type="button"
+                  variant="navy"
+                  onClick={handleViewEpc}
+                  disabled={epcViewing}
+                  className="!py-1.5 !px-3 text-xs"
+                >
+                  {epcViewing ? 'Opening…' : 'View'}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => epcFileRef.current?.click()}
+                  className="rp-epc-replace"
+                >
+                  REPLACE
+                </button>
+              </div>
               <input
                 ref={epcFileRef}
                 type="file"
@@ -588,10 +614,13 @@ export default function Profile() {
               />
             </div>
           ) : (
-            <label className="border-2 border-dashed border-line rounded-xl py-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface">
-              <Upload size={22} className="text-ink mb-3" />
-              <p className="font-semibold text-ink text-sm">Upload New EPC Certificate</p>
-              <p className="text-xs text-muted mt-1">PDF, JPEG, or PNG up to 5MB</p>
+            <label className="rp-epc-dropzone">
+              <span className="rp-epc-dropzone-icon">
+                <Upload size={20} />
+              </span>
+              <p className="rp-epc-dropzone-title">Upload New EPC Certificate</p>
+              <p className="rp-epc-dropzone-hint">PDF, JPEG, or PNG up to 10MB</p>
+              <span className="rp-epc-dropzone-btn">Upload</span>
               <input
                 ref={epcFileRef}
                 type="file"
@@ -601,14 +630,19 @@ export default function Profile() {
               />
             </label>
           )}
-          <Button type="submit" variant="primary" className="w-full">
-            Update
+          <Button
+            type="button"
+            variant="primary"
+            className="w-full rp-property-upload"
+            onClick={() => epcFileRef.current?.click()}
+          >
+            Upload
           </Button>
         </div>
       </form>
 
-      {/* Save button (bottom, full-width) */}
-      <div className="mt-6">
+      {/* Save button (centered, standalone) */}
+      <div className="mt-6 flex flex-col items-center">
         <Button
           variant="green"
           onClick={handleSaveAll}
@@ -617,11 +651,9 @@ export default function Profile() {
           Save
         </Button>
         {saved && (
-          <div className="flex justify-center mt-2">
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green">
-              <Check size={16} /> Saved!
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1.5 mt-2 text-sm font-semibold text-brand-green">
+            <Check size={16} /> Saved!
+          </span>
         )}
       </div>
     </div>

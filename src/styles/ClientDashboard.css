@@ -5,6 +5,8 @@
    with the four stat cards below. */
 .dashboard-banner.dashboard-banner-client {
   width: 100%;
+  background: #0b1c30;
+  border-radius: 16px;
 }
 
 .dashboard-banner-rings {
@@ -103,7 +105,7 @@
   height: 513px;
   border-radius: 18px;
   background: #ffffff;
-  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
+  box-shadow: 0px 4px 4.8px 0px rgba(11, 28, 48, 0.25);
   opacity: 1;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -156,12 +158,23 @@
   border-radius: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
+  background: #0b1c30;
+  background-image: none;
+}
+
+.rp-button.rp-dash-proj-btn:hover {
+  background: #142238;
+}
+
+/* Progress fill on the dashboard project cards (emerald green per Figma). */
+.rp-dash-proj-card .rp-progress-fill-green {
+  background: #10b981;
 }
 
 /* Upgrade panel + button */
 .rp-upgrade-banner {
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
-  background: #e9e8e9;
+  background: #f3f4f6;
 }
 
 .rp-button.rp-upgrade-btn {
@@ -174,9 +187,9 @@
   color: #ffffff;
   width: 168.61px;
   height: 44px;
-  border-radius: 8px;
+  border-radius: 9999px;
   padding: 10px 32px;
-  background: #12b14e;
+  background: #10b981;
 }
 
 /* Loading skeleton for stat cards (reuses the .skeleton-block shimmer from

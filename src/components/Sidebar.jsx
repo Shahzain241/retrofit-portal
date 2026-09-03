@@ -49,7 +49,7 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
       )}
       <aside
         className={`rp-sidebar fixed left-0 top-0 z-40 h-screen text-white flex flex-col transition-all duration-200 rounded-tr-[30px] rounded-br-[30px] ${
-          collapsed ? 'is-collapsed w-[76px]' : 'w-[250px]'
+          collapsed ? 'is-collapsed w-[76px]' : 'w-[232px]'
         } ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
       >
         <div className="relative pt-[45.96px] pb-6">
@@ -77,7 +77,7 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
           <div className="rp-sidebar-divider" />
         </div>
 
-        <nav className="flex-1 px-4 space-y-1">
+        <nav className="flex-1 px-3 space-y-0.5">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={label}
@@ -85,7 +85,7 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
               onClick={onClose}
               title={collapsed ? label : undefined}
               className={({ isActive }) =>
-                `flex items-center py-3 text-sm font-medium transition-colors ${
+                `flex items-center py-2.5 text-sm font-medium transition-colors ${
                   collapsed ? 'justify-center' : 'px-4 gap-3'
                 } ${
                   isActive
@@ -94,13 +94,13 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
                 }`
               }
             >
-              <Icon size={18} />
+              <Icon size={18} strokeWidth={1.5} />
               {!collapsed && <span>{label}</span>}
             </NavLink>
           ))}
         </nav>
 
-        <div className="px-4 pb-6 space-y-3">
+        <div className="px-3 pb-6 space-y-3">
           {variant === 'client' && !collapsed && (
             <button
               className="rp-sidebar-newproject"

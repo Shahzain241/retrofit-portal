@@ -46,6 +46,8 @@ export default function Billing() {
   const [cancelling, setCancelling] = useState(false);
   const planPrice = PLAN_PRICES[profile.plan] ?? '—';
   const nextBilling = profile.plan !== 'Free' ? formatNextBilling(profile.nextBillingDate) : null;
+  // Feature list for the current plan, driven by the shared plans catalog.
+  const planFeatures = plans.find((p) => p.name === profile.plan)?.features.filter((f) => f.ok) ?? [];
 
   useEffect(() => {
     let mounted = true;
@@ -124,8 +126,8 @@ export default function Billing() {
         </div>
         <Link to="/billing/plans">
           <Button
-            variant="gradientEdge"
-            className="rp-dash-cta w-[143px]"
+            variant="navy"
+            className="rp-dash-cta w-[143px] rp-billing-upgrade-cta"
           >
             Upgrade Plan
           </Button>
@@ -147,13 +149,11 @@ export default function Billing() {
             </div>
           </div>
           <div className="space-y-2 mb-5">
-            {['Unlimited retrofit projects', 'Advanced energy efficiency analytics', 'Team collaboration (up to 10 members)'].map(
-              (f) => (
-                <div key={f} className="flex items-center gap-2 text-sm text-body">
-                  <CheckCircle2 size={16} className="text-brand-green shrink-0" /> {f}
-                </div>
-              )
-            )}
+            {planFeatures.map((f) => (
+              <div key={f.id} className="flex items-center gap-2 text-sm text-body">
+                <CheckCircle2 size={16} className="text-[#10B981] shrink-0" /> {f.text}
+              </div>
+            ))}
           </div>
           <div className="flex gap-3 border-t border-dashed border-line pt-4 rp-plan-actions">
             <Link to="/billing/plans" className="flex-1">
@@ -209,7 +209,9 @@ export default function Billing() {
                   <td className="px-6 py-4 text-ink">{inv.date}</td>
                   <td className="px-6 py-4 text-ink">{inv.amount}</td>
                   <td className="px-6 py-4">
-                    <span className="text-brand-green font-semibold text-sm">{label(INVOICE_STATUS, inv.status)}</span>
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${inv.status === 'paid' ? 'bg-brand-green-light text-brand-green' : 'bg-line text-muted'}`}>
+                      {label(INVOICE_STATUS, inv.status)}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
                     <Button

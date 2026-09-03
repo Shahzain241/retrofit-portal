@@ -22,7 +22,7 @@ export default function DashboardLayout({ variant = 'client' }) {
         collapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed((v) => !v)}
       />
-      <main className={`px-4 sm:px-6 lg:px-10 py-5 lg:py-8 rp-dash-content transition-[margin] duration-200 ${isCollapsed ? 'lg:ml-[76px]' : 'lg:ml-[250px]'}`}>
+      <main className={`px-4 sm:px-6 lg:px-10 py-5 lg:py-8 rp-dash-content transition-[margin] duration-200 ${isCollapsed ? 'lg:ml-[76px]' : 'lg:ml-[232px]'}`}>
         <div className="flex items-center justify-between lg:hidden mb-5">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -32,7 +32,11 @@ export default function DashboardLayout({ variant = 'client' }) {
             Menu
           </button>
         </div>
-        <Topbar variant={variant} />
+
+        <div className="rp-topbar-bar -mx-4 sm:-mx-6 lg:-mx-10 px-4 sm:px-6 lg:px-10 pt-2 pb-2 bg-white mb-5 sm:mb-6">
+          <Topbar variant={variant} />
+        </div>
+
         <Outlet />
       </main>
     </div>

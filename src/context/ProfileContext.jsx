@@ -9,7 +9,7 @@ const defaultProfile = {
   lastName: 'Hopkins',
   email: 'JohnHopkins123@gmail.com',
   phone: '+44 123 12334 22',
-  avatar: 'https://i.pravatar.cc/160?img=13',
+  avatar: 'https://ui-avatars.com/api/?name=John+Hopkins&background=e6e9ef&color=475467&size=160',
   notifications: {
     push: true,
     email: false,

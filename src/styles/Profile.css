@@ -3,12 +3,13 @@
    DashboardShared.css. */
 
 .rp-button.rp-profile-save {
-  width: 100%;
+  width: 320px;
+  max-width: 100%;
   height: 54px;
   border-radius: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
-  background: #12b14e;
+  background: #10b981;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 16px;
@@ -17,4 +18,205 @@
   text-align: center;
   vertical-align: middle;
   color: #ffffff;
+}
+
+/* Personal Info card (identity + avatar) — exact Figma values. */
+.rp-profile-info-card {
+  width: 624px;
+  min-height: 653px;
+  gap: 20px;
+  border-radius: 18px;
+  padding: 16px 16px 26px 16px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px rgba(11, 28, 48, 0.25);
+}
+
+@media (max-width: 1023px) {
+  .rp-profile-info-card {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* Identity "Update" button: flat solid dark teal #084C55 (Figma), overriding
+   the shared `primary` gradient. Width/text/behavior untouched. */
+.rp-button.rp-profile-update {
+  background: #084c55;
+  background-image: none;
+  box-shadow: none;
+}
+
+.rp-button.rp-profile-update:hover {
+  background: #0a5a65;
+}
+
+/* Password & Security card (right column) — Figma size 440x182, gap 16. */
+.rp-profile-security-card {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: 100%;
+  min-height: 182px;
+  gap: 16px;
+  border-radius: 18px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px rgba(11, 28, 48, 0.25);
+}
+
+/* Notification Preferences card (right column) — Figma size 440x116, gap 16. */
+.rp-profile-notif-card {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: 100%;
+  min-height: 116px;
+  gap: 16px;
+  border-radius: 18px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4.8px 0px rgba(11, 28, 48, 0.25);
+}
+
+@media (max-width: 1023px) {
+  .rp-profile-security-card,
+  .rp-profile-notif-card {
+    width: 100% !important;
+    min-height: auto !important;
+  }
+}
+
+/* Property card action — full-width dark teal "Upload" button. */
+.rp-button.rp-property-upload {
+  background: #084c55;
+  background-image: none;
+  box-shadow: none;
+}
+
+.rp-button.rp-property-upload:hover {
+  background: #0a5a65;
+}
+
+/* ---------- EPC Certificate dropzone (empty state) ---------- */
+.rp-epc-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 32px 24px;
+  border: 1.5px dashed #c8ced6;
+  border-radius: 14px;
+  background: #fbfcfd;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.rp-epc-dropzone:hover {
+  background: #f7f8fa;
+  border-color: #98a2b3;
+}
+
+.rp-epc-dropzone-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #eef3f7;
+  color: #0f1b2e;
+  margin-bottom: 6px;
+}
+
+.rp-epc-dropzone-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #101828;
+}
+
+.rp-epc-dropzone-hint {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
+  color: #667085;
+}
+
+.rp-epc-dropzone-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 8px;
+  background: #0b1c30;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rp-epc-dropzone-btn:hover {
+  background: #142238;
+}
+
+/* ---------- EPC Certificate file row (already-uploaded state) ---------- */
+.rp-epc-uploaded {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.rp-epc-uploaded-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #eef3f7;
+  color: #1fae5c;
+  flex-shrink: 0;
+}
+
+.rp-epc-uploaded-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #101828;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rp-epc-uploaded-meta {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #667085;
+}
+
+.rp-epc-replace {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.02em;
+  color: #1fae5c;
+}
+
+.rp-epc-replace:hover {
+  text-decoration: underline;
 }

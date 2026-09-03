@@ -33,6 +33,55 @@ function formatNotifTime(value) {
   });
 }
 
+/** True only when `value` is a usable image source (http(s) URL or data-image URI). */
+export function isImageSource(value) {
+  return typeof value === 'string' && value.length > 0 && /^(https?:\/\/|data:image\/)/i.test(value);
+}
+
+/** Fallback initials derived from a display name ("Jane Doe" -> "JD"). */
+export function getAvatarInitials(name = '') {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Topbar avatar — always renders a clean circle: the profile image when a
+ * valid avatar source is set, or fallback initials otherwise. The raw avatar
+ * string is NEVER rendered as text content, so a stale/garbage avatar value
+ * (e.g. a persisted toast/notification/error message) can never leak into the
+ * UI. A failed image load swaps to initials instead of showing broken content.
+ */
+export function TopbarAvatar({ avatar, name = '', className = '' }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = isImageSource(avatar) && !failed;
+
+  if (!showImage) {
+    return (
+      <span
+        aria-hidden="true"
+        className={`inline-flex items-center justify-center rounded-full bg-[#e6e9ef] text-navy-900 font-semibold select-none ${className}`}
+      >
+        {getAvatarInitials(name)}
+      </span>
+    );
+  }
+  return (
+    <img
+      src={avatar}
+      alt="User avatar"
+      onError={() => setFailed(true)}
+      className={`rounded-full object-cover bg-[#e6e9ef] ${className}`}
+    />
+  );
+}
+
+/** Display name used to derive the avatar fallback initials. */
+function avatarName(profile) {
+  return `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`.trim() || profile?.email || '';
+}
+
 export default function Topbar({ variant = 'client' }) {
   const [openNotif, setOpenNotif] = useState(false);
   const [openGrid, setOpenGrid] = useState(false);
@@ -192,7 +241,7 @@ export default function Topbar({ variant = 'client' }) {
     <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 rp-dash-topbar" ref={ref}>
       <div className="rp-dash-topbar-search relative">
         <div className="relative rp-dash-topbar-search-field">
-          <label htmlFor="topbar-search-input" className="sr-only">Search projects and services</label>
+          <label htmlFor="topbar-search-input" className="sr-only">Search retrofit services</label>
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
           <input
             id="topbar-search-input"
@@ -201,7 +250,7 @@ export default function Topbar({ variant = 'client' }) {
             onFocus={() => {
               if (searchQuery.trim().length >= SEARCH_MIN_CHARS) setSearchOpen(true);
             }}
-            placeholder="Search projects & services..."
+            placeholder="Search retrofit services..."
             className="rp-topbar-search-input w-full bg-white pl-11 pr-4 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
           />
         </div>
@@ -264,10 +313,12 @@ export default function Topbar({ variant = 'client' }) {
           className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-line flex items-center justify-center"
         >
           <Bell size={18} className="text-ink" />
-          {unreadCount > 0 && (
+          {unreadCount > 0 ? (
             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-white text-[10px] font-bold flex items-center justify-center">
               {unreadCount}
             </span>
+          ) : (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger border border-white" />
           )}
         </button>
         {openNotif && (
@@ -330,10 +381,10 @@ export default function Topbar({ variant = 'client' }) {
         {variant === 'admin' ? (
           // Admin dashboard: the avatar is a plain, inert display element —
           // no click handler, no navigation, no clickable styling.
-          <img
-            src={profile.avatar}
-            alt="User avatar"
-            className="w-11 h-11 rounded-full object-cover"
+          <TopbarAvatar
+            avatar={profile.avatar}
+            name={avatarName(profile)}
+            className="w-11 h-11"
           />
         ) : (
           <button
@@ -342,10 +393,10 @@ export default function Topbar({ variant = 'client' }) {
             onClick={() => navigate('/profile')}
             className="p-0 rounded-full border-0 bg-transparent cursor-pointer"
           >
-            <img
-              src={profile.avatar}
-              alt="User avatar"
-              className="w-11 h-11 rounded-full object-cover"
+            <TopbarAvatar
+              avatar={profile.avatar}
+              name={avatarName(profile)}
+              className="w-11 h-11"
             />
           </button>
         )}

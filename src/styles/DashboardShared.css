@@ -51,14 +51,14 @@
 
 /* ---------- Shared sidebar ---------- */
 .rp-sidebar {
-  background-color: #0a1628;
+  background-color: #0b1c30;
 }
 
 .rp-sidebar-brand {
   display: flex;
   align-items: center;
   gap: 12.38px;
-  margin-left: 98.59px;
+  margin-left: 91px;
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -72,7 +72,7 @@
 }
 
 .rp-sidebar-divider {
-  width: 202px;
+  width: 188px;
   height: 0;
   margin-top: 32.09px;
   margin-left: 24px;
@@ -114,7 +114,7 @@ a.rp-sidebar-link-active {
   justify-content: center;
   gap: 10px;
   background: #ffffff;
-  width: 220px;
+  width: 204px;
   height: 47px;
   border-radius: 15px;
   border-right: 1.5px solid rgba(11, 28, 48, 0.12);
@@ -129,6 +129,12 @@ a.rp-sidebar-link-active {
 }
 
 /* ---------- Shared topbar ---------- */
+/* Full-width white bar wrapping the search + utility icons (Figma global
+   top header). The Topbar's own bottom margin is suppressed inside the bar. */
+.rp-topbar-bar .rp-dash-topbar {
+  margin-bottom: 0;
+}
+
 .rp-topbar-search-input {
   height: 52px;
   border-radius: 12px;
@@ -243,8 +249,8 @@ a.rp-sidebar-link-active {
   height: 16px;
 }
 
-/* Search bar: always visible at every size. It flexes to fill the available
-   space, capped at its 634px design width so desktop stays identical. */
+/* Search bar: flexes to fill the top bar, wrapped in a max-width container
+   and centered so it aligns cleanly with the right-side utility icons. */
 .rp-dash-topbar-search {
   flex: 1 1 auto;
   min-width: 0;

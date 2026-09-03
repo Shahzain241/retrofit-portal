@@ -17,12 +17,12 @@ export default function StatCard({ icon: Icon, value, label, variant = 'default'
     );
   }
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-line/60">
-      <div className="w-9 h-9 rounded-lg bg-surface flex items-center justify-center mb-3 sm:mb-4">
+    <div className="bg-white rounded-xl p-2.5 sm:p-3 border border-line/60 shadow-[0px_4px_4.8px_0px_rgba(11,28,48,0.25)]">
+      <div className="flex items-center justify-center mb-2 w-[35px] h-[35px] rounded-[4px] bg-[rgba(11,28,48,0.11)] shadow-[0px_4px_4.8px_0px_rgba(11,28,48,0.25)]">
         <Icon size={16} className="text-ink" />
       </div>
-      <p className={`text-2xl sm:text-3xl font-bold ${variant === 'danger' ? 'text-danger' : 'text-brand-green'}`}>{value}</p>
-      <p className="text-[11px] sm:text-xs font-semibold tracking-wide text-muted mt-1 uppercase">{label}</p>
+      <p className={`text-[28px] leading-none font-bold ${variant === 'danger' ? 'text-danger' : 'text-[#12B14E]'}`}>{value}</p>
+      <p className="text-[12px] font-semibold tracking-wide text-[#6B7280] mt-1 uppercase">{label}</p>
     </div>
   );
 }
