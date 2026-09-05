@@ -189,7 +189,7 @@ export default function PaymentMethodCard() {
             Your default payment method is used for all recurring subscription charges and project extras.
           </p>
           <Button
-            variant="primary"
+            variant="gradient"
             icon={Plus}
             className="w-full rp-pay-add"
             onClick={() => openModal('backup')}

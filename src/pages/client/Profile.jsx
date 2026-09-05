@@ -39,10 +39,6 @@ export default function Profile() {
   const [pwForm, setPwForm] = useState({ current: '', next: '' });
   const [pwError, setPwError] = useState('');
   const [lastChanged, setLastChanged] = useState('3 months ago');
-  const [editingEmail, setEditingEmail] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
-  const [emailNote, setEmailNote] = useState('');
-  const [emailError, setEmailError] = useState('');
   const fileRef = useRef(null);
   const epcFileRef = useRef(null);
   const didInit = useRef(false);
@@ -129,52 +125,36 @@ export default function Profile() {
   function handleSaveIdentity(e) {
     e.preventDefault();
     if (!userId) return;
-    supabase
+    const newEmail = (form.email || '').trim();
+    const emailChanged =
+      newEmail.toLowerCase() !== (profile.email || '').toLowerCase();
+
+    const profileUpdate = supabase
       .from('profiles')
       .update({ first_name: form.firstName, last_name: form.lastName, phone: form.phone })
-      .eq('id', userId)
-      .then(({ error }) => {
-        if (error) {
-          showToast({ type: 'error', message: error.message || 'Could not update profile.' });
-          return;
-        }
-        updateProfile(form);
-        flashSaved();
-        showToast({ type: 'success', message: 'Profile updated' });
-      });
-  }
+      .eq('id', userId);
 
-  function handleEmailChange() {
-    const email = newEmail.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError('Please enter a valid email address.');
-      showToast({ type: 'error', message: 'Please enter a valid email address.' });
-      return;
-    }
-    if (email.toLowerCase() === form.email.toLowerCase()) {
-      setEmailError('New email must be different from your current email.');
-      showToast({ type: 'error', message: 'New email must be different from your current email.' });
-      return;
-    }
-    setEmailError('');
-    // profiles.email is NOT updated here — the change only takes effect once
-    // the user clicks the confirmation link sent to the new address (the
-    // USER_UPDATED sync in ProfileContext handles the post-confirmation write).
-    supabase.auth
-      .updateUser({ email })
-      .then(({ error }) => {
-        if (error) {
-          setEmailError(error.message || 'Could not update email.');
-          showToast({ type: 'error', message: error.message || 'Could not update email.' });
-          return;
-        }
-        setEmailNote(
-          'A confirmation link has been sent to your new email. Your email address will not change until you click it.',
-        );
-        setEditingEmail(false);
-        setNewEmail('');
-        showToast({ type: 'success', message: 'Confirmation link sent to your new email' });
-      });
+    // Changing the login email must go through auth (a confirmation link is
+    // emailed to the new address; the address only switches once it's clicked).
+    const emailUpdate = emailChanged
+      ? supabase.auth.updateUser({ email: newEmail })
+      : Promise.resolve({ error: null });
+
+    Promise.all([profileUpdate, emailUpdate]).then(([prof, auth]) => {
+      if (prof.error || auth.error) {
+        const msg = (prof.error || auth.error || {}).message || 'Could not update profile.';
+        showToast({ type: 'error', message: msg });
+        return;
+      }
+      // Keep the current email locally until the confirmation link is used.
+      updateProfile({ ...form, email: profile.email });
+      flashSaved();
+      showToast(
+        emailChanged
+          ? { type: 'success', message: 'Confirmation link sent to your new email' }
+          : { type: 'success', message: 'Profile updated' },
+      );
+    });
   }
 
   function handleSaveProperty(e) {
@@ -345,7 +325,7 @@ export default function Profile() {
 
   return (
     <div className="w-full max-w-[1200px] mx-auto">
-      <h1 className="text-2xl font-bold text-ink">Profile & Settings</h1>
+      <h1 className="text-[28px] leading-[40px] font-bold text-ink">Profile & Settings</h1>
       <p className="text-body mt-1 mb-6">
         Manage your personal identity, property portfolio, and security preferences.
       </p>
@@ -393,55 +373,14 @@ export default function Profile() {
               />
             </div>
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="profile-email" className="block text-sm font-semibold text-ink">Email Address</label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingEmail((v) => !v);
-                    if (!editingEmail) {
-                      setNewEmail('');
-                      setEmailNote('');
-                      setEmailError('');
-                    }
-                  }}
-                  className="text-brand-green text-sm font-semibold"
-                >
-                  {editingEmail ? 'CANCEL' : 'EDIT'}
-                </button>
-              </div>
+              <label htmlFor="profile-email" className="block text-sm font-semibold text-ink mb-2">Email Address</label>
               <input
                 id="profile-email"
                 type="email"
                 value={form.email}
                 onChange={set('email')}
-                readOnly
                 className="w-full rounded-xl border border-line px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
               />
-              {emailNote && <p className="text-sm text-brand-green mt-2">{emailNote}</p>}
-              {editingEmail && (
-                <div className="mt-3 space-y-3">
-                  <div>
-                    <label htmlFor="profile-new-email" className="block text-sm font-semibold text-ink mb-2">New Email</label>
-                    <input
-                      id="profile-new-email"
-                      type="email"
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      className="w-full rounded-xl border border-line px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                    />
-                  </div>
-                  {emailError && <p className="text-sm text-danger">{emailError}</p>}
-                  <Button
-                    type="button"
-                    variant="navy"
-                    onClick={handleEmailChange}
-                    className="w-full !py-2.5 text-sm"
-                  >
-                    Update Email
-                  </Button>
-                </div>
-              )}
             </div>
             <div>
               <label htmlFor="profile-phone" className="block text-sm font-semibold text-ink mb-2">Phone Number</label>
@@ -462,7 +401,7 @@ export default function Profile() {
         {/* Right side column (~35%) */}
         <div className="space-y-6">
           <div className="rp-profile-security-card">
-            <h4 className="font-bold text-ink">Password & Security</h4>
+            <h4 className="text-[18px] leading-[28px] font-semibold text-ink">Password & Security</h4>
             <p className="text-sm text-body">
               Change your password to keep your account secure.
             </p>
@@ -530,7 +469,7 @@ export default function Profile() {
           </div>
 
           <div className="rp-profile-notif-card">
-            <h4 className="font-bold text-ink">Notification Preferences</h4>
+            <h4 className="text-[18px] leading-[28px] font-semibold text-ink">Notification Preferences</h4>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-ink">Receive Push Notification</p>
@@ -547,12 +486,12 @@ export default function Profile() {
       {/* Bottom section: Primary Property Details (large white card) */}
       <form onSubmit={handleSaveProperty} className="bg-white rounded-2xl border border-line/60 shadow-sm p-6 mt-6">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-ink">Primary Property Details</h4>
+          <h4 className="text-[18px] leading-[28px] font-semibold text-ink">Primary Property Details</h4>
           <Badge variant="green">VERIFIED</Badge>
         </div>
         <div className="space-y-5">
           <div>
-            <label htmlFor="profile-address" className="block text-sm font-semibold text-ink mb-2">Address</label>
+            <label htmlFor="profile-address" className="block text-xs font-medium leading-none text-[#45464D] mb-2">Address</label>
             <input
               id="profile-address"
               value={property.address}
@@ -561,7 +500,7 @@ export default function Profile() {
             />
           </div>
           <div>
-            <label htmlFor="profile-property-type" className="block text-sm font-semibold text-ink mb-2">Property Type</label>
+            <label htmlFor="profile-property-type" className="block text-xs font-medium leading-none text-[#45464D] mb-2">Property Type</label>
             <input
               id="profile-property-type"
               value={property.type}
@@ -570,7 +509,7 @@ export default function Profile() {
             />
           </div>
           <div>
-            <label htmlFor="profile-epc-number" className="block text-sm font-semibold text-ink mb-2">EPC Number</label>
+            <label htmlFor="profile-epc-number" className="block text-xs font-medium leading-none text-[#45464D] mb-2">EPC Number</label>
             <input
               id="profile-epc-number"
               value={property.epcNumber}

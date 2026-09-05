@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Grid3x3 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { publicServices } from '../data/services';
 import { clientLinks, adminLinks } from '../data/sidebarLinks';
@@ -61,7 +61,7 @@ export function TopbarAvatar({ avatar, name = '', className = '' }) {
     return (
       <span
         aria-hidden="true"
-        className={`inline-flex items-center justify-center rounded-full bg-[#e6e9ef] text-navy-900 font-semibold select-none ${className}`}
+        className={`inline-flex items-center justify-center rounded-full bg-[#e6e9ef] text-navy-900 font-semibold select-none border-2 border-[#0F9D58] ${className}`}
       >
         {getAvatarInitials(name)}
       </span>
@@ -72,8 +72,53 @@ export function TopbarAvatar({ avatar, name = '', className = '' }) {
       src={avatar}
       alt="User avatar"
       onError={() => setFailed(true)}
-      className={`rounded-full object-cover bg-[#e6e9ef] ${className}`}
+      className={`rounded-full object-cover bg-[#e6e9ef] border-2 border-[#0F9D58] ${className}`}
     />
+  );
+}
+
+/** Material-style outlined bell (Google "notifications" silhouette): rounded
+ * dome top, small knob on the crown, straight vertical sides, a flat bottom
+ * bar wider than the dome, and a small semicircle clapper hanging below it.
+ * Drawn hollow/outline (stroke) in the current color — not solid-filled.
+ * lucide-react only ships rounded-dome Bell variants, so this is custom. */
+function SolidBellIcon({ size = 18, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M7 9.5A5 5 0 0 1 17 9.5L17 17.4L18.5 17.4L18.5 19.2L5.5 19.2L5.5 17.4L7 17.4Z"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.4 19.2A1.6 1.6 0 0 0 13.6 19.2"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="3.2" r="1.6" stroke="currentColor" strokeWidth={2.2} />
+    </svg>
+  );
+}
+
+/** Solid 3x3 dots grid (app-launcher style) — matches the Figma apps-menu icon. */
+function DotsGridIcon({ size = 18, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <g fill="currentColor">
+        <circle cx="5" cy="5" r="2.4" />
+        <circle cx="12" cy="5" r="2.4" />
+        <circle cx="19" cy="5" r="2.4" />
+        <circle cx="5" cy="12" r="2.4" />
+        <circle cx="12" cy="12" r="2.4" />
+        <circle cx="19" cy="12" r="2.4" />
+        <circle cx="5" cy="19" r="2.4" />
+        <circle cx="12" cy="19" r="2.4" />
+        <circle cx="19" cy="19" r="2.4" />
+      </g>
+    </svg>
   );
 }
 
@@ -302,7 +347,7 @@ export default function Topbar({ variant = 'client' }) {
         )}
       </div>
 
-      <div className="relative shrink-0">
+      <div className="relative shrink-0 ml-2 -mr-2">
         <button
           aria-label="Open notifications"
           onClick={() => {
@@ -310,13 +355,11 @@ export default function Topbar({ variant = 'client' }) {
             setOpenGrid(false);
             if (!openNotif) loadNotifications(userId);
           }}
-          className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-line flex items-center justify-center"
+          className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center"
         >
-          <Bell size={18} className="text-ink" />
+          <SolidBellIcon size={18} className="text-ink" />
           {unreadCount > 0 ? (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-danger text-white text-[10px] font-bold flex items-center justify-center">
-              {unreadCount}
-            </span>
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-danger border border-white" />
           ) : (
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger border border-white" />
           )}
@@ -345,16 +388,16 @@ export default function Topbar({ variant = 'client' }) {
         )}
       </div>
 
-      <div className="relative shrink-0 hidden sm:block">
+      <div className="relative shrink-0 hidden sm:block -ml-2 -mr-2">
         <button
           aria-label="Open apps menu"
           onClick={() => {
             setOpenGrid((v) => !v);
             setOpenNotif(false);
           }}
-          className="w-11 h-11 rounded-full bg-white border border-line flex items-center justify-center"
+          className="w-11 h-11 flex items-center justify-center"
         >
-          <Grid3x3 size={18} className="text-ink" />
+          <DotsGridIcon size={18} className="text-ink" />
         </button>
         {openGrid && (
           <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-line p-3 grid grid-cols-3 gap-2 z-50">
@@ -377,14 +420,14 @@ export default function Topbar({ variant = 'client' }) {
         )}
       </div>
 
-      <div className="flex items-center gap-3 pl-1 border-l border-line shrink-0">
+      <div className="relative shrink-0">
         {variant === 'admin' ? (
           // Admin dashboard: the avatar is a plain, inert display element —
           // no click handler, no navigation, no clickable styling.
           <TopbarAvatar
             avatar={profile.avatar}
             name={avatarName(profile)}
-            className="w-11 h-11"
+            className="w-[35px] h-[35px]"
           />
         ) : (
           <button
@@ -396,7 +439,7 @@ export default function Topbar({ variant = 'client' }) {
             <TopbarAvatar
               avatar={profile.avatar}
               name={avatarName(profile)}
-              className="w-11 h-11"
+              className="w-[35px] h-[35px]"
             />
           </button>
         )}

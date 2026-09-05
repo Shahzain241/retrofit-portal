@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 import StatusPill from '../../components/StatusPill';
 import ProgressBar from '../../components/ProgressBar';
@@ -23,6 +23,7 @@ function formatAddress(project) {
 }
 
 export default function MyProjects() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('All');
   const [projects, setProjects] = useState([]);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -131,14 +132,14 @@ export default function MyProjects() {
                   <StatusPill>{p.status === 'completed' ? 'Completed' : 'Coordination'}</StatusPill>
                 </td>
                 <td className="px-6 py-5 text-right">
-                  <Link to={`/projects/${p.id}`}>
-                    <Button
-                      variant="gradient"
-                      className="rp-table-btn-view !py-2 !px-6"
-                    >
-                      View
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="gradient"
+                    type="button"
+                    className="rp-table-btn-view !py-2 !px-6"
+                    onClick={() => navigate(`/projects/${p.id}`)}
+                  >
+                    View
+                  </Button>
                 </td>
               </tr>
             ))}

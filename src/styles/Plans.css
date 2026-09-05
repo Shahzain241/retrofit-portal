@@ -5,3 +5,9 @@
   border: 1px solid #c4c4c442;
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
 }
+
+/* "Current Plan" stays non-clickable but must render the SAME rich gradient
+   as "Contact Sales" — override the browser's default disabled dimming. */
+.rp-button.rp-plan-current:disabled {
+  opacity: 1;
+}

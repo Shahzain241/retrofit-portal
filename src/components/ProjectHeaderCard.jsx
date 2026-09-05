@@ -4,6 +4,26 @@ import clientdash4 from '../assets/clientdash4.jpg';
 import { coordinatorById, formatLocation } from '../data/projects';
 import { label, USER_ROLE } from '../data/enums';
 
+/** Map stored service codes to clean display labels; title-case unknown values. */
+const SERVICE_TAG_LABELS = {
+  hvac: 'HVAC Retrofit',
+  'hvac retrofit': 'HVAC Retrofit',
+  insulation: 'Insulation Upgrade',
+  'insulation upgrade': 'Insulation Upgrade',
+  solar: 'Solar Installation',
+  'solar installation': 'Solar Installation',
+  'heat pump': 'Heat Pump Installation',
+  'heat pump installation': 'Heat Pump Installation',
+  eco4: 'ECO4',
+};
+
+function formatTag(value) {
+  const key = String(value || '').trim().toLowerCase();
+  if (SERVICE_TAG_LABELS[key]) return SERVICE_TAG_LABELS[key];
+  if (!value) return 'Service';
+  return String(value).replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
 /**
  * Project header card rendered at the top of the client Project Detail page —
  * image, address/tag, coordinator, and progress. Uses the shared ProgressBar.
@@ -24,7 +44,7 @@ export default function ProjectHeaderCard({ project }) {
             <p className="text-body mt-1">{formatLocation(project)}</p>
           </div>
           <span className="bg-brand-green-light text-brand-green text-xs font-bold px-3 py-1.5 rounded-full shrink-0">
-            {project.tag}
+            {formatTag(project.tag)}
           </span>
         </div>
 

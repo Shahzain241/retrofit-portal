@@ -2,52 +2,88 @@
    `.dashboard-banner` lives in DashboardShared.css (shared with admin). */
 
 /* Client hero banner spans the full content width so its right edge aligns
-   with the four stat cards below. */
+   with the four stat cards below. Base gradient + 20px radius (Figma Hero
+   Section) are inherited from `.dashboard-banner` in DashboardShared.css —
+   no solid-background or radius override here. */
 .dashboard-banner.dashboard-banner-client {
   width: 100%;
-  background: #0b1c30;
-  border-radius: 16px;
+  border-radius: 20px;
 }
 
 .dashboard-banner-rings {
   position: absolute;
-  top: 20px;
-  right: -40px;
-  width: 220px;
-  height: 220px;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
   overflow: visible;
   pointer-events: none;
 }
 
-.ring {
+/* Decorative rings on the hero banner. Both are pure stroke-only outlines in
+   the clean vibrant green (#12B14E, 12px): transparent centers, no fill, no
+   box-shadow, no outline. Named rp-banner-* (not `ring`/`ring-1`) so nothing
+   can collide with Tailwind's ring utilities or add an extra outline.
+   Geometry matches Figma Ellipse 529 (large) + Ellipse 528 (small): sizes,
+   banner-relative offsets (banner is 1122px wide), 62.79deg rotation and the
+   per-ellipse opacity. */
+.rp-banner-ring {
   position: absolute;
   border-radius: 50%;
-  border: 12px solid #0F9D58;
-  opacity: 0.9;
+  border: 22px solid #12B14E;
+  box-sizing: border-box;
 }
 
-.ring-1 {
-  width: 140px;
-  height: 140px;
-  top: 10px;
-  right: 30px;
-  border: 12px solid #0F9D58;
-  opacity: 0.9;
+/* Large ring (Ellipse 529): 200x200, cropped by the banner's overflow:hidden
+   — its top (-59px) extends past the banner's top edge. */
+.rp-banner-ring-1 {
+  width: 200px;
+  height: 200px;
+  top: -59px;
+  right: 48px;
+  transform: rotate(62.79deg);
+  opacity: 1;
+  z-index: 2;
 }
 
-.ring-2 {
-  width: 90px;
-  height: 90px;
-  top: 100px;
-  right: 90px;
-  border: 12px solid #0F9D58;
-  opacity: 0.5;
+/* Small ring (Ellipse 528): slightly elliptical, tucked behind the large ring
+   (lower z-index), overlapping its bottom-right; its right edge bleeds past
+   the banner's right edge and is clipped. */
+.rp-banner-ring-2 {
+  width: 193px;
+  height: 201.5px;
+  top: 41px;
+  right: -52px;
+  transform: rotate(62.79deg);
+  opacity: 0.69;
+  z-index: 1;
+}
+
+/* Third ring (Ellipse 530): 200x200, lower-left of the large ring, cropped by
+   the banner's bottom edge (top 138 + height 200 > 259px banner height). */
+.rp-banner-ring-3 {
+  width: 200px;
+  height: 200px;
+  top: 138px;
+  right: 127px;
+  transform: rotate(62.79deg);
+  opacity: 0.53;
+  z-index: 0;
 }
 
 .dashboard-stats-grid {
-  margin-top: -60px;
+  margin-top: -67px;
   position: relative;
   z-index: 2;
+}
+
+/* Overlapping stats section (Figma): 1120x163, 4 columns, 24px gaps, 1 row.
+   The single row fills the section height (cards stay 262x163). */
+@media (min-width: 1024px) {
+  .dashboard-stats-grid {
+    height: 163px;
+    grid-auto-rows: 1fr;
+  }
 }
 
 /* Tablet: stat cards 2 columns, banner fills width */
@@ -158,12 +194,20 @@
   border-radius: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
-  background: #0b1c30;
-  background-image: none;
+  background: linear-gradient(269.98deg, #12B14E -214.32%, #003366 99.98%);
+}
+
+/* Container wrapping the "Open Project" button: 325x62, 16px gap above,
+   8px top padding (button 54px sits inset 8px). */
+.rp-dash-proj-btn-wrap {
+  width: 325px;
+  height: 62px;
+  padding-top: 8px;
+  margin-top: 16px;
 }
 
 .rp-button.rp-dash-proj-btn:hover {
-  background: #142238;
+  background: linear-gradient(269.98deg, #0fa042 -214.32%, #002850 99.98%);
 }
 
 /* Progress fill on the dashboard project cards (emerald green per Figma). */
@@ -174,7 +218,15 @@
 /* Upgrade panel + button */
 .rp-upgrade-banner {
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
-  background: #f3f4f6;
+  background: #e9e8e9;
+  border-radius: 18px;
+  padding: 20px 16px;
+}
+
+@media (min-width: 640px) {
+  .rp-upgrade-banner {
+    height: 101px;
+  }
 }
 
 .rp-button.rp-upgrade-btn {
@@ -187,9 +239,9 @@
   color: #ffffff;
   width: 168.61px;
   height: 44px;
-  border-radius: 9999px;
+  border-radius: 8px;
   padding: 10px 32px;
-  background: #10b981;
+  background: var(--eco, #12B14E);
 }
 
 /* Loading skeleton for stat cards (reuses the .skeleton-block shimmer from

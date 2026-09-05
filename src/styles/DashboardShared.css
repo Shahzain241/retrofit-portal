@@ -129,10 +129,20 @@ a.rp-sidebar-link-active {
 }
 
 /* ---------- Shared topbar ---------- */
-/* Full-width white bar wrapping the search + utility icons (Figma global
-   top header). The Topbar's own bottom margin is suppressed inside the bar. */
+/* Topbar frame (Figma 2147228199): 877px wide, 52px tall, with the search and
+   the right-side utility icons (bell, grid, avatar) spread space-between.
+   The Topbar's own bottom margin is suppressed inside the bar. */
+.rp-topbar-bar {
+  display: flex;
+  align-items: center;
+  height: 52px;
+}
+
 .rp-topbar-bar .rp-dash-topbar {
   margin-bottom: 0;
+  width: 100%;
+  height: 52px;
+  justify-content: space-between;
 }
 
 .rp-topbar-search-input {

@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
   Check,
   CheckCircle2,
   ChevronRight,
-  ClipboardCheck,
   FolderOpen,
-  Star,
-  Zap,
 } from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
@@ -46,6 +43,7 @@ const STAFF_ROLES = ['coordinator', 'designer', 'assessor'];
 
 export default function ClientDashboard() {
   const { profile } = useProfile();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [projects, setProjects] = useState([]);
@@ -138,12 +136,12 @@ export default function ClientDashboard() {
       })}`;
 
       setClientStats([
-        { id: 'stat-active-projects', icon: ClipboardCheck, value: activeCount, label: 'Active Projects' },
-        { id: 'stat-completed', icon: CheckCircle2, value: completedCount, label: 'Completed' },
-        { id: 'stat-funding-secured', icon: Star, value: fundingText, label: 'Funding Secured' },
+        { id: 'stat-active-projects', icon: ActiveProjectsIcon, value: activeCount, label: 'Active Projects' },
+        { id: 'stat-completed', icon: CompletedIcon, value: completedCount, label: 'Completed' },
+        { id: 'stat-funding-secured', icon: FundingSecuredIcon, value: fundingText, label: 'Funding Secured' },
         // Compliance has no backing table/feature yet — honest placeholder,
         // never a fabricated figure.
-        { id: 'stat-compliance', icon: Zap, value: '—', label: 'Compliance' },
+        { id: 'stat-compliance', icon: ComplianceIcon, value: '—', label: 'Compliance' },
       ]);
     } catch {
       setHasError(true);
@@ -186,10 +184,11 @@ export default function ClientDashboard() {
 
   return (
     <div>
-      <div className="dashboard-banner dashboard-banner-client rounded-3xl text-white p-6 sm:p-8">
+      <div className="dashboard-banner dashboard-banner-client text-white p-6 sm:p-8">
         <div className="dashboard-banner-rings">
-          <span className="ring ring-1" />
-          <span className="ring ring-2" />
+          <span className="rp-banner-ring rp-banner-ring-3" />
+          <span className="rp-banner-ring rp-banner-ring-2" />
+          <span className="rp-banner-ring rp-banner-ring-1" />
         </div>
         <h1 className="font-['Inter'] font-bold text-[32px] leading-[40px] tracking-[-0.64px] align-middle text-white relative z-10">Good morning {profile.firstName}!</h1>
         <p className="text-white/70 mt-2 relative z-10">
@@ -206,7 +205,7 @@ export default function ClientDashboard() {
           <button onClick={retryFetch} className="error-state-action">Retry</button>
         </div>
       ) : (
-        <div className="dashboard-stats-grid grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
+        <div className="dashboard-stats-grid grid grid-cols-2 md:grid-cols-4 gap-6 mb-[60px]">
           {isLoading
             ? clientStats.map((_, i) => <StatCardSkeleton key={i} />)
             : clientStats.map((s, i) => (
@@ -223,18 +222,18 @@ export default function ClientDashboard() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="empty-state mb-8">
+        <div className="empty-state mb-[60px]">
           <FolderOpen size={40} className="empty-state-icon" />
           <p className="empty-state-title">No active projects yet</p>
           <p className="empty-state-desc">Start a retrofit project to see it here.</p>
           <Link to="/services" className="empty-state-action">Browse Services</Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-[60px]">
           {projects.map((project) => {
           const isInProgress = project.status !== 'completed';
           const statusChip = isInProgress
-            ? 'bg-brand-green-light text-brand-green'
+            ? 'bg-[#6BFF8FB8] text-[#006E2F]'
             : 'bg-line text-muted';
           return (
           <div
@@ -247,7 +246,7 @@ export default function ClientDashboard() {
                 alt={project.title}
                 className="w-full h-full object-cover"
               />
-              <span className={`absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 ${statusChip}`}>
+              <span className={`absolute top-3 left-3 font-['Inter'] text-xs font-bold tracking-[0.6px] px-3 py-[10px] rounded-full flex items-center gap-[4px] backdrop-blur-[3.8px] ${statusChip}`}>
                 {isInProgress ? <Check size={12} /> : <CheckCircle2 size={12} />}
                 {isInProgress ? 'IN PROGRESS' : 'COMPLETED'}
               </span>
@@ -276,14 +275,16 @@ export default function ClientDashboard() {
                 </div>
               </div>
 
-              <Link to={`/projects/${project.id}`}>
+              <div className="rp-dash-proj-btn-wrap">
                 <Button
                   variant="gradient"
-                  className="w-full mt-14 rp-dash-proj-btn"
+                  type="button"
+                  className="w-full rp-dash-proj-btn"
+                  onClick={() => navigate(`/projects/${project.id}`)}
                 >
                   Open Project
                 </Button>
-              </Link>
+              </div>
             </div>
           </div>
           );
@@ -303,5 +304,99 @@ function StatCardSkeleton() {
       <div className="skeleton-block skeleton-stat-value" />
       <div className="skeleton-block skeleton-stat-label" />
     </div>
+  );
+}
+
+/* Active Projects: a two-layer icon — an OUTLINE archive/box base (stroke
+   only, transparent fill) with a small SOLID dark-navy circle badge + white
+   check layered over its bottom-right corner, per the Figma design. */
+function ActiveProjectsIcon({ className = '' }) {
+  const size = 24;
+  const badgeSize = Math.round(size * 0.5);
+  return (
+    <span
+      className={`relative inline-flex shrink-0 ${className}`}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2" y="3" width="20" height="5" rx="1" />
+        <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+        <path d="M10 12h4" />
+      </svg>
+      <svg
+        width={badgeSize}
+        height={badgeSize}
+        viewBox="0 0 24 24"
+        className="absolute"
+        style={{ right: -2, bottom: -2 }}
+      >
+        <circle cx="12" cy="12" r="10" fill="currentColor" />
+        <path
+          d="M8 12.5l2.7 2.7L16.6 9.3"
+          stroke="#ffffff"
+          strokeWidth={3.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function CompletedIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="M8 12.5l2.7 2.7L16.6 9.3"
+        stroke="#ffffff"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function FundingSecuredIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        paintOrder="stroke fill"
+        d="M12 2.7l2.75 5.57 6.15.9-4.45 4.34 1.05 6.13L12 17.1l-5.5 2.89 1.05-6.13L3.1 9.17l6.15-.9L12 2.7Z"
+      />
+    </svg>
+  );
+}
+
+function ComplianceIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        paintOrder="stroke fill"
+        d="M13.1 2 4.6 13.6h6.1l-.9 8.4 8.5-11.5h-6l1-8.5Z"
+      />
+    </svg>
   );
 }

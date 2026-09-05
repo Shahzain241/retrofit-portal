@@ -20,7 +20,7 @@ export default function UpgradeBanner() {
   const price = priority?.price || '£29';
 
   return (
-    <div className="rp-upgrade-banner border border-line rounded-xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="rp-upgrade-banner flex flex-col sm:flex-row items-center justify-between gap-4">
       <div>
         <h3 className="font-['Inter'] font-bold text-[20px] leading-[28px] tracking-[0px] text-[#0B1C30]">
           Upgrade to Priority Support

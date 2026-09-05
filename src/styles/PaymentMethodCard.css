@@ -11,8 +11,4 @@
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
 }
 
-/* "Add Backup Method" button — flat solid dark navy overrides the gradient. */
-.rp-button.rp-pay-add {
-  background: #0b1c30;
-  background-image: none;
-}
+/* "Add Backup Method" button — uses the shared green->navy gradient. */

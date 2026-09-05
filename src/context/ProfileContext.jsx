@@ -4,12 +4,25 @@ import { supabase } from '../lib/supabaseClient';
 const PROFILE_KEY = 'retrofit.portal.profile';
 const SETTINGS_KEY = 'retrofit.portal.settings';
 
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=John+Hopkins&background=e6e9ef&color=475467&size=160';
+
+/** True only when `value` is a usable image source (http(s) URL or data-image URI). */
+function isImageSource(value) {
+  return typeof value === 'string' && /^(https?:\/\/|data:image\/)/i.test(value);
+}
+
+/** Guard the avatar against stale/garbage values (e.g. a persisted toast
+ *  message) — never let a non-image string become the avatar source. */
+function sanitizeAvatar(value) {
+  return isImageSource(value) ? value : DEFAULT_AVATAR;
+}
+
 const defaultProfile = {
   firstName: 'John',
   lastName: 'Hopkins',
   email: 'JohnHopkins123@gmail.com',
   phone: '+44 123 12334 22',
-  avatar: 'https://ui-avatars.com/api/?name=John+Hopkins&background=e6e9ef&color=475467&size=160',
+  avatar: DEFAULT_AVATAR,
   notifications: {
     push: true,
     email: false,
@@ -53,7 +66,10 @@ function load(key, fallback) {
 const ProfileContext = createContext(null);
 
 export function ProfileProvider({ children }) {
-  const [profile, setProfile] = useState(() => load(PROFILE_KEY, defaultProfile));
+  const [profile, setProfile] = useState(() => {
+    const p = load(PROFILE_KEY, defaultProfile);
+    return { ...p, avatar: sanitizeAvatar(p.avatar) };
+  });
   const [settings, setSettings] = useState(() => load(SETTINGS_KEY, defaultSettings));
   const [hydrated, setHydrated] = useState(false);
 
@@ -93,7 +109,7 @@ export function ProfileProvider({ children }) {
           lastName: data.last_name ?? prev.lastName,
           email: data.email ?? prev.email,
           phone: data.phone ?? prev.phone,
-          avatar: data.avatar_url ?? prev.avatar,
+          avatar: data.avatar_url != null ? sanitizeAvatar(data.avatar_url) : sanitizeAvatar(prev.avatar),
           notifications: {
             push: data.notifications?.push ?? prev.notifications.push,
           },

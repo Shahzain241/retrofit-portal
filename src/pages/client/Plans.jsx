@@ -69,7 +69,7 @@ export default function Plans() {
   }
   return (
     <div>
-      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">Choose Your Transformation</h1>
+      <h1 className="font-['Inter'] font-medium text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1E36]">Choose Your Transformation</h1>
       <p className="text-body mt-1 mb-8">Scalable solutions for teams of all sizes.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -82,13 +82,13 @@ export default function Plans() {
               p.highlight ? 'bg-navy-900 text-white border-navy-900' : 'bg-white border-line/60 shadow-sm'
             }`}
           >
-            {(p.isCurrent || p.badge) && (
+            {p.badge && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-green text-white text-[10px] font-bold px-4 py-1.5 rounded-full">
-                {p.isCurrent ? 'CURRENT PLAN' : p.badge}
+                {p.badge}
               </span>
             )}
             <h3 className={`text-lg font-bold ${p.highlight ? 'text-brand-green' : 'text-ink'}`}>{p.name}</h3>
-            <p className="text-4xl font-bold mt-2">
+            <p className={`text-4xl font-bold mt-2 ${p.highlight ? 'text-white' : 'text-ink'}`}>
               {p.price}
               <span className={`text-sm font-normal ${p.highlight ? 'text-white/60' : 'text-muted'}`}>/mo</span>
             </p>
@@ -97,19 +97,23 @@ export default function Plans() {
               {p.features.map((f) => (
                 <div key={f.text} className="flex items-center gap-2 text-sm">
                   {f.ok ? (
-                    <Check size={16} className="text-brand-green shrink-0" />
+                    <span className="w-[21px] h-[21px] rounded-full border border-brand-green flex items-center justify-center shrink-0">
+                      <Check size={12} className="text-brand-green" />
+                    </span>
                   ) : (
-                    <X size={16} className="text-muted shrink-0" />
+                    <span className="w-[21px] h-[21px] rounded-full border border-[#D1D5DB] flex items-center justify-center shrink-0">
+                      <X size={12} className="text-[#D1D5DB]" />
+                    </span>
                   )}
-                  <span className={f.ok ? (p.highlight ? 'text-white' : 'text-ink') : 'text-muted'}>
+                  <span className={p.highlight ? 'text-white' : 'text-ink'}>
                     {f.text}
                   </span>
                 </div>
               ))}
             </div>
             <Button
-              variant={p.isCurrent ? 'outline' : gradientCta ? 'gradient' : 'outline'}
-              className={`w-full ${gradientCta && !p.isCurrent ? 'rp-plan-card-cta' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+              variant={p.isCurrent ? 'gradient' : gradientCta ? 'gradient' : 'outline'}
+              className={`w-full ${gradientCta || p.isCurrent ? 'rp-plan-card-cta' : ''} ${p.isCurrent ? 'rp-plan-current' : ''}`}
               disabled={p.isCurrent}
               onClick={() => {
                 if (p.isCurrent) return;

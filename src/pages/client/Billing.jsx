@@ -126,7 +126,7 @@ export default function Billing() {
         </div>
         <Link to="/billing/plans">
           <Button
-            variant="navy"
+            variant="gradient"
             className="rp-dash-cta w-[143px] rp-billing-upgrade-cta"
           >
             Upgrade Plan
@@ -158,7 +158,7 @@ export default function Billing() {
           <div className="flex gap-3 border-t border-dashed border-line pt-4 rp-plan-actions">
             <Link to="/billing/plans" className="flex-1">
               <Button
-                variant="outline"
+                variant="gradient"
                 className="rp-plan-upgrade w-full"
               >
                 Upgrade Plan
@@ -166,7 +166,7 @@ export default function Billing() {
             </Link>
             {profile.plan !== 'Free' && (
               <Button
-                variant="navy"
+                variant="gradient"
                 className="rp-plan-cancel flex-1"
                 onClick={() => setCancelOpen(true)}
               >

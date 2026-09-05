@@ -1,0 +1,22 @@
+/* Project Detail tab bar — the active tab is indicated ONLY by the green
+   bottom underline (circular end-caps). No borders, outlines, or focus
+   boxes/rings may render on the tab buttons in any state (default / focus /
+   focus-visible / active), so a stray blue browser focus bar can never appear
+   on the left edge of the tab row. */
+
+.rp-project-tabs button,
+.rp-project-tabs button:focus,
+.rp-project-tabs button:active {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+}
+
+/* Subtle keyboard-focus alternative (green inset ring) — not a bar, not a box. */
+.rp-project-tabs button:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px #0f9d58;
+}

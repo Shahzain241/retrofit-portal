@@ -1,10 +1,8 @@
 /* Billing & Subscription (client) — extracted inline styles.
    Mobile fill rules for `.rp-plan-card`/`.rp-pay-card` live in DashboardShared.css. */
 
-/* Header "Upgrade Plan" CTA — flat solid dark navy #0B1C30 (Figma). */
+/* Header "Upgrade Plan" CTA — green->navy gradient (Figma). */
 .rp-button.rp-billing-upgrade-cta {
-  background: #0b1c30;
-  background-image: none;
   box-shadow: none;
 }
 
@@ -19,18 +17,17 @@
   box-shadow: 0px 4px 4.8px 0px #0b1c3040;
 }
 
-/* "Upgrade Plan" primary action inside the plan panel — light gray neutral
-   fill (#F3F4F6) with dark text (#0B1C30) and rounded corners. */
+/* "Upgrade Plan" primary action inside the plan panel — white card-style
+   button with a light border and soft shadow. */
 .rp-button.rp-plan-upgrade {
   width: 490px;
   height: 54px;
   gap: 8px;
   border-radius: 15px;
   padding: 15px;
-  background: #f3f4f6;
-  background-image: none;
-  box-shadow: none;
-  border: none;
+  background: #ffffff;
+  border: 1px solid #c4c4c442;
+  box-shadow: 0px 4px 4.8px 0px #0b1c3040;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 16px;
@@ -41,25 +38,21 @@
   color: #0b1c30;
 }
 
-/* "Cancel" secondary action inside the plan panel — solid dark navy. */
+/* "Cancel" secondary action inside the plan panel — green->navy gradient. */
 .rp-button.rp-plan-cancel {
   width: 86px;
   height: 54px;
   border-radius: 15px;
   padding: 15px 16px;
-  background: #0b1c30;
-  background-image: none;
   box-shadow: none;
   color: #ffffff;
 }
 
-/* "PDF" download cell-button in the invoice table — dark teal #084C55. */
+/* "PDF" download cell-button in the invoice table — green->navy gradient. */
 .rp-button.rp-table-btn-pdf {
   width: 85px;
   height: 36px;
   border-radius: 10px;
   padding: 8px 16px;
-  background: #084c55;
-  background-image: none;
   box-shadow: none;
 }
