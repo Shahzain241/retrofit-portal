@@ -16,15 +16,9 @@ import {
   YAxis,
 } from 'recharts';
 import {
-  Activity,
   AlertTriangle,
-  CheckCircle2,
-  ClipboardCheck,
   Inbox,
   MoreHorizontal,
-  UserPlus,
-  Users,
-  Zap,
 } from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
@@ -102,12 +96,12 @@ export default function AdminDashboard() {
   const [priorityQueue, setPriorityQueue] = useState([]);
 
   const stats = [
-    { id: 'stat-total-clients', icon: Users, value: totalClients, label: 'Total Clients' },
-    { id: 'stat-total-projects', icon: ClipboardCheck, value: totalProjects, label: 'Total Projects' },
-    { id: 'stat-active-services', icon: Zap, value: activeServices, label: 'Active Services' },
-    { id: 'stat-active-projects', icon: Activity, value: activeProjects, label: 'In Progress' },
-    { id: 'stat-completed-projects', icon: CheckCircle2, value: completedProjects, label: 'Completed' },
-    { id: 'stat-recent-signups', icon: UserPlus, value: recentSignups, label: 'Recent Signups' },
+    { id: 'stat-total-clients', icon: NewTodayIcon, value: totalClients, label: 'NEW TODAY' },
+    { id: 'stat-total-projects', icon: ActiveProjectsIcon, value: totalProjects, label: 'ACTIVE PROJECTS' },
+    { id: 'stat-active-services', icon: OverdueTasksIcon, value: activeServices, label: 'OVERDUE TASKS' },
+    { id: 'stat-active-projects', icon: RevenueMtdIcon, value: activeProjects, label: 'REVENUE MTD' },
+    { id: 'stat-completed-projects', icon: AvgCompletionIcon, value: completedProjects, label: 'AVG COMPLETION', labelClassName: 'admin-stat-label-figma' },
+    { id: 'stat-recent-signups', icon: ComplianceIcon, value: recentSignups, label: 'COMPLIANCE' },
   ];
 
   const fetchDashboard = useCallback(async () => {
@@ -243,7 +237,45 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="dashboard-banner text-white p-6 sm:p-8 mb-6">
-        <div className="dashboard-banner-glow" />
+        <svg
+          className="dashboard-banner-graphic"
+          viewBox="0 0 1120 259"
+          width="100%"
+          height="100%"
+          style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+        >
+          <defs>
+            <clipPath id="bgblur_1_clip">
+              <circle cx="1048.66" cy="115.657" r="100" transform="rotate(-62.7906 1048.66 115.657)" />
+            </clipPath>
+            <clipPath id="bgblur_2_clip">
+              <circle cx="948.086" cy="202.086" r="25.3126" transform="rotate(-62.7906 948.086 202.086)" />
+            </clipPath>
+            <clipPath id="bgblur_3_clip">
+              <circle cx="948.379" cy="150.38" r="11.4208" transform="rotate(-62.7906 948.379 150.38)" />
+            </clipPath>
+          </defs>
+          <g transform="translate(-40,-40)">
+            <path opacity="0.69" d="M1201.9 128.707C1178.55 115.714 1151.18 112.121 1125.83 118.72C1100.47 125.319 1079.19 141.568 1066.68 163.894C1054.18 186.219 1051.45 212.792 1059.12 237.766C1066.79 262.74 1084.21 284.07 1107.57 297.064L1118.34 277.836C1100.32 267.81 1086.88 251.353 1080.96 232.083C1075.04 212.813 1077.14 192.31 1086.8 175.084C1096.45 157.858 1112.86 145.32 1132.43 140.229C1151.99 135.137 1173.11 137.909 1191.13 147.935L1201.9 128.707Z" fill="#12B14E"/>
+
+            <foreignObject x="936.737" y="3.737" width="223.842" height="223.841" clipPath="url(#bgblur_1_clip)">
+              <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(11.9px)', height: '100%', width: '100%' }} />
+            </foreignObject>
+            <circle cx="1048.66" cy="115.657" r="100" transform="rotate(-62.7906 1048.66 115.657)" fill="#12B14E" fillOpacity="0.45"/>
+
+            <foreignObject x="910.868" y="164.868" width="74.436" height="74.437" clipPath="url(#bgblur_2_clip)">
+              <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(11.9px)', height: '100%', width: '100%' }} />
+            </foreignObject>
+            <circle cx="948.086" cy="202.086" r="25.3126" transform="rotate(-62.7906 948.086 202.086)" fill="#12B14E" fillOpacity="0.45"/>
+
+            <foreignObject x="925.056" y="127.057" width="46.646" height="46.646" clipPath="url(#bgblur_3_clip)">
+              <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(11.9px)', height: '100%', width: '100%' }} />
+            </foreignObject>
+            <circle cx="948.379" cy="150.38" r="11.4208" transform="rotate(-62.7906 948.379 150.38)" fill="#12B14E" fillOpacity="0.45"/>
+
+            <path opacity="0.53" fillRule="evenodd" clipRule="evenodd" d="M1015.38 223.725C1064.5 248.978 1083.85 309.267 1058.59 358.384C1033.34 407.501 973.051 426.846 923.934 401.594C874.817 376.341 855.472 316.052 880.724 266.935C905.977 217.818 966.266 198.472 1015.38 223.725ZM937.876 374.477C972.017 392.031 1013.92 378.583 1031.48 344.442C1049.03 310.301 1035.58 268.395 1001.44 250.842C967.3 233.288 925.394 246.735 907.841 280.876C890.287 315.018 903.735 356.924 937.876 374.477Z" fill="#12B14E"/>
+          </g>
+        </svg>
         <h1 className="text-2xl sm:text-3xl font-bold relative z-10">Good morning {profile.firstName}!</h1>
         <p className="text-white/70 mt-2 relative z-10">
           You have <span className="text-brand-green font-semibold">{needsAttention} pending {needsAttention === 1 ? 'project' : 'projects'}</span> that
@@ -262,8 +294,16 @@ export default function AdminDashboard() {
         <div className="admin-stats-grid">
           {isLoading
             ? stats.map((_, i) => <AdminStatCardSkeleton key={i} />)
-            : stats.map((s, i) => (
-                <StatCard key={i} icon={s.icon} value={s.value} label={s.label} variant={s.variant} compact />
+            : stats.map((s) => (
+                <StatCard
+                  key={s.id}
+                  icon={s.icon}
+                  value={s.value}
+                  label={s.label}
+                  variant={s.variant}
+                  labelClassName={s.labelClassName}
+                  compact
+                />
               ))}
         </div>
       )}
@@ -475,6 +515,121 @@ function AdminStatCardSkeleton() {
       <div className="skeleton-block" />
       <div className="skeleton-block" />
     </div>
+  );
+}
+
+function ComplianceIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#0B1C30" className={className} aria-hidden="true">
+      <path
+        stroke="#0B1C30"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d="M13.1 2 4.6 13.6h6.1l-.9 8.4 8.5-11.5h-6l1-8.5Z"
+      />
+    </svg>
+  );
+}
+
+function RevenueMtdIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#0B1C30" className={className} aria-hidden="true">
+      <path
+        stroke="#0B1C30"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d="M12 1 L14.7 8.3 L22.46 8.6 L16.38 13.42 L18.47 20.9 L12 16.6 L5.53 20.9 L7.63 13.42 L1.54 8.6 L9.3 8.3 Z"
+      />
+    </svg>
+  );
+}
+
+function NewTodayIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="none"
+        stroke="#1a1a1a"
+        strokeWidth={1.75}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+      />
+      <path
+        fill="#0f9d58"
+        stroke="none"
+        d="M15 2 20 7 15 7 Z"
+      />
+      <path
+        fill="none"
+        stroke="#1a1a1a"
+        strokeWidth={1.75}
+        strokeLinecap="round"
+        d="M9 13h6M9 17h5"
+      />
+    </svg>
+  );
+}
+
+function ActiveProjectsIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#0B1C30">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.5 7C13.985 7 16 9.015 16 11.5C16 13.985 13.985 16 11.5 16C9.015 16 7 13.985 7 11.5C7 9.015 9.015 7 11.5 7ZM13.8535 10.1465C13.6583 9.95123 13.3417 9.95124 13.1465 10.1465L11 12.293L9.85352 11.1465C9.65826 10.9512 9.34175 10.9512 9.14648 11.1465C8.95122 11.3417 8.95122 11.6583 9.14648 11.8535L10.6465 13.3535C10.8417 13.5488 11.1583 13.5488 11.3535 13.3535L13.8535 10.8535C14.0488 10.6583 14.0488 10.3417 13.8535 10.1465Z"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 1C13.657 1 15 2.343 15 4V7H14.6006C14.4027 6.86509 14.2138 6.71736 14 6.60742V5H2V12C2 13.105 2.895 14 4 14H6.60742C6.71736 14.2148 6.86509 14.4027 7 14.6006V15H4C2.343 15 1 13.657 1 12V4C1 2.343 2.343 1 4 1H12ZM4 2C2.895 2 2 2.895 2 4H14C14 2.895 13.105 2 12 2H4Z"
+      />
+    </svg>
+  );
+}
+
+function OverdueTasksIcon({ className = '' }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="10" fill="#0B1C30" />
+      <path d="M12 7v5" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
+      <path d="M16 16l-4-4" stroke="#ffffff" strokeWidth={1.8} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function AvgCompletionIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clipPath="url(#clip0_127_2247)">
+        <path
+          d="M23.4856 22.5H9.84625C5.75443 22.5 3.70851 22.5 2.43757 21.2472C1.16663 19.9944 1.16663 17.9778 1.16663 13.9444V0.5"
+          stroke="#0B1C30"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M6.12634 5.3878C6.90503 4.01647 7.9627 2.94336 9.58951 2.94336C16.4675 2.94336 12.6026 17.61 19.9927 17.61C21.6306 17.61 22.6821 16.5296 23.4856 15.1656"
+          stroke="#0B1C30"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M11.101 10.2766H11.0849M6.14123 10.2766H6.12511M23.5005 10.2766H23.4844M18.5407 10.2766H18.5246M11.1159 10.2766C11.1159 10.2848 11.1126 10.2925 11.1068 10.2983C11.101 10.304 11.0931 10.3072 11.0849 10.3072C11.0767 10.3072 11.0688 10.304 11.063 10.2983C11.0572 10.2925 11.0539 10.2848 11.0539 10.2766C11.0539 10.2685 11.0572 10.2608 11.063 10.255C11.0688 10.2493 11.0767 10.2461 11.0849 10.2461C11.0931 10.2461 11.101 10.2493 11.1068 10.255C11.1126 10.2608 11.1159 10.2685 11.1159 10.2766ZM6.15611 10.2766C6.15611 10.2848 6.15285 10.2925 6.14703 10.2983C6.14122 10.304 6.13334 10.3072 6.12511 10.3072C6.11689 10.3072 6.10901 10.304 6.1032 10.2983C6.09738 10.2925 6.09412 10.2848 6.09412 10.2766C6.09412 10.2685 6.09738 10.2608 6.1032 10.255C6.10901 10.2493 6.11689 10.2461 6.12511 10.2461C6.13334 10.2461 6.14122 10.2493 6.14703 10.255C6.15285 10.2608 6.15611 10.2685 6.15611 10.2766ZM23.5154 10.2766C23.5154 10.2848 23.5121 10.2925 23.5063 10.2983C23.5005 10.304 23.4926 10.3072 23.4844 10.3072C23.4761 10.3072 23.4682 10.304 23.4624 10.2983C23.4566 10.2925 23.4534 10.2848 23.4534 10.2766C23.4534 10.2685 23.4566 10.2608 23.4624 10.255C23.4682 10.2493 23.4761 10.2461 23.4844 10.2461C23.4926 10.2461 23.5005 10.2493 23.5063 10.255C23.5121 10.2608 23.5154 10.2685 23.5154 10.2766ZM18.5556 10.2766C18.5556 10.2848 18.5523 10.2925 18.5465 10.2983C18.5407 10.304 18.5328 10.3072 18.5246 10.3072C18.5163 10.3072 18.5085 10.304 18.5027 10.2983C18.4968 10.2925 18.4936 10.2848 18.4936 10.2766C18.4936 10.2685 18.4968 10.2608 18.5027 10.255C18.5085 10.2493 18.5163 10.2461 18.5246 10.2461C18.5328 10.2461 18.5407 10.2493 18.5465 10.255C18.5523 10.2608 18.5556 10.2685 18.5556 10.2766Z"
+          stroke="#0B1C30"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_127_2247">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
   );
 }
 

@@ -2,17 +2,17 @@
  * Shared StatCard — headline metric card (icon + value + label).
  * Used on the Client Dashboard (default) and Admin Dashboard (compact variant).
  */
-export default function StatCard({ icon: Icon, value, label, variant = 'default', compact = false }) {
+export default function StatCard({ icon: Icon, value, label, variant = 'default', compact = false, labelClassName = '' }) {
   if (compact) {
     return (
       <div className="admin-stat-card">
         <div className="admin-stat-icon">
-          <Icon size={16} />
+          <Icon size={20} strokeWidth={1.5} className="text-muted" />
         </div>
         <p className={`admin-stat-value ${variant === 'danger' ? 'admin-stat-value-danger' : 'admin-stat-value-success'}`}>
           {value}
         </p>
-        <p className="admin-stat-label">{label}</p>
+        <p className={`admin-stat-label${labelClassName ? ` ${labelClassName}` : ''}`}>{label}</p>
       </div>
     );
   }
