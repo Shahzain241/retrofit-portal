@@ -119,13 +119,13 @@ function partA() {
   );
 
   const a4 =
-    TOPBAR_SRC.includes("to: '/admin/dashboard'") &&
-    TOPBAR_SRC.includes("to: '/admin/projects'") &&
-    TOPBAR_SRC.includes('(isStaff ? ADMIN_APPS : TOPBAR_APPS).map');
+    TOPBAR_SRC.includes("adminLinks } from '../data/sidebarLinks'") &&
+    TOPBAR_SRC.includes('const ADMIN_APPS = adminLinks.map') &&
+    /variant === 'admin' \? ADMIN_APPS : CLIENT_APPS/.test(TOPBAR_SRC);
   record(
-    'a4) admin apps menu targets admin routes and the render picks the role-aware list',
+    'a4) admin apps menu is derived from adminLinks (admin routes) and the render picks the layout-variant-aware list',
     a4,
-    a4 ? '' : 'apps menu is not role-aware',
+    a4 ? '' : 'apps menu is not role/layout-aware',
   );
 }
 

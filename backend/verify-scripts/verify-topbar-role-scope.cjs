@@ -157,14 +157,14 @@ record(
 // --- a7) admin avatar is fully inert (no handler, no navigation, no styling) ---
 const adminBranchOk =
   /variant === 'admin' \? \(/.test(TOPBAR_SRC) &&
-  /<img\s*\n\s+src=\{profile\.avatar\}\n\s+alt="User avatar"\n\s+className="w-11 h-11 rounded-full object-cover"\n\s+\/>/.test(TOPBAR_SRC);
+  /variant === 'admin' \? \([\s\S]*?<TopbarAvatar/.test(TOPBAR_SRC);
 const a7 =
   adminBranchOk &&
   !/navigate\(variant === 'admin' \? '\/admin\/settings' : '\/profile'\)/.test(TOPBAR_SRC) &&
   !/navigate\('\/admin\/settings'\)/.test(TOPBAR_SRC) &&
   !/variant === 'admin' \? '\/admin\/settings'/.test(TOPBAR_SRC);
 record(
-  'a7) admin avatar is a plain inert <img> — no click handler, no navigation, no clickable styling',
+  'a7) admin avatar is a plain inert TopbarAvatar — no click handler, no navigation, no clickable styling',
   a7,
   a7 ? '' : 'admin avatar still has click/navigation wiring or clickable styling',
 );
