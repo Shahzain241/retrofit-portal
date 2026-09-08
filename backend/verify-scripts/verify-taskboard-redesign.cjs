@@ -62,7 +62,6 @@ const path = require('path');
 const URL = 'https://xxtfqjbadzfjpcdfjdxo.supabase.co';
 
 const results = [];
-let failures = 0;
 
 function record(name, ok, detail = '') {
   results.push({ name, ok });
@@ -70,7 +69,7 @@ function record(name, ok, detail = '') {
 }
 
 function recordSkip(name, detail = '') {
-  results.push({ name, ok: true });
+  results.push({ name, ok: true, skipped: true });
   console.log(`  SKIP  ${name}${detail ? `  — ${detail}` : ''}`);
 }
 
@@ -333,12 +332,15 @@ async function main() {
   await partB();
 
   // --- summary -------------------------------------------------------------------
+  const skipped = results.filter((r) => r.skipped).length;
+  const failed = results.filter((r) => !r.ok && !r.skipped).length;
+  const passed = results.length - skipped - failed;
   console.log('\n==================== SUMMARY ====================');
-  results.forEach((r) => console.log(`  ${r.ok ? 'PASS' : 'FAIL'}  ${r.name}`));
+  results.forEach((r) => console.log(`  ${r.skipped ? 'SKIP' : r.ok ? 'PASS' : 'FAIL'}  ${r.name}`));
   console.log('================================================');
-  console.log(`TOTAL: ${results.length}   PASSED: ${results.length - failures}   FAILED: ${failures}`);
+  console.log(`TOTAL: ${results.length}   PASSED: ${passed}   SKIPPED: ${skipped}   FAILED: ${failed}`);
 
-  process.exit(failures === 0 ? 0 : 1);
+  process.exit(failed === 0 ? 0 : 1);
 }
 
 main().catch((e) => {
