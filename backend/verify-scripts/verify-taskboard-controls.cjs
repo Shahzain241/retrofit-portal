@@ -1,25 +1,24 @@
 /**
- * TaskBoard board-controls verification (assignee filter, column counts, card click).
+ * TaskBoard board-controls verification (column counts, card click).
  *
- * Covers the three board-control fixes from the full modal audit:
+ * Covers the board-control behaviour after the Task Board redesign:
  *
  *   PART A — source checks
- *       a1) "All assignees" dropdown is built from the REAL staff pool
- *           (staffProfiles fetched via the staff-role query), not only the
- *           assignee names that happen to be on the current board. "Unassigned"
- *           stays selectable.
- *       a2) column counts use the REAL unfiltered count for the column, not the
- *           filtered visibleColumns length — so the "(n)" never shrinks when a
- *           search/assignee/priority filter is active.
+ *       a1) the board no longer renders the search / "All assignees" /
+ *           "All priorities" filter controls, while the real staff pool is
+ *           still fetched (staffProfiles) for the task assignee picker in the
+ *           create/edit form
+ *       a2) column counts use the live tasks array for the column — with the
+ *           filters gone, the "(n)" badge equals the real tasks on that column
  *       a3) clicking a task CARD opens the edit modal (the whole card is a
  *           button), the drag grip is excluded (stopPropagation so dragging
  *           doesn't trigger edit), and the pencil still works.
  *
  *   PART B — live checks
- *       b1) the real unfiltered count for a column equals the actual tasks
+ *       b1) the real column count for a column equals the actual tasks
  *           stored in `tasks` for that project+status (the count source)
- *       b2) a filterable staff pool query returns the same staff-role profiles
- *           the board's assignee dropdown is populated from
+ *       b2) a staff-role profiles query returns the same staff-role profiles
+ *           the assignee picker is populated from
  *           (coordinator/designer/assessor/super-admin)
  *
  * Requires backend/sql/05_create_tasks_table.sql + 06_tasks_rls.sql (table/RLS).
@@ -69,26 +68,25 @@ function partA() {
   console.log('\n--- PART A: source checks ---');
 
   const a1 =
-    BOARD_SRC.includes('staffProfiles.forEach((s) =>') &&
-    BOARD_SRC.includes('const name = s.full_name || s.email;') &&
-    BOARD_SRC.includes('value="Unassigned"') &&
-    /columns\.forEach\(\(col\) => col\.tasks\.forEach/.test(BOARD_SRC) &&
-    BOARD_SRC.includes('assigneeFilter');
+    !BOARD_SRC.includes('placeholder="Search tasks..."') &&
+    !BOARD_SRC.includes('All assignees') &&
+    !BOARD_SRC.includes('All priorities') &&
+    BOARD_SRC.includes('fetchStaff') &&
+    BOARD_SRC.includes('task-assignee') &&
+    BOARD_SRC.includes('staff.map((s) =>');
   record(
-    'a1) "All assignees" dropdown is built from the real staff pool (+ board assignees)',
+    'a1) search / assignee / priority filter controls removed; real staff pool still powers the task assignee picker',
     a1,
-    a1 ? '' : 'assignee options still derived only from tasks on the board',
+    a1 ? '' : 'a board filter control is still present, or the staff pool / assignee picker was dropped',
   );
 
   const a2 =
-    BOARD_SRC.includes('realCount={columns.find((c) => c.id === col.id)?.tasks.length ?? 0}') &&
-    BOARD_SRC.includes('function DroppableColumn({ col, realCount, onEdit, onDelete })') &&
-    BOARD_SRC.includes('({realCount})') &&
-    !BOARD_SRC.includes('({col.tasks.length})');
+    BOARD_SRC.includes('({col.tasks.length})') &&
+    !BOARD_SRC.includes('visibleColumns');
   record(
-    'a2) column counts use the real unfiltered count, not the filtered length',
+    'a2) column counts render the live tasks array for each column (no filtered view)',
     a2,
-    a2 ? '' : 'count still rendered from the filtered visibleColumns length',
+    a2 ? '' : 'count no longer derives from the real tasks array on the column',
   );
 
   const a3 =

@@ -88,7 +88,7 @@ function partA() {
   console.log('\n--- PART A: source checks ---');
 
   const a1 =
-    BOARD_SRC.includes('import { GripVertical, Plus, Pencil, Search, Trash2 }') &&
+    BOARD_SRC.includes('Trash2') &&
     BOARD_SRC.includes('onDelete(task)') &&
     BOARD_SRC.includes('aria-label={`Delete task: ${task.title}`}') &&
     BOARD_SRC.includes('<Trash2 size={14} />');

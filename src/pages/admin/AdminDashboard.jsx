@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Area,
   AreaChart,
@@ -28,7 +28,6 @@ import {
 } from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Button from '../../components/Button';
-import TaskBoardModal from '../../components/TaskBoardModal';
 import { label, PRIORITY, PROJECT_STATUS } from '../../data/enums';
 import { supabase } from '../../lib/supabaseClient';
 import { useProfile } from '../../context/ProfileContext';
@@ -84,10 +83,9 @@ function formatDate(value) {
 
 export default function AdminDashboard() {
   const { profile } = useProfile();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isTaskBoardOpen, setIsTaskBoardOpen] = useState(false);
-  const [taskBoardProjectId, setTaskBoardProjectId] = useState(null);
   const [revenueHover, setRevenueHover] = useState(null);
   const [revenueTrend, setRevenueTrend] = useState([]);
   const [revenueTotal, setRevenueTotal] = useState(0);
@@ -456,10 +454,7 @@ export default function AdminDashboard() {
                   <Button
                     variant="navy"
                     className="!py-2 !px-5 text-xs"
-                    onClick={() => {
-                      setTaskBoardProjectId(q.projectId);
-                      setIsTaskBoardOpen(true);
-                    }}
+                    onClick={() => navigate(`/admin/projects/${q.projectId}/board`)}
                   >
                     {q.action}
                   </Button>
@@ -469,12 +464,6 @@ export default function AdminDashboard() {
           </tbody>
         </table>
       </div>
-
-      <TaskBoardModal
-        open={isTaskBoardOpen}
-        onClose={() => setIsTaskBoardOpen(false)}
-        projectId={taskBoardProjectId}
-      />
     </div>
   );
 }

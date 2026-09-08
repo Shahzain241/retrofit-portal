@@ -61,14 +61,15 @@ function partA() {
 
   const a1 =
     BOARD_SRC.includes(".from('projects')") &&
-    BOARD_SRC.includes(".select('name')") &&
+    BOARD_SRC.includes(".select('id, name')") &&
     BOARD_SRC.includes(".eq('id', activeProjectId)") &&
     BOARD_SRC.includes('setProjectName') &&
+    BOARD_SRC.includes('setProjectCode') &&
     !BOARD_SRC.includes('High-Efficiency Heat Pump Installation Cluster');
   record(
-    'a1) TaskBoard fetches the real project name (no hardcoded subtitle)',
+    'a1) TaskBoard fetches the real project code + name (no hardcoded subtitle)',
     a1,
-    a1 ? '' : 'hardcoded subtitle is still present or the name fetch is missing',
+    a1 ? '' : 'hardcoded subtitle is still present or the code/name fetch is missing',
   );
 
   const a2 =

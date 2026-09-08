@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import { GripVertical, Plus, Pencil, Search, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Pencil, Trash2 } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/Button';
 import { taskBoardColumns } from '../../data/projects';
@@ -15,47 +15,20 @@ const BACKLOG = 'backlog';
 
 export default function TaskBoard({ projectId }) {
   const params = useParams();
-  const activeProjectId = projectId || params.id || 'RET-2026-0042';
+  const activeProjectId = projectId || params.id;
+  // Header uses the real `projects` row: `projects.id` is the project code
+  // (same field ProjectsDirectory renders as "Project ID") and `projects.name`
+  // is the project name.
+  const [projectCode, setProjectCode] = useState('');
   const [projectName, setProjectName] = useState('');
   const [columns, setColumns] = useState(() =>
     taskBoardColumns.map((col) => ({ ...col, tasks: [] })),
   );
   const [staffProfiles, setStaffProfiles] = useState([]);
-  const [priorityFilter, setPriorityFilter] = useState('All');
-  const [assigneeFilter, setAssigneeFilter] = useState('All');
-  const [search, setSearch] = useState('');
   const [modal, setModal] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const { showToast } = useToast();
-
-  // Real staff pool for the assignee filter (full_name || email, matching how
-  // task.assignee is displayed), unioned with any assignee names already on the
-  // board so legacy/current assignees remain filterable.
-  const assignees = useMemo(() => {
-    const set = new Set();
-    staffProfiles.forEach((s) => {
-      const name = s.full_name || s.email;
-      if (name) set.add(name);
-    });
-    columns.forEach((col) => col.tasks.forEach((t) => t.assignee && set.add(t.assignee)));
-    return [...set];
-  }, [staffProfiles, columns]);
-
-  const visibleColumns = useMemo(() => {
-    return columns.map((col) => {
-      const tasks = col.tasks.filter((t) => {
-        const matchesPriority = priorityFilter === 'All' || t.priority === priorityFilter;
-        const matchesAssignee =
-          assigneeFilter === 'All' ||
-          (assigneeFilter === 'Unassigned' ? !t.assignee : t.assignee === assigneeFilter);
-        const matchesSearch =
-          !search || (t.title || '').toLowerCase().includes(search.toLowerCase());
-        return matchesPriority && matchesAssignee && matchesSearch;
-      });
-      return { ...col, tasks };
-    });
-  }, [columns, priorityFilter, assigneeFilter, search]);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -108,11 +81,13 @@ export default function TaskBoard({ projectId }) {
     let mounted = true;
     supabase
       .from('projects')
-      .select('name')
+      .select('id, name')
       .eq('id', activeProjectId)
       .maybeSingle()
       .then(({ data }) => {
-        if (mounted && data?.name) setProjectName(data.name);
+        if (!mounted || !data) return;
+        if (data.id) setProjectCode(data.id);
+        if (data.name) setProjectName(data.name);
       })
       .catch(() => {});
     return () => {
@@ -282,7 +257,7 @@ export default function TaskBoard({ projectId }) {
 
   return (
     <div className="max-w-[1120px] mx-auto">
-      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">{activeProjectId}</h1>
+      <h1 className="font-['Inter'] font-semibold text-[36px] leading-[40px] tracking-[-0.9px] text-[#0B1C30]">{projectCode || activeProjectId}</h1>
       <p className="text-body mt-1 mb-6">{projectName || 'Task board'}</p>
 
       <div className="flex items-center justify-between mb-4">
@@ -292,49 +267,12 @@ export default function TaskBoard({ projectId }) {
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 mb-5">
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search tasks..."
-            aria-label="Search tasks"
-            className="w-56 rounded-xl border border-line bg-white pl-9 pr-3 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-          />
-        </div>
-        <select
-          value={assigneeFilter}
-          onChange={(e) => setAssigneeFilter(e.target.value)}
-          aria-label="Filter by assignee"
-          className="rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-        >
-          <option value="All">All assignees</option>
-          <option value="Unassigned">Unassigned</option>
-          {assignees.map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </select>
-        <select
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-          aria-label="Filter by priority"
-          className="rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-        >
-          <option value="All">All priorities</option>
-          {PRIORITIES.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
-      </div>
-
       <DndContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {visibleColumns.map((col) => (
+          {columns.map((col) => (
             <DroppableColumn
               key={col.id}
               col={col}
-              realCount={columns.find((c) => c.id === col.id)?.tasks.length ?? 0}
               onEdit={(task) => setModal({ mode: 'edit', columnId: col.id, task })}
               onDelete={(task) => setDeleteTarget(task)}
             />
@@ -404,23 +342,18 @@ export default function TaskBoard({ projectId }) {
   );
 }
 
-function DroppableColumn({ col, realCount, onEdit, onDelete }) {
+function DroppableColumn({ col, onEdit, onDelete }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.id });
   return (
     <div ref={setNodeRef} className={`rp-board-col ${isOver ? 'rp-board-col-over' : ''}`}>
-      <div className="flex items-center justify-between -mx-4 px-4 mb-4 border-b-2 border-gray-300 pb-3">
-        <h4 className="font-['Inter'] font-semibold text-[12px] leading-[100%] tracking-[0px] text-[#0B1C30]">{col.title}</h4>
-        <span className="text-brand-green text-sm font-semibold">({realCount})</span>
+      <div className="flex items-center justify-between -mx-4 px-4 mb-4 border-b border-line pb-3">
+        <h4 className="font-['Inter'] font-bold text-[12px] leading-[100%] tracking-[0px] text-[#0B1C30]">{col.title}</h4>
+        <span className="text-brand-green text-sm font-semibold">({col.tasks.length})</span>
       </div>
       <div className="space-y-3">
         {col.tasks.map((t) => (
           <DraggableTask key={t.id} task={t} onEdit={onEdit} onDelete={onDelete} />
         ))}
-        {col.tasks.length === 0 && (
-          <div className="text-xs text-muted text-center py-8 border border-dashed border-line rounded-xl">
-            Drop tasks here
-          </div>
-        )}
       </div>
     </div>
   );
@@ -447,7 +380,7 @@ function DraggableTask({ task, onEdit, onDelete }) {
           onEdit(task);
         }
       }}
-      className={`border border-line rounded-xl p-4 bg-white cursor-pointer ${isDragging ? 'opacity-50 shadow-lg' : ''}`}
+      className={`border border-line rounded-xl p-4 bg-white shadow-sm cursor-pointer ${isDragging ? 'opacity-50 shadow-lg' : ''}`}
     >
       <div className="flex items-start gap-1.5">
         <button
