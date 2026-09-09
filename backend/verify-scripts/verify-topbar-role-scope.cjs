@@ -13,7 +13,7 @@
  *       (Dashboard, My Projects, Profile & Property, Billing) and NONE of the
  *       admin items (no Projects Directory / admin routes / admin-only labels).
  *   a4) Admin dashboard apps menu shows ONLY admin items (no client-only
- *       items like "My Projects" or "Profile & Property", no /projects or
+ *       items like "Profile & Property" or "Billing", no /projects or
  *       /profile client routes).
 *  a5) No hardcoded menu selection by `isStaff` remains for the apps menu
  *       (that was the root cause of admin items leaking into the client view).
@@ -116,7 +116,6 @@ const a4 =
   adminRoutes.includes('/admin/projects') &&
   adminRoutes.includes('/admin/services') &&
   adminRoutes.includes('/admin/settings') &&
-  !adminLabels.includes('My Projects') &&
   !adminLabels.includes('Profile & Property') &&
   !adminLabels.includes('Billing') &&
   !adminRoutes.includes('/projects') &&

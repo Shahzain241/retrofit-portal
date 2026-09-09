@@ -18,6 +18,15 @@ export default function Profile() {
   const { profile, hydrated, updateProfile, updateProperty, toggleNotification } = useProfile();
   const { showToast } = useToast();
 
+  // Initials fallback shown in the avatar circle when no profile photo is set.
+  const avatarInitials =
+    `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim()
+      .split(/\s+/)
+      .map((p) => p[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || '?';
+
   const [userId, setUserId] = useState(null);
   const [form, setForm] = useState({
     firstName: profile.firstName,
@@ -337,11 +346,17 @@ export default function Profile() {
           <div className="rp-profile-info-card">
           <div className="flex justify-center mb-5">
             <div className="relative w-24 h-24 rounded-full bg-[#e6e9ef]">
-              <img
-                src={profile.avatar}
-                alt="Profile photo"
-                className="w-24 h-24 rounded-full object-cover bg-[#e6e9ef]"
-              />
+              {profile.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt="Profile photo"
+                  className="w-24 h-24 rounded-full object-cover bg-[#e6e9ef]"
+                />
+              ) : (
+                <span className="w-24 h-24 rounded-full inline-flex items-center justify-center text-2xl font-semibold text-navy-900 bg-[#e6e9ef]">
+                  {avatarInitials}
+                </span>
+              )}
               <button
                 onClick={() => fileRef.current?.click()}
                 aria-label="Change profile photo"

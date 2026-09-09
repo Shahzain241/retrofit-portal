@@ -4,9 +4,8 @@
  *   a1) InviteStaff role select no longer contains the bogus "John Smith"
  *       option (it mapped to no real role and always errored); it now only
  *       offers the three real invitable roles (Coordinator/Designer/Assessor).
- *   a2) the admin Sidebar link to /admin/projects is relabeled to something
- *       accurate ("Projects Directory"); the route is unchanged, and the
- *       CLIENT sidebar link ("My Projects" → /projects) is untouched.
+ *   a2) the admin Sidebar link to /admin/projects is labeled "My Projects"
+ *       (matching Figma); the route is unchanged.
  *
  * Pure source checks — no credentials required.
  * Usage: node backend/verify-scripts/verify-admin-cosmetics.cjs
@@ -50,13 +49,13 @@ function main() {
   console.log('\n--- Sidebar admin label ---');
   const a2 =
     LINKS_SRC.includes("to: '/admin/projects'") &&
-    LINKS_SRC.includes("label: 'Projects Directory'") &&
-    !LINKS_SRC.includes("to: '/admin/projects', label: 'My Projects'") &&
+    LINKS_SRC.includes("label: 'My Projects'") &&
+    !LINKS_SRC.includes("to: '/admin/projects', label: 'Projects Directory'") &&
     LINKS_SRC.includes("to: '/projects', label: 'My Projects'");
   record(
-    'a2) admin link labeled "Projects Directory" (route unchanged; client link untouched)',
+    'a2) admin link labeled "My Projects" (route unchanged; no stale "Projects Directory" label)',
     a2,
-    a2 ? '' : 'admin label or client/admin route mapping is wrong',
+    a2 ? '' : 'admin label is not "My Projects" or a stale label remains',
   );
 
   console.log('\n==================== SUMMARY ====================');

@@ -400,7 +400,7 @@ export default function Topbar({ variant = 'client' }) {
           <DotsGridIcon size={18} className="text-ink" />
         </button>
         {openGrid && (
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-line p-3 grid grid-cols-3 gap-2 z-50">
+          <div className="absolute right-0 mt-2 w-[250px] bg-white rounded-2xl shadow-xl border border-line p-3 grid grid-cols-3 gap-3 z-50">
             {(variant === 'admin' ? ADMIN_APPS : CLIENT_APPS).map((a) => (
               <button
                 key={a.label}

@@ -10,12 +10,13 @@
  *   - the email-template save is localStorage-only (no DB table), which was
  *     not disclosed in the UI
  *
- * All of those are now honest: toolbar icons are inert "Coming soon", the
- * integration cards carry a "Demo data" note, and the email editor discloses
- * that it is saved locally only.
+ * Those are now handled: toolbar icons are inert "Coming soon", the email
+ * editor discloses that it is saved locally only, and the standalone
+ * "Demo data — no live integrations" disclaimer line has been removed to
+ * match the Figma design.
  *
  *   a1) toolbar icons are inert + "Coming soon" (opacity/cursor-not-allowed)
- *   a2) integration health is labelled "Demo data"
+ *   a2) the Integration Health "Demo data" disclaimer line is ABSENT (matches Figma)
  *   a3) email template save discloses localStorage-only persistence
  *
  * Pure source checks — no credentials required.
@@ -52,11 +53,11 @@ function main() {
   );
 
   const a2 =
-    SETTINGS_SRC.includes('Demo data — no live integrations are configured in this environment.');
+    !SETTINGS_SRC.includes('Demo data — no live integrations are configured in this environment.');
   record(
-    'a2) Integration Health cards are labelled "Demo data"',
+    'a2) Integration Health "Demo data" disclaimer line is absent (matches Figma)',
     a2,
-    a2 ? '' : 'integration cards still present fabricated statuses without a demo marker',
+    a2 ? '' : 'the demo disclaimer line is still present',
   );
 
   const a3 =

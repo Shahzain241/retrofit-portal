@@ -17,6 +17,20 @@ const ROLE_OPTIONS = [
   { value: 'assessor', label: 'Assessor' },
 ];
 
+/** Format a last-login timestamp as a short date-time, or '—' when absent. */
+function formatLastLogin(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 /**
  * Admin User Directory — list of platform users with roles, status and
  * management actions. Edit + Ban are real `profiles` UPDATEs; impersonation is
@@ -146,7 +160,7 @@ export default function Users() {
       <div className="bg-white rounded-2xl border border-line/60 shadow-sm overflow-x-auto">
         <table className="w-full text-left min-w-[800px]">
           <thead>
-            <tr className="border-b border-line">
+            <tr className="border-b border-dashed border-gray-200">
               <th className="px-6 py-4 rp-table-th">Name</th>
               <th className="px-6 py-4 rp-table-th">Role</th>
               <th className="px-6 py-4 rp-table-th"># Projects</th>
@@ -178,10 +192,16 @@ export default function Users() {
                   <span className="rp-table-td">{projectCounts[u.id] ?? 0}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="rp-table-td">{'—'}</span>
+                  <span className="rp-table-td">{formatLastLogin(u.last_login_at)}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`rp-table-td ${u.is_banned ? 'text-danger' : u.status === 'active' ? 'rp-table-td-success' : ''}`}>
+                  <span className={`rp-table-td ${
+                    u.is_banned
+                      ? 'text-danger'
+                      : u.status === 'active'
+                        ? 'rp-table-td-success'
+                        : 'text-muted'
+                  }`}>
                     {u.is_banned ? 'Banned' : label(USER_STATUS, u.status)}
                   </span>
                 </td>

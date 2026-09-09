@@ -73,6 +73,10 @@ export default function Login() {
       showToast({ type: 'error', message: error.message || 'Invalid email or password. Please try again.' });
       return;
     }
+    // Stamp the profile's last_login_at so the admin User Directory can show a
+    // real sign-in time (anon key can't read auth.users; record_login() is a
+    // SECURITY DEFINER RPC that updates the caller's own row).
+    supabase.rpc('record_login').then(() => {});
     updateProfile({ email: email.trim() });
     showToast({ type: 'success', message: 'Logged in successfully' });
     navigate(role === 'admin' ? '/admin/dashboard' : '/dashboard');

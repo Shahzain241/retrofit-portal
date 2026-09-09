@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Bold, Italic, List } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../../components/Button';
 import { useProfile } from '../../context/ProfileContext';
 import { useToast } from '../../context/ToastContext';
+import { previewEmailHtml } from '../../utils/emailPreview';
 import '../../styles/Settings.css';
 
 /**
@@ -16,6 +17,7 @@ export default function Settings() {
   const [integrations, setIntegrations] = useState(settings.integrations);
   const [saved, setSaved] = useState(false);
   const [discarded, setDiscarded] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(true);
 
   function flash(msgKey) {
     if (msgKey === 'saved') {
@@ -42,8 +44,6 @@ export default function Settings() {
     showToast({ type: 'info', message: 'Changes discarded' });
   }
 
-  const previewBody = template.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
   return (
     <div>
       <h1 className="st-heading">
@@ -58,9 +58,6 @@ export default function Settings() {
         <h4 className="st-section-title mb-4">
           Integration Health
         </h4>
-        <p className="text-xs text-muted mb-4">
-          Demo data — no live integrations are configured in this environment.
-        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {integrations.map((it) => (
             <div key={it.name} className="border border-line rounded-xl p-4">
@@ -94,39 +91,49 @@ export default function Settings() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="border border-line rounded-xl overflow-hidden">
             <div className="flex items-center gap-3 bg-surface px-4 py-2 border-b border-line">
-              <Bold size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
-              <Italic size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
-              <List size={14} className="text-body opacity-40 cursor-not-allowed" title="Coming soon" />
-            </div>
-            <label htmlFor="email-template-editor" className="sr-only">Email template</label>
-            <textarea
-              id="email-template-editor"
-              value={template}
-              onChange={(e) => setTemplate(e.target.value)}
-              rows={10}
-              className="w-full px-4 py-3 text-sm font-mono focus:outline-none resize-none"
-            />
-            <div className="flex items-center justify-between gap-2 p-3">
-              <p className="text-[11px] text-muted">
-                Demo — saved locally in this browser, not synced to a database.
-              </p>
-              <Button
-                variant="green"
-                className="rp-update-btn shrink-0"
-                onClick={save}
+              <button
+                type="button"
+                onClick={() => setTemplateOpen((v) => !v)}
+                className="rp-collapse-toggle"
+                aria-label={templateOpen ? 'Collapse template editor' : 'Expand template editor'}
               >
-                Update
-              </Button>
+                {templateOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
             </div>
+            {templateOpen && (
+              <>
+                <label htmlFor="email-template-editor" className="sr-only">Email template</label>
+                <textarea
+                  id="email-template-editor"
+                  value={template}
+                  onChange={(e) => setTemplate(e.target.value)}
+                  rows={10}
+                  className="w-full px-4 py-3 text-sm font-mono focus:outline-none resize-none"
+                />
+                <div className="flex items-center justify-end gap-2 p-3">
+                  <Button
+                    variant="green"
+                    className="rp-update-btn shrink-0"
+                    onClick={save}
+                  >
+                    Update
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
           <div className="border border-line rounded-xl overflow-hidden">
             <div className="st-preview-head bg-navy-900 px-4 py-3">
               Preview
             </div>
-            <div className="p-5 text-sm text-body space-y-3">
-              <p>Hello Jane Doe,</p>
-              <p>{previewBody}</p>
-            </div>
+            {/* Render the substituted template HTML. Merge tags are replaced
+                with sample values (see utils/emailPreview.js) and the HTML is
+                parsed into a clean, formatted preview. The stored/raw template
+                is never modified. */}
+            <div
+              className="st-email-preview"
+              dangerouslySetInnerHTML={{ __html: previewEmailHtml(template) }}
+            />
           </div>
         </div>
       </div>

@@ -78,7 +78,9 @@ describe('Topbar apps menu + avatar', () => {
     adminLinks.forEach(({ label }) => {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0);
     });
-    expect(screen.queryByText('My Projects')).not.toBeInTheDocument();
+    // Client-only labels/routes must NOT leak into the admin apps menu. Note
+    // the admin /admin/projects link is ALSO labeled "My Projects" (matches
+    // Figma), so only the genuinely client-only items are asserted here.
     expect(screen.queryByText('Profile & Property')).not.toBeInTheDocument();
     expect(screen.queryByText('Billing')).not.toBeInTheDocument();
   });
@@ -105,7 +107,9 @@ describe('Topbar apps menu + avatar', () => {
   });
 
   it('renders the avatar through TopbarAvatar for both variants', async () => {
+    // The default profile has no real photo (avatar is null), so TopbarAvatar
+    // renders the clean initials fallback instead of a remote/broken image.
     renderTopbar('admin');
-    expect(screen.getByAltText('User avatar')).toBeInTheDocument();
+    expect(screen.getByText('JH')).toBeInTheDocument();
   });
 });

@@ -12,9 +12,14 @@ function isImageSource(value) {
 }
 
 /** Guard the avatar against stale/garbage values (e.g. a persisted toast
- *  message) — never let a non-image string become the avatar source. */
+ *  message) — never let a non-image string become the avatar source. When no
+ *  real photo is set (missing value, invalid string, or the generic remote
+ *  ui-avatars.com placeholder), returns `null` so the UI falls back to clean
+ *  initials instead of a broken/remote image. */
 function sanitizeAvatar(value) {
-  return isImageSource(value) ? value : DEFAULT_AVATAR;
+  if (value === DEFAULT_AVATAR) return null;
+  if (typeof value === 'string' && /ui-avatars\.com/i.test(value)) return null;
+  return isImageSource(value) ? value : null;
 }
 
 const defaultProfile = {
@@ -22,7 +27,7 @@ const defaultProfile = {
   lastName: 'Hopkins',
   email: 'JohnHopkins123@gmail.com',
   phone: '+44 123 12334 22',
-  avatar: DEFAULT_AVATAR,
+  avatar: null,
   notifications: {
     push: true,
     email: false,
@@ -164,6 +169,15 @@ export function ProfileProvider({ children }) {
             if (mounted) hydrate(session.user.id);
           });
         return;
+      }
+      // Count sign-ins / token refreshes as activity so the admin User
+      // Directory "Last Login" shows a real time (SECURITY DEFINER RPC stamps
+      // the caller's own profiles.last_login_at).
+      if (
+        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') &&
+        session?.user?.id
+      ) {
+        supabase.rpc('record_login').then(() => {});
       }
       hydrate(session?.user?.id ?? null);
     });

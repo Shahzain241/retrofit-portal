@@ -81,13 +81,18 @@
   border-image-slice: 1;
 }
 
-/* Active nav link — solid white pill with dark ink text (no green outline). */
+/* Active nav link — solid white pill with dark ink text, right-rounded
+   corners and a subtle 1.5px right/bottom border (Figma). */
 a.rp-sidebar-link-active {
   gap: 12px;
   padding: 16px;
   height: 47px;
   background: #ffffff;
   color: #0b1c30;
+  border-right: 1.5px solid rgba(11, 28, 48, 0.12);
+  border-bottom: 1.5px solid rgba(11, 28, 48, 0.12);
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
 /* Collapsed sidebar — icon-only rail. */

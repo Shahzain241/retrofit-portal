@@ -69,7 +69,7 @@ export default function Sidebar({ variant = 'client', open = false, onClose, col
             type="button"
             onClick={onToggleCollapse}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="hidden lg:flex absolute top-[56px] -right-4 w-8 h-8 rounded-full bg-white text-navy-900 items-center justify-center shadow border border-line hover:bg-gray-100 sidebar-toggle-btn"
+            className="hidden lg:flex absolute top-[56px] -right-4 w-8 h-8 rounded-xl bg-white text-navy-900 items-center justify-center shadow border border-line hover:bg-gray-100 sidebar-toggle-btn"
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
